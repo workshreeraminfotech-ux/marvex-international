@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://saheerparadiseexport.com/sitemap.xml
-
+Sitemap: https://marvexinternational.com/sitemap.xml

@@ -33,7 +33,7 @@ export default function HeroSection() {
             </h1>
 
             <p className="jrp-hero-description">
-              Choose Saheer Paradise Export for agro commodities, whole spices, and food products that meet the highest international standards. Delivering trust, exporting excellence worldwide.
+              Choose Marvex International for agro commodities, whole spices, and food products that meet the highest international standards. Delivering trust, exporting excellence worldwide.
             </p>
 
             <ul className="jrp-hero-list">

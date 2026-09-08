@@ -10,7 +10,7 @@ const testimonials = [
     location: 'Kuala Lumpur, Malaysia',
     img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',
     stars: 5,
-    text: 'Saheer Paradise Export has been our trusted agro supplier. Their recent container dispatch arrived in perfect condition with 100% purity and fast customs clearance.'
+    text: 'Marvex International has been our trusted agro supplier. Their recent container dispatch arrived in perfect condition with 100% purity and fast customs clearance.'
   },
   {
     name: 'Sofia Martinez',
@@ -26,7 +26,7 @@ const testimonials = [
     location: 'Riyadh, Saudi Arabia',
     img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80',
     stars: 5,
-    text: 'From whole spices to ground powders and seeds, every single dispatch from Saheer Paradise Export meets top international standards. Their professionalism and vessel freight speed are unmatched.'
+    text: 'From whole spices to ground powders and seeds, every single dispatch from Marvex International meets top international standards. Their professionalism and vessel freight speed are unmatched.'
   }
 ];
 
@@ -111,19 +111,19 @@ export default function TestimonialsSection() {
             <div className="testi-image-wrap">
               <img
                 src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=800&q=80"
-                alt="Testimonials Showcase — Saheer Paradise Export"
+                alt="Testimonials Showcase — Marvex International"
               />
             </div>
 
             <div className="testimonial-count-badge-v2">
               <div className="badge-icon-circle">
-                🚢
+                🌿
               </div>
               <div>
                 <h3 className="badge-stat-num">
-                  <AnimatedCounter end={4000} suffix="+" />
+                  <AnimatedCounter end={100} suffix="%" />
                 </h3>
-                <p className="badge-stat-label">Happy Global Clients</p>
+                <p className="badge-stat-label">Pure Quality Guaranteed</p>
               </div>
             </div>
           </div>

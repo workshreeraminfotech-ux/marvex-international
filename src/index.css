@@ -1,40 +1,45 @@
 /* ==========================================================================
-   Saheer Paradise Export — Premium Global Agro & Commodity Website
+   Marvex International — Premium Global Agro & Commodity Website
    Theme: Exact Logo-matched Deep Maritime Blue (#1B4B7A) + Ocean Azure (#0284C7)
    ========================================================================== */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,800;1,600&display=swap');
 
 :root {
-  /* === BRAND PALETTE — Exact Saheer Paradise Export Logo Extraction === */
-  --navy: #1B4B7A;          /* Logo primary maritime blue — Ship & Ocean Waves */
-  --navy-dark: #0A2240;     /* Deep nautical navy for dark headers, hero & footer */
-  --navy-mid: #25639A;      /* Dynamic mid-tone ocean blue for card highlights & gradients */
-  --gold: #0284C7;          /* Primary vibrant wave ocean cyan/blue */
-  --gold-light: #38BDF8;    /* Bright ocean azure hover & badge accent */
-  --gold-glow: #BAE6FD;     /* Soft ocean water glow */
-  --gold-pale: #F0F9FF;     /* Soft crisp ocean tint background */
-  --gold-deep: #0369A1;     /* Rich deep ocean azure for hover states */
+  /* === BRAND PALETTE — Marvex International Corporate Navy, Black & Crisp White === */
+  --navy: #011B47;          /* Exact Logo Deep Corporate Navy */
+  --navy-dark: #000E26;     /* Deepest Midnight Navy / Black */
+  --navy-mid: #0B2556;      /* Refined Mid Navy */
+  --navy-soft: #12377A;     /* Navy glow */
 
-  /* === ACCENT — Radiant Maritime Azure & Cyan === */
-  --accent: #0284C7;        /* Primary accent = Ocean Cyan Blue */
-  --accent-cyan: #38BDF8;   /* Secondary accent = Bright Wave Blue */
-  --accent-light: #F0F9FF;  /* Light ocean badge background */
-  --accent-deep: #1B4B7A;   /* Dark navy hover */
+  /* === BLACK & WHITE HIGHLIGHTS (Replaces Gray & Amber) === */
+  --gold: #011B47;          /* Primary highlight = Deep Navy */
+  --gold-light: #FFFFFF;    /* Crisp White highlight */
+  --gold-glow: rgba(1, 27, 71, 0.20); /* Soft Navy glow */
+  --gold-pale: #F8FAFC;     /* Clean off-white surface */
+  --gold-deep: #000E26;     /* Midnight Black */
+
+  /* === ACCENTS === */
+  --accent: #011B47;        /* Primary brand = Navy */
+  --accent-cyan: #000E26;   /* Secondary accent = Deep Black */
+  --accent-light: #F8FAFC;  /* Light crisp badge background */
+  --accent-deep: #000E26;   /* Deepest Navy / Black */
+  --slate-silver: #011B47;
+  --slate-light: #E2E8F0;
 
   /* === NEUTRALS === */
-  --black: #0A2240;         /* Deep Maritime Black */
-  --gray: #475569;          /* Slate body gray */
-  --gray-light: #F8FAFC;    /* Cool slate crisp background */
-  --cream: #F0F7FF;         /* Soft oceanic mist tint page background */
-  --white: #FFFFFF;
-  --border: #E2E8F0;        /* Subtle metallic ocean border */
+  --black: #0B132B;         /* High-contrast solid Black/Navy */
+  --gray: #334155;          /* Crisp high-readability body text (no dull gray) */
+  --gray-light: #F8FAFC;    /* Clean background */
+  --cream: #F8FAFC;         /* Clean page canvas */
+  --white: #FFFFFF;         /* Pure crisp white */
+  --border: #E2E8F0;        /* Clean structural border */
 
   /* === BRAND ALIASES === */
-  --green: #0284C7;         /* Primary highlight accent = Ocean Azure */
-  --green-light: #38BDF8;
-  --green-pale: #F0F9FF;
-  --yellow: #0284C7;
-  --yellow-pale: #F0F9FF;
+  --green: #011B47;
+  --green-light: #0B132B;
+  --green-pale: #F8FAFC;
+  --yellow: #011B47;
+  --yellow-pale: #F8FAFC;
 
   --font-h: 'Outfit', sans-serif;
   --font-b: 'Inter', sans-serif;
@@ -42,9 +47,9 @@
   --radius: 16px;
   --radius-sm: 10px;
   --radius-pill: 100px;
-  --shadow: 0 4px 20px rgba(27, 75, 122, 0.08);
-  --shadow-lg: 0 12px 40px rgba(27, 75, 122, 0.14);
-  --shadow-glow: 0 0 25px rgba(2, 132, 199, 0.25);
+  --shadow: 0 4px 20px rgba(1, 27, 71, 0.08);
+  --shadow-lg: 0 12px 40px rgba(1, 27, 71, 0.14);
+  --shadow-glow: 0 0 25px rgba(1, 27, 71, 0.20);
   --transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -67,23 +72,23 @@ button, input, select, textarea { font: inherit; }
 /* ---- SECTION TITLES ---- */
 .section-title { text-align: center; margin-bottom: 40px; }
 .section-title.left-align { text-align: left; }
-.eyebrow { display: inline-block; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: var(--gold-deep); background: var(--gold-pale); border: 1px solid var(--gold-light); padding: 5px 16px; border-radius: 100px; margin-bottom: 12px; }
+.eyebrow { display: inline-block; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: #011B47; background: #FFFFFF; border: 1.5px solid #011B47; padding: 6px 18px; border-radius: 100px; margin-bottom: 12px; box-shadow: 0 2px 10px rgba(1, 27, 71, 0.08); }
 .section-title h2 { font-family: var(--font-h); font-size: 38px; font-weight: 800; color: var(--navy); line-height: 1.15; }
-.section-title h2 span { color: var(--gold); }
+.section-title h2 span { color: var(--navy); }
 .section-title p { margin-top: 10px; font-size: 16px; color: var(--gray); max-width: 580px; margin-left: auto; margin-right: auto; }
 
 /* ---- BUTTONS ---- */
-/* Primary CTA = Ocean Maritime Gradient */
-.btn-primary { display: inline-flex; align-items: center; gap: 10px; background: linear-gradient(135deg, #1B4B7A 0%, #0284C7 100%); color: #FFFFFF; padding: 13px 28px; border-radius: var(--radius-pill); font-size: 15px; font-weight: 800; border: none; cursor: pointer; transition: var(--transition); box-shadow: 0 6px 20px rgba(2, 132, 199, 0.35); }
-.btn-primary:hover { background: linear-gradient(135deg, #0284C7 0%, #0369A1 100%); color: #FFFFFF; transform: translateY(-2px); box-shadow: 0 10px 28px rgba(2, 132, 199, 0.5); }
-/* Outline = Ocean Blue */
-.btn-outline { display: inline-flex; align-items: center; gap: 10px; background: transparent; color: var(--navy); padding: 12px 26px; border-radius: var(--radius-pill); font-size: 15px; font-weight: 800; border: 2px solid var(--gold); cursor: pointer; transition: var(--transition); }
-.btn-outline:hover { background: var(--gold); color: #FFFFFF; }
-/* Ghost = Blue */
+/* Primary CTA = Solid Corporate Navy & White */
+.btn-primary { display: inline-flex; align-items: center; gap: 10px; background: #011B47; color: #FFFFFF; padding: 13px 28px; border-radius: var(--radius-pill); font-size: 15px; font-weight: 800; border: 1px solid #011B47; cursor: pointer; transition: var(--transition); box-shadow: 0 6px 20px rgba(1, 27, 71, 0.28); }
+.btn-primary:hover { background: #000E26; color: #FFFFFF; border-color: #000E26; transform: translateY(-2px); box-shadow: 0 10px 28px rgba(1, 27, 71, 0.4); }
+/* Outline = Corporate Navy / White */
+.btn-outline { display: inline-flex; align-items: center; gap: 10px; background: transparent; color: var(--navy); padding: 12px 26px; border-radius: var(--radius-pill); font-size: 15px; font-weight: 800; border: 2px solid var(--navy); cursor: pointer; transition: var(--transition); }
+.btn-outline:hover { background: var(--navy); color: #FFFFFF; }
+/* Ghost = Blue / Black */
 .btn-ghost { display: inline-flex; align-items: center; gap: 8px; color: var(--navy); font-size: 15px; font-weight: 700; transition: var(--transition); }
-.btn-ghost:hover { gap: 12px; color: var(--gold-deep); }
+.btn-ghost:hover { gap: 12px; color: var(--black); }
 .btn-ghost-dark { display: inline-flex; align-items: center; gap: 8px; color: var(--black); font-size: 14px; font-weight: 600; transition: var(--transition); }
-.btn-ghost-dark:hover { color: var(--gold-deep); gap: 12px; }
+.btn-ghost-dark:hover { color: var(--navy); gap: 12px; }
 
 /* ======================================================================
    ANNOUNCEMENT BAR
@@ -91,13 +96,13 @@ button, input, select, textarea { font: inherit; }
 .announcement-bar { background: var(--navy-dark); padding: 10px 0; }
 .announcement-inner { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
 .ann-contact { display: flex; align-items: center; gap: 20px; }
-.ann-link { display: inline-flex; align-items: center; gap: 8px; color: rgba(255,255,255,0.88); font-size: 13px; }
-.ann-link svg { color: var(--gold-light); }
-.ann-link:hover { color: var(--gold-light); }
+.ann-link { display: inline-flex; align-items: center; gap: 8px; color: rgba(255,255,255,0.92); font-size: 13px; font-weight: 600; }
+.ann-link svg { color: #FFFFFF; }
+.ann-link:hover { color: #FFFFFF; text-decoration: underline; }
 .ann-social { display: flex; align-items: center; gap: 6px; }
-.ann-social-text { font-size: 12px; color: rgba(255,255,255,0.65); margin-right: 6px; }
-.ann-social a { width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,0.1); color: #fff; display: inline-flex; align-items: center; justify-content: center; transition: var(--transition); }
-.ann-social a:hover { background: var(--gold); }
+.ann-social-text { font-size: 12px; color: rgba(255,255,255,0.75); margin-right: 6px; }
+.ann-social a { width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,0.15); color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; transition: var(--transition); }
+.ann-social a:hover { background: #FFFFFF; color: #011B47; }
 
 /* ======================================================================
    NAVBAR

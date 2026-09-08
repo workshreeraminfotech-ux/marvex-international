@@ -8,30 +8,30 @@ export default function CounterSection() {
     {
       end: 100,
       suffix: '%',
-      title: 'Container Shipment Dispatched',
-      icon: Ship,
-      desc: 'Recently Shipped Container to Malaysia 🇲🇾'
-    },
-    {
-      end: 100,
-      suffix: '%',
-      title: 'On-Time Container Delivery',
+      title: 'Purity & Quality Assurance',
       icon: ShieldCheck,
-      desc: 'Seamless port & customs clearing'
-    },
-    {
-      end: 30,
-      suffix: '+',
-      title: 'Countries Reached',
-      icon: Globe2,
-      desc: 'Trusted global trade network'
+      desc: 'Lab tested, graded & 100% natural produce'
     },
     {
       end: 100,
       suffix: '%',
-      title: 'Quality & Purity Compliance',
+      title: 'Export-Ready Standards',
+      icon: Ship,
+      desc: 'Hygienic, moisture-proof container packaging'
+    },
+    {
+      end: 100,
+      suffix: '%',
+      title: 'Direct Farm Sourcing',
       icon: Building2,
-      desc: 'Lab tested & export certified'
+      desc: 'Ethically procured from premier Indian farms'
+    },
+    {
+      end: 24,
+      suffix: '/7',
+      title: 'Dedicated Export Desk',
+      icon: Globe2,
+      desc: 'Prompt CIF & FOB global trade support'
     }
   ];
 

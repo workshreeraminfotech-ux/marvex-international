@@ -103,22 +103,22 @@ export default function ContactSection() {
               <div className="contact-info-item">
                 <div className="ci-icon"><Phone size={18} /></div>
                 <div className="ci-text">
-                  <strong>+91 93779 88770</strong>
-                  <span>Sahil Sorathiya • Mon–Sat IST</span>
+                  <strong>+91 8200712955</strong>
+                  <span>Direct B2B Desk • Mon–Sat IST</span>
                 </div>
               </div>
               <div className="contact-info-item">
                 <div className="ci-icon"><Mail size={18} /></div>
                 <div className="ci-text">
-                  <strong>saheerparadiseexport@gmail.com</strong>
+                  <strong>info@marvexinternational.com</strong>
                   <span>We reply within 24 hours</span>
                 </div>
               </div>
               <div className="contact-info-item">
                 <div className="ci-icon"><MapPin size={18} /></div>
                 <div className="ci-text">
-                  <strong>501, Shashwat World, 80 Ft Rd Rolex, Rajkot - 360022</strong>
-                  <span>Fifth Floor, Sardar Chowk, Kothariya Main Rd, Gujarat, India</span>
+                  <strong>Gujarat, India</strong>
+                  <span>Global Export Hub</span>
                 </div>
               </div>
             </div>
@@ -134,7 +134,7 @@ export default function ContactSection() {
           >
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d119067.87434720948!2d70.7284077!3d22.2736308!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3959c98ac71cdf0f%3A0x76dd15cfbe93ad3b!2sRajkot%2C+Gujarat!5e0!3m2!1sen!2sin!4v1600000000000"
-              title="Saheer Paradise Export Location - Gujarat, India"
+              title="Marvex International Location - Gujarat, India"
               allowFullScreen
               loading="lazy"
             />

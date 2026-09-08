@@ -98,7 +98,7 @@ export default function Preloader({ minDuration = 1800, onFinish }) {
             >
               <img
                 src={logoImg}
-                alt="Saheer Paradise Export Logo"
+                alt="Marvex International Logo"
                 style={{
                   height: '95px',
                   width: 'auto',

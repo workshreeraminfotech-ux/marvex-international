@@ -118,8 +118,8 @@ export default function AboutPage({ onNavigate, onOpenQuote }) {
               alignItems: 'center',
               gap: '8px',
               backgroundColor: 'rgba(255, 255, 255, 0.12)',
-              border: '1px solid rgba(56, 189, 248, 0.4)',
-              color: '#BAE6FD',
+              border: '1.5px solid #6E737D',
+              color: '#CBD2DC',
               fontSize: '12px',
               fontWeight: 800,
               textTransform: 'uppercase',
@@ -129,8 +129,8 @@ export default function AboutPage({ onNavigate, onOpenQuote }) {
               marginBottom: '20px',
               backdropFilter: 'blur(6px)'
             }}>
-              <Sparkles size={14} style={{ color: 'var(--gold-light)' }} />
-              SAHEER PARADISE EXPORT • B2B AGRO EXPORTS
+              <Sparkles size={14} style={{ color: '#CBD2DC' }} />
+              MARVEX INTERNATIONAL • B2B AGRO EXPORTS
             </span>
 
             <h1 style={{
@@ -281,7 +281,7 @@ export default function AboutPage({ onNavigate, onOpenQuote }) {
                 >
                   <div style={{ height: '160px', overflow: 'hidden', position: 'relative' }}>
                     <img src={step.img} alt={step.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    <div style={{ position: 'absolute', top: 12, left: 12, width: 40, height: 40, borderRadius: '12px', background: 'linear-gradient(135deg, #0A2240 0%, #1B4B7A 100%)', color: '#38BDF8', border: '1px solid rgba(56, 189, 248, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ position: 'absolute', top: 12, left: 12, width: 40, height: 40, borderRadius: '12px', background: 'linear-gradient(135deg, #040F22 0%, #0B2545 100%)', color: '#60A5FA', border: '1px solid rgba(96, 165, 250, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <Icon size={20} />
                     </div>
                   </div>
@@ -307,7 +307,7 @@ export default function AboutPage({ onNavigate, onOpenQuote }) {
               Driven by Purpose, <span style={{ color: 'var(--gold)' }}>Guided by Integrity</span>
             </h2>
             <p style={{ color: 'var(--gray)', maxWidth: '600px', margin: '10px auto 0' }}>
-              Discover the core principles that power Saheer Paradise Export's global reputation as a premier agro commodity exporter.
+              Discover the core principles that power Marvex International's global reputation as a premier agro commodity exporter.
             </p>
           </div>
 
@@ -362,7 +362,7 @@ export default function AboutPage({ onNavigate, onOpenQuote }) {
               OUR ADVANTAGES
             </span>
             <h2 style={{ color: 'var(--navy)', marginTop: '10px' }}>
-              Why Importers Choose <span style={{ color: 'var(--gold)' }}>Saheer Paradise Export</span>
+              Why Importers Choose <span style={{ color: 'var(--gold)' }}>Marvex International</span>
             </h2>
           </div>
 
@@ -386,7 +386,7 @@ export default function AboutPage({ onNavigate, onOpenQuote }) {
               >
                 <div style={{ height: '150px', overflow: 'hidden', position: 'relative' }}>
                   <img src={hl.img} alt={hl.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  <div style={{ position: 'absolute', top: 12, right: 12, background: 'linear-gradient(135deg, #0A2240 0%, #1B4B7A 100%)', color: '#38BDF8', border: '1px solid rgba(56, 189, 248, 0.3)', padding: '4px 10px', borderRadius: '100px', fontSize: '11px', fontWeight: 800 }}>
+                  <div style={{ position: 'absolute', top: 12, right: 12, background: 'linear-gradient(135deg, #040F22 0%, #0B2545 100%)', color: '#60A5FA', border: '1px solid rgba(96, 165, 250, 0.3)', padding: '4px 10px', borderRadius: '100px', fontSize: '11px', fontWeight: 800 }}>
                     Verified Advantage
                   </div>
                 </div>

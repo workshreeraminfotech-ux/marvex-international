@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Phone, Mail, MapPin, MessageCircle, ArrowRight, Clock, Globe, Send } from 'lucide-react';
+import { Phone, Mail, MapPin, MessageCircle, ArrowRight, Clock, Send } from 'lucide-react';
 import { addEnquiry } from '../utils/adminStore';
 
 const countryCodes = ['+91', '+1', '+44', '+971', '+65', '+27', '+49', '+61', '+33', '+86', '+55', '+52'];
@@ -8,31 +8,31 @@ const countryCodes = ['+91', '+1', '+44', '+971', '+65', '+27', '+49', '+61', '+
 const contactCards = [
   {
     icon: Phone, label: 'Phone / WhatsApp',
-    value: '+91 93779 88770',
-    sub: 'Sahil Sorathiya • Mon–Sat IST',
-    href: 'tel:+919377988770',
-    color: '#0284C7'
+    value: '+91 8200712955',
+    sub: 'Direct B2B Export Desk • Mon–Sat IST',
+    href: 'tel:+918200712955',
+    color: '#011B47'
   },
   {
     icon: Mail, label: 'Email Address',
-    value: 'saheerparadiseexport@gmail.com',
+    value: 'info@marvexinternational.com',
     sub: 'We reply within 24 hours',
-    href: 'mailto:saheerparadiseexport@gmail.com',
-    color: '#38BDF8'
+    href: 'mailto:info@marvexinternational.com',
+    color: '#011B47'
   },
   {
     icon: MapPin, label: 'Head Office Address',
-    value: '501, Shashwat World, 80 Ft Rd Rolex, Kothariya Main Rd, Rajkot - 360022',
-    sub: 'Fifth Floor, Sardar Chowk, Gujarat, India',
+    value: 'Gujarat, India',
+    sub: 'International Agro Commodities & Exports Desk',
     href: '#map',
-    color: '#0284C7'
+    color: '#011B47'
   },
   {
     icon: Clock, label: 'Business Hours',
     value: 'Mon–Sat: 9AM – 6PM',
     sub: 'Sunday: Closed (IST)',
     href: null,
-    color: '#38BDF8'
+    color: '#011B47'
   },
 ];
 
@@ -59,7 +59,7 @@ export default function ContactPage() {
 
   return (
     <div>
-      {/* Page Hero — Guaranteed Background Image Overlay */}
+      {/* Page Hero */}
       <section style={{
         position: 'relative',
         color: '#FFFFFF',
@@ -71,7 +71,7 @@ export default function ContactPage() {
         {/* Background Image */}
         <img 
           src="https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=1920&q=80" 
-          alt="Contact Saheer Paradise Export Background" 
+          alt="Contact Marvex International Background" 
           style={{
             position: 'absolute',
             inset: 0,
@@ -97,8 +97,8 @@ export default function ContactPage() {
               alignItems: 'center',
               gap: '8px',
               backgroundColor: 'rgba(255, 255, 255, 0.12)',
-              border: '1.5px solid #38BDF8',
-              color: '#BAE6FD',
+              border: '1.5px solid #6E737D',
+              color: '#CBD2DC',
               fontSize: '12px',
               fontWeight: 800,
               textTransform: 'uppercase',
@@ -119,7 +119,7 @@ export default function ContactPage() {
               lineHeight: 1.15,
               color: '#FFFFFF'
             }}>
-              Contact <span style={{ color: '#38BDF8' }}>Saheer Paradise Export</span>
+              Contact <span style={{ color: '#CBD2DC' }}>Marvex International</span>
             </h1>
 
             <p style={{ fontSize: '17px', color: 'rgba(255, 255, 255, 0.9)', lineHeight: 1.6, maxWidth: '700px', margin: '0 auto', fontWeight: 500 }}>
@@ -156,8 +156,8 @@ export default function ContactPage() {
                   width: 48,
                   height: 48,
                   borderRadius: 14,
-                  background: 'linear-gradient(135deg, #1B4B7A 0%, #0284C7 100%)',
-                  color: '#fff',
+                  background: 'linear-gradient(135deg, #000E26 0%, #011B47 100%)',
+                  color: '#6E737D',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -280,7 +280,7 @@ export default function ContactPage() {
               >
                 <iframe
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d119067.87434720948!2d70.7284077!3d22.2736308!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3959c98ac71cdf0f%3A0x76dd15cfbe93ad3b!2sRajkot%2C+Gujarat!5e0!3m2!1sen!2sin!4v1600000000000"
-                  title="Saheer Paradise Export Location - Gujarat India"
+                  title="Marvex International Location - Gujarat India"
                   allowFullScreen
                   loading="lazy"
                 />
@@ -301,7 +301,7 @@ export default function ContactPage() {
                   Chat directly with our export desk on WhatsApp for immediate response!
                 </p>
                 <a
-                  href="https://api.whatsapp.com/send?phone=919377988770&text=Hi%20Saheer%20Paradise%20Export!%20I%20would%20like%20to%20enquire%20about%20your%20products."
+                  href="https://api.whatsapp.com/send?phone=918200712955&text=Hi%20Marvex%20International!%20I%20would%20like%20to%20enquire%20about%20your%20products."
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn-primary"

@@ -1,38 +1,34 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   Menu, X, ArrowRight, MapPin, Mail, Phone, ChevronDown, 
-  Flame, Wheat, Cog, Cylinder, ChevronRight 
+  Zap, Flame, Wrench, ChevronRight, Factory, Ship 
 } from 'lucide-react';
 import logoImg from '../assets/logo.png';
 
 const CATEGORIES_MENU = [
   {
-    id: 'category-indian-spices',
-    categoryKey: 'Indian Spices',
-    title: 'Indian Spices',
+    id: 'category-earthing-parts',
+    categoryKey: 'Earthing Parts',
+    title: 'Earthing Parts',
+    badge: 'Manufacturer',
+    icon: Zap,
+    color: '#011B47'
+  },
+  {
+    id: 'category-spices-agro',
+    categoryKey: 'Spices & Agro Commodities',
+    title: 'Spices & Agro Commodities',
+    badge: 'Merchant Exporter',
     icon: Flame,
-    color: '#EA580C'
+    color: '#011B47'
   },
   {
-    id: 'category-agro-commodities',
-    categoryKey: 'Agro Commodities',
-    title: 'Agro Commodities',
-    icon: Wheat,
-    color: '#16A34A'
-  },
-  {
-    id: 'category-machinery',
-    categoryKey: 'Machinery',
-    title: 'Machinery',
-    icon: Cog,
-    color: '#0284C7'
-  },
-  {
-    id: 'category-pipes',
-    categoryKey: 'Pipes',
-    title: 'Pipes',
-    icon: Cylinder,
-    color: '#6366F1'
+    id: 'category-hardware-items',
+    categoryKey: 'Hardware & Sanitary Items',
+    title: 'Hardware & Sanitary Items',
+    badge: 'Manufacturer',
+    icon: Wrench,
+    color: '#011B47'
   }
 ];
 
@@ -106,16 +102,17 @@ export default function Navbar({ activePage, onNavigate }) {
           <div className="jrp-header-inner" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '88px' }}>
             
             {/* Logo */}
-            <a href="#" onClick={handleLogoClick} style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', cursor: 'pointer' }} title="Saheer Paradise Export — Go to Home">
+            <a href="#" onClick={handleLogoClick} style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', cursor: 'pointer' }} title="Marvex International — Go to Home">
               <img 
                 src={logoImg} 
-                alt="Saheer Paradise Export" 
+                alt="Marvex International" 
                 className="jrp-header-logo-img" 
                 style={{ 
-                  height: '74px', 
+                  height: '62px', 
+                  maxHeight: '64px',
                   width: 'auto', 
                   objectFit: 'contain',
-                  filter: 'contrast(1.08) drop-shadow(0 2px 8px rgba(0,0,0,0.06))',
+                  filter: 'contrast(1.05)',
                   display: 'block'
                 }} 
               />

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getProducts, getBlogs, getCertificates, getEnquiries, syncStoreWithCloud } from './adminStore';
+import { getProducts, getBlogs, getCertificates, getEnquiries } from './adminStore';
 
 export function useStoreProducts() {
   const [products, setProducts] = useState(() => {
@@ -8,15 +8,12 @@ export function useStoreProducts() {
   });
 
   useEffect(() => {
-    // Initial active sync with live Firebase Firestore
-    syncStoreWithCloud();
-
     const handleUpdate = () => {
       const list = getProducts();
       setProducts(Array.isArray(list) ? list : []);
     };
-    window.addEventListener('priya_store_updated', handleUpdate);
-    return () => window.removeEventListener('priya_store_updated', handleUpdate);
+    window.addEventListener('marvex_store_updated', handleUpdate);
+    return () => window.removeEventListener('marvex_store_updated', handleUpdate);
   }, []);
 
   return Array.isArray(products) ? products : [];
@@ -29,14 +26,12 @@ export function useStoreBlogs() {
   });
 
   useEffect(() => {
-    syncStoreWithCloud();
-
     const handleUpdate = () => {
       const list = getBlogs();
       setBlogs(Array.isArray(list) ? list : []);
     };
-    window.addEventListener('priya_store_updated', handleUpdate);
-    return () => window.removeEventListener('priya_store_updated', handleUpdate);
+    window.addEventListener('marvex_store_updated', handleUpdate);
+    return () => window.removeEventListener('marvex_store_updated', handleUpdate);
   }, []);
 
   return Array.isArray(blogs) ? blogs : [];
@@ -49,14 +44,12 @@ export function useStoreCertificates() {
   });
 
   useEffect(() => {
-    syncStoreWithCloud();
-
     const handleUpdate = () => {
       const list = getCertificates();
       setCerts(Array.isArray(list) ? list : []);
     };
-    window.addEventListener('priya_store_updated', handleUpdate);
-    return () => window.removeEventListener('priya_store_updated', handleUpdate);
+    window.addEventListener('marvex_store_updated', handleUpdate);
+    return () => window.removeEventListener('marvex_store_updated', handleUpdate);
   }, []);
 
   return Array.isArray(certs) ? certs : [];
@@ -69,14 +62,12 @@ export function useStoreEnquiries() {
   });
 
   useEffect(() => {
-    syncStoreWithCloud();
-
     const handleUpdate = () => {
       const list = getEnquiries();
       setEnquiries(Array.isArray(list) ? list : []);
     };
-    window.addEventListener('priya_store_updated', handleUpdate);
-    return () => window.removeEventListener('priya_store_updated', handleUpdate);
+    window.addEventListener('marvex_store_updated', handleUpdate);
+    return () => window.removeEventListener('marvex_store_updated', handleUpdate);
   }, []);
 
   return Array.isArray(enquiries) ? enquiries : [];

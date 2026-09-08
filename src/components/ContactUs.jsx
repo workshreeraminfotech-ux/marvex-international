@@ -52,7 +52,7 @@ export default function ContactUs() {
           <div>
             <span className="eyebrow" style={{ color: 'var(--gold-light)', background: 'rgba(2, 132, 199, 0.15)', borderColor: 'var(--gold-light)' }}>Contact Export Desk</span>
             <h2 style={{ fontFamily: 'var(--font-h)', fontSize: '38px', fontWeight: 900, color: '#fff', marginBottom: '20px', lineHeight: 1.2 }}>
-              Get In Touch With <span style={{ color: '#38BDF8' }}>Saheer Paradise Export</span>
+              Get In Touch With <span style={{ color: '#38BDF8' }}>Marvex International</span>
             </h2>
             <p style={{ fontSize: '16px', color: 'rgba(255, 255, 255, 0.85)', marginBottom: '36px', lineHeight: 1.6 }}>
               Have inquiries regarding bulk agro commodities, ocean freight container availability, or customized packaging? Send us a message and our export team will respond within 24 hours.
@@ -65,7 +65,7 @@ export default function ContactUs() {
                 </div>
                 <div>
                   <strong style={{ display: 'block', fontSize: 14, color: '#fff' }}>Phone / WhatsApp:</strong>
-                  <a href="tel:+919377988770" style={{ fontSize: 15, color: 'rgba(255, 255, 255, 0.85)' }}>+91 93779 88770 (Sahil Sorathiya)</a>
+                  <a href="tel:+918200712955" style={{ fontSize: 15, color: 'rgba(255, 255, 255, 0.85)' }}>+91 8200712955</a>
                 </div>
               </div>
 
@@ -75,7 +75,7 @@ export default function ContactUs() {
                 </div>
                 <div>
                   <strong style={{ display: 'block', fontSize: 14, color: '#fff' }}>Email Address:</strong>
-                  <a href="mailto:saheerparadiseexport@gmail.com" style={{ fontSize: 15, color: 'rgba(255, 255, 255, 0.85)' }}>saheerparadiseexport@gmail.com</a>
+                  <a href="mailto:info@marvexinternational.com" style={{ fontSize: 15, color: 'rgba(255, 255, 255, 0.85)' }}>info@marvexinternational.com</a>
                 </div>
               </div>
 
@@ -85,7 +85,7 @@ export default function ContactUs() {
                 </div>
                 <div>
                   <strong style={{ display: 'block', fontSize: 14, color: '#fff' }}>India Head Office:</strong>
-                  <p style={{ fontSize: 14, color: 'rgba(255, 255, 255, 0.85)', lineHeight: 1.4 }}>Fifth Floor, 501, Shashwat World, 80 Ft Road Rolex, Sardar Chowk, Kothariya Main Road, Rajkot - Gujarat - 360022</p>
+                  <p style={{ fontSize: 14, color: 'rgba(255, 255, 255, 0.85)', lineHeight: 1.4 }}>Gujarat, India • Global Export Hub</p>
                 </div>
               </div>
             </div>

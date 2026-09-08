@@ -14,14 +14,14 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error('Saheer Paradise Export App Crash:', error, errorInfo);
+    console.error('Marvex International App Crash:', error, errorInfo);
   }
 
   render() {
     if (this.state.hasError) {
       return (
         <div style={{ padding: '40px 20px', textAlign: 'center', fontFamily: 'sans-serif', backgroundColor: '#F8FAFC', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-          <h2 style={{ color: '#0A2240', marginBottom: '8px' }}>Saheer Paradise Export</h2>
+          <h2 style={{ color: '#0A2240', marginBottom: '8px' }}>Marvex International</h2>
           <p style={{ color: '#64748B', maxWidth: '500px', fontSize: '14px', lineHeight: 1.5 }}>
             Application encountered a temporary error.
           </p>
@@ -40,7 +40,7 @@ class ErrorBoundary extends React.Component {
             }}
             style={{ background: 'linear-gradient(135deg, #1B4B7A 0%, #0284C7 100%)', color: '#fff', padding: '12px 28px', borderRadius: '100px', border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '14px', boxShadow: '0 4px 14px rgba(2,132,199,0.3)' }}
           >
-            Clear Browser Cache & Reload
+            Reload Page
           </button>
         </div>
       );

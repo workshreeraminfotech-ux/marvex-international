@@ -1,4 +1,4 @@
-// Central Blog Dataset for Saheer Paradise Export
+// Central Blog Dataset for Marvex International
 // Featuring authentic products & real product photos from src/assets/products
 
 import turmericPowder from '../assets/products/Turmeric Powder.png';
@@ -25,7 +25,7 @@ Key Quality Markers for Importers:
 • Sifting & Cleanliness: Double-sifted through 80-mesh stainless steel screens for ultra-fine consistency.
 
 Processing & Export Packaging:
-At Saheer Paradise Export, raw turmeric rhizomes undergo steam boiling, sun curing, double polishing, and cool-temperature milling. Finished powder is sealed in multi-layer vacuum pouches or 25kg PP bags to protect volatile oils from UV light and humidity.`
+At Marvex International, raw turmeric rhizomes undergo steam boiling, sun curing, double polishing, and cool-temperature milling. Finished powder is sealed in multi-layer vacuum pouches or 25kg PP bags to protect volatile oils from UV light and humidity.`
   },
   {
     id: 2,
@@ -43,7 +43,7 @@ Evaluating Chilli Powder Parameters:
 3. Safety Standards: Strict testing for Aflatoxin B1/G1, Ochratoxin A, and pesticide residue levels (MRLs).
 
 Export Advantage:
-Saheer Paradise Export provides both stemless whole dried red chillies and micro-milled red chilli powder with laboratory Certificate of Analysis (COA) for ASTA color and SHU pungency.`
+Marvex International provides both stemless whole dried red chillies and micro-milled red chilli powder with laboratory Certificate of Analysis (COA) for ASTA color and SHU pungency.`
   },
   {
     id: 3,
@@ -80,7 +80,7 @@ Green Cardamom Pods:
 • Pod Size: 8mm+ Extra Bold green pods with fully developed dark seeds inside.
 • Aroma Profile: Sweet camphorous notes due to high cineole and terpinyl acetate oils.
 
-Saheer Paradise Export exports whole sun-dried Tellicherry black peppercorns and handpicked 8mm green cardamom pods in master cartons.`
+Marvex International exports whole sun-dried Tellicherry black peppercorns and handpicked 8mm green cardamom pods in master cartons.`
   },
   {
     id: 5,
@@ -97,7 +97,7 @@ Key Blend Profiles:
 • Hyderabadi Biryani Mix: Fragrant blend of mace, star anise, cardamoms, and caraway seeds.
 • Madras Curry Powder: Mild golden spice mix with coriander, turmeric, mustard, and ginger.
 
-Saheer Paradise Export specializes in custom formulation, bulk grinding, and private-label packaging for international food distributors.`
+Marvex International specializes in custom formulation, bulk grinding, and private-label packaging for international food distributors.`
   },
   {
     id: 6,

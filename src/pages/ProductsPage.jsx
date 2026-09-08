@@ -1,70 +1,61 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Search, ArrowRight, Eye, Sparkles, Filter, CheckCircle2, 
-  Flame, Wheat, Cog, Cylinder, LayoutGrid, Layers, Tag
+  Search, ArrowRight, Sparkles, Filter, CheckCircle2, 
+  Zap, Flame, Wrench, Factory, Ship, LayoutGrid, Layers, Tag
 } from 'lucide-react';
 import { PRODUCT_CATEGORIES } from '../data/products';
 import { useStoreProducts } from '../utils/useStore';
 import { normalizeProduct } from '../utils/adminStore';
 
 const CATEGORY_META = {
-  'Indian Spices': {
-    title: 'Pure Indian Spices & Spice Blends',
-    highlight: '1st Vertical: Indian Spices',
-    eyebrow: 'APEDA & Spices Board of India Certified',
-    desc: 'Ultra-pure ground spices, whole bold spices, aromatic seed spices, and heritage culinary spice mixes double-sifted for maximum essential oil retention.',
+  'Earthing Parts': {
+    title: 'Electrical Earthing & Grounding Systems',
+    businessRole: 'Manufacturer & Exporter',
+    highlight: '1st Vertical: Earthing Systems (Manufacturer & Exporter)',
+    eyebrow: 'UL 467 & IEC 62305 Standard Compliant • In-House Manufacturing',
+    desc: 'High-conductivity molecularly bonded copper earth rods (254 microns), pure solid copper rods, heavy-duty brass ground clamps, grounding tapes, lightning air terminals, and chemical earthing electrodes.',
+    bgImg: 'https://images.unsplash.com/photo-1544724569-5f546fd6f2b5?auto=format&fit=crop&w=1920&q=80',
+    icon: Zap,
+    color: '#011B47',
+    badges: ['In-House Manufacturer', 'UL / IEC Standard Compliant', '254 Micron Molecular Copper Coating', 'Custom Technical Drawings'],
+    subcategories: ['All Earthing', 'Earth Rods & Conductors', 'Earth Clamps & Couplers', 'Chemical Electrodes & Compounds', 'Lightning Protection']
+  },
+  'Spices & Agro Commodities': {
+    title: 'Pure Indian Spices & Agro Commodities',
+    businessRole: 'Merchant Exporter',
+    highlight: '2nd Vertical: Spices & Agro (Merchant Exporter)',
+    eyebrow: 'APEDA & Spices Board of India Certified • Direct Mandi Procurement',
+    desc: 'Premier merchant export of 100% Sortex-cleaned whole bold spices, ultra-fine ground spice powders, oilseeds (sesame, mustard), and long-grain Basmati rice with fast maritime container dispatch.',
     bgImg: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=1920&q=80',
     icon: Flame,
-    color: '#F59E0B',
-    badges: ['100% Pure Origin', 'High Curcumin & Oil Content', 'Custom Vacuum Packing'],
-    subcategories: ['All Spices', 'Ground Spices', 'Whole Spices', 'Seed Spices', 'Blended Spices', 'Exotic & Premium']
+    color: '#011B47',
+    badges: ['Merchant Exporter', '100% Sortex 99.5%+ Purity', 'APEDA / FSSAI / Spices Board Certified', 'Moisture Proof Packaging'],
+    subcategories: ['All Agro & Spices', 'Seed Spices', 'Whole Spices', 'Ground Spices', 'Oilseeds & Grains']
   },
-  'Agro Commodities': {
-    title: 'Indian Agro Commodities & Grains',
-    highlight: '2nd Vertical: Agro Commodities',
-    eyebrow: 'Direct Farm Procurement & Sortex Graded',
-    desc: '1121 Extra Long Steam Basmati Rice, Sharbati MP Milling Wheat, Non-GMO Soybeans, Java & Bold Peanuts, Kabuli Chickpeas, and Oilseeds.',
-    bgImg: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=1920&q=80',
-    icon: Wheat,
-    color: '#10B981',
-    badges: ['Phytosanitary Certified', 'Moisture < 12%', 'Bulk Liner & PP Bags'],
-    subcategories: ['All Agro', 'Rice & Grains', 'Oilseeds & Meals', 'Pulses & Legumes']
-  },
-  'Machinery': {
-    title: 'Industrial & Agricultural Machinery',
-    highlight: '3rd Vertical: Machinery',
-    eyebrow: 'High-Efficiency Processing & Packaging Units',
-    desc: 'AI Optical RGB Color Sorters, Commercial Cool-Grinding Spice Pulverizers, Multi-Head High Speed Pouch Packaging Machines, and Tractor Rotavators.',
-    bgImg: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1920&q=80',
-    icon: Cog,
-    color: '#3B82F6',
-    badges: ['CE / ISO Certified', 'SS304 Food Grade', 'Seaworthy Wooden Crating'],
-    subcategories: ['All Machinery', 'Processing Machinery', 'Packaging Equipment', 'Agro Machinery']
-  },
-  'Pipes': {
-    title: 'Industrial & Agricultural Pipes Catalog',
-    highlight: '4th Vertical: Industrial Pipes',
-    eyebrow: 'ASTM, ASME, IS & ISO Certified Pipeline Solutions',
-    desc: 'Stainless Steel SS304/SS316L Seamless Pipes, API 5L Carbon Steel Line Pipes, Virgin HDPE PE100 Water Pipes, UPVC and Precision Drip Irrigation Systems.',
-    bgImg: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1920&q=80',
-    icon: Cylinder,
-    color: '#6366F1',
-    badges: ['ASTM A312 / API 5L', 'Hydrostatic Tested', 'UV Stabilized Polymers'],
-    subcategories: ['All Pipes', 'Stainless Steel Pipes', 'Carbon Steel Pipes', 'Plastic & Polymer Pipes', 'Irrigation Pipes']
+  'Hardware & Sanitary Items': {
+    title: 'Hardware & Sanitary Items',
+    businessRole: 'Manufacturer & Exporter',
+    highlight: '3rd Vertical: Hardware & Sanitary Items (Manufacturer & Exporter)',
+    eyebrow: 'SS Kitchen Sinks, Wash Basins, Taps, Showers & Sanitaryware • In-House Manufacturing',
+    desc: 'Export-grade stainless steel SS 304 & quartz kitchen sinks, designer ceramic wash basins, precision brass mixer taps, rainfall shower sets, and sanitary bathroom fittings.',
+    bgImg: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1920&q=80',
+    icon: Wrench,
+    color: '#011B47',
+    badges: ['In-House Manufacturer', 'Food-Grade SS 304 & Vitreous Ceramic', 'Tested Drip-Free Cartridges', 'Seaworthy Export Packing'],
+    subcategories: ['All Sanitary & Hardware', 'Kitchen Sinks', 'Wash Basins & Ceramics', 'Taps & Faucets', 'Showers & Bath Sets', 'Sanitary Fittings & Accessories']
   }
 };
 
-export default function ProductsPage({ initialCategory = 'Indian Spices', onSelectProduct, onOpenQuote }) {
+export default function ProductsPage({ initialCategory = 'Earthing Parts', onSelectProduct, onOpenQuote }) {
   const getValidCategory = (cat) => {
-    if (!cat || cat === 'All') return 'Indian Spices';
+    if (!cat || cat === 'All') return 'Earthing Parts';
     if (CATEGORY_META[cat]) return cat;
     const lower = String(cat).toLowerCase();
-    if (lower.includes('spice') || lower.includes('ground') || lower.includes('whole') || lower.includes('seed') || lower.includes('masala')) return 'Indian Spices';
-    if (lower.includes('agro') || lower.includes('grain') || lower.includes('rice') || lower.includes('pulse')) return 'Agro Commodities';
-    if (lower.includes('machin')) return 'Machinery';
-    if (lower.includes('pipe')) return 'Pipes';
-    return 'Indian Spices';
+    if (lower.includes('earth') || lower.includes('ground') || lower.includes('rod') || lower.includes('lightning') || lower.includes('clamp')) return 'Earthing Parts';
+    if (lower.includes('spice') || lower.includes('agro') || lower.includes('seed') || lower.includes('rice') || lower.includes('cumin') || lower.includes('chilli') || lower.includes('turmeric')) return 'Spices & Agro Commodities';
+    if (lower.includes('hard') || lower.includes('sanit') || lower.includes('sink') || lower.includes('basin') || lower.includes('tap') || lower.includes('shower') || lower.includes('faucet') || lower.includes('bath')) return 'Hardware & Sanitary Items';
+    return 'Earthing Parts';
   };
 
   const [activeTab, setActiveTab] = useState(() => getValidCategory(initialCategory));
@@ -81,8 +72,8 @@ export default function ProductsPage({ initialCategory = 'Indian Spices', onSele
 
   const productsList = useStoreProducts();
 
-  const currentMeta = CATEGORY_META[activeTab] || CATEGORY_META['Indian Spices'];
-  const HeaderIcon = currentMeta.icon || Flame;
+  const currentMeta = CATEGORY_META[activeTab] || CATEGORY_META['Earthing Parts'];
+  const HeaderIcon = currentMeta.icon || Zap;
 
   // Filter logic safely with strict category isolation
   const filteredProducts = useMemo(() => {
@@ -193,7 +184,7 @@ export default function ProductsPage({ initialCategory = 'Indian Spices', onSele
               alignItems: 'center',
               gap: '8px',
               backgroundColor: 'rgba(255, 255, 255, 0.12)',
-              border: `1.5px solid ${currentMeta.color || '#38BDF8'}`,
+              border: `1.5px solid ${currentMeta.color || '#1D4ED8'}`,
               color: '#FFFFFF',
               fontSize: '12.5px',
               fontWeight: 800,
@@ -204,7 +195,7 @@ export default function ProductsPage({ initialCategory = 'Indian Spices', onSele
               marginBottom: '20px',
               backdropFilter: 'blur(8px)'
             }}>
-              <HeaderIcon size={16} style={{ color: currentMeta.color || '#38BDF8' }} />
+              <HeaderIcon size={16} style={{ color: currentMeta.color || '#60A5FA' }} />
               {currentMeta.eyebrow}
             </span>
 
@@ -218,7 +209,7 @@ export default function ProductsPage({ initialCategory = 'Indian Spices', onSele
               color: '#FFFFFF'
             }}>
               {currentMeta.title} <br />
-              <span style={{ color: currentMeta.color || '#38BDF8' }}>
+              <span style={{ color: currentMeta.color || '#60A5FA' }}>
                 {activeTab === 'All' ? 'Catalog & Global Supply' : currentMeta.highlight}
               </span>
             </h1>
@@ -513,17 +504,18 @@ export default function ProductsPage({ initialCategory = 'Indian Spices', onSele
                     onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
                   />
 
-                  {/* Category Badge */}
+                  {/* Category & Business Role Badge */}
                   <div style={{ position: 'absolute', top: '12px', right: '12px', display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-end' }}>
                     <span style={{
-                      backgroundColor: 'var(--navy)',
+                      backgroundColor: '#011B47',
                       color: '#FFFFFF',
                       fontSize: '11px',
                       fontWeight: 800,
-                      padding: '3px 10px',
-                      borderRadius: '100px'
+                      padding: '4px 11px',
+                      borderRadius: '100px',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.18)'
                     }}>
-                      {product.category || product.cat || activeTab}
+                      {product.businessType || (product.category === 'Spices & Agro Commodities' ? 'Merchant Exporter' : 'Manufacturer & Exporter')}
                     </span>
                   </div>
                 </div>
@@ -558,7 +550,7 @@ export default function ProductsPage({ initialCategory = 'Indian Spices', onSele
                   </p>
 
                   {/* Action Buttons */}
-                  <div style={{ display: 'flex', gap: '10px', marginTop: 'auto' }}>
+                  <div style={{ marginTop: 'auto' }}>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -566,7 +558,7 @@ export default function ProductsPage({ initialCategory = 'Indian Spices', onSele
                       }}
                       className="btn btn-primary"
                       style={{
-                        flex: 1,
+                        width: '100%',
                         padding: '11px 16px',
                         fontSize: '13.5px',
                         justifyContent: 'center'
@@ -574,22 +566,6 @@ export default function ProductsPage({ initialCategory = 'Indian Spices', onSele
                     >
                       <span>Request Quote</span>
                       <ArrowRight size={14} />
-                    </button>
-                    
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (onSelectProduct) onSelectProduct(product);
-                      }}
-                      className="btn btn-outline"
-                      style={{
-                        padding: '11px 16px',
-                        fontSize: '13.5px',
-                        justifyContent: 'center'
-                      }}
-                    >
-                      <Eye size={14} />
-                      <span>Details</span>
                     </button>
                   </div>
                 </div>

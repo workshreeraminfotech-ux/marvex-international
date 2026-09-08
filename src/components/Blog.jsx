@@ -12,7 +12,7 @@ export default function Blog({ onNavigate }) {
         <div className="section-title text-center">
           <span className="eyebrow">Latest Insights & Market Reports</span>
           <h2>Agro & Spice Export <span style={{ color: 'var(--gold)' }}>Blog</span></h2>
-          <p className="section-desc">Stay updated with crop updates, quality benchmarks, and product sourcing guides from Saheer Paradise Export experts.</p>
+          <p className="section-desc">Stay updated with crop updates, quality benchmarks, and product sourcing guides from Marvex International experts.</p>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>

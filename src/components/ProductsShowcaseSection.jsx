@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, Eye, Flame, Wheat, Cog, Cylinder, Sparkles } from 'lucide-react';
+import { ArrowRight, Flame, Wheat, Cog, Cylinder, Sparkles } from 'lucide-react';
 import { useStoreProducts } from '../utils/useStore';
 import { normalizeProduct } from '../utils/adminStore';
 
@@ -161,23 +161,14 @@ export default function ProductsShowcaseSection({ onSelectProduct, onOpenQuote, 
                   </p>
 
                   {/* Action Buttons */}
-                  <div style={{ display: 'flex', gap: '8px', marginTop: 'auto' }}>
+                  <div style={{ marginTop: 'auto' }}>
                     <button
                       onClick={() => onOpenQuote ? onOpenQuote(item.title) : null}
                       className="btn btn-primary"
-                      style={{ flex: 1, padding: '11px 14px', fontSize: '13px', justifyContent: 'center' }}
+                      style={{ width: '100%', padding: '11px 16px', fontSize: '13.5px', justifyContent: 'center' }}
                     >
                       <span>Request Quote</span>
                       <ArrowRight size={14} />
-                    </button>
-                    
-                    <button
-                      onClick={() => onSelectProduct ? onSelectProduct(item) : null}
-                      className="btn btn-outline"
-                      style={{ padding: '11px 14px', fontSize: '13px', justifyContent: 'center' }}
-                    >
-                      <Eye size={14} />
-                      <span>View</span>
                     </button>
                   </div>
                 </div>

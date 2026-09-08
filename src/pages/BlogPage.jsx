@@ -57,8 +57,8 @@ export default function BlogPage() {
               alignItems: 'center',
               gap: '8px',
               backgroundColor: 'rgba(255, 255, 255, 0.12)',
-              border: '1px solid rgba(56, 189, 248, 0.4)',
-              color: '#BAE6FD',
+              border: '1.5px solid #6E737D',
+              color: '#CBD2DC',
               fontSize: '12px',
               fontWeight: 800,
               textTransform: 'uppercase',
@@ -68,7 +68,7 @@ export default function BlogPage() {
               marginBottom: '20px',
               backdropFilter: 'blur(6px)'
             }}>
-              <Sparkles size={14} style={{ color: '#38BDF8' }} />
+              <Sparkles size={14} style={{ color: '#CBD2DC' }} />
               Knowledge Hub & Export Insights
             </span>
 
@@ -81,7 +81,7 @@ export default function BlogPage() {
               color: '#FFFFFF'
             }}>
               Spice Product Guides & <br />
-              <span style={{ color: '#38BDF8' }}>Market Insights</span>
+              <span style={{ color: '#CBD2DC' }}>Market Insights</span>
             </h1>
 
             <p style={{ fontSize: '17px', color: 'rgba(255, 255, 255, 0.9)', lineHeight: 1.6, maxWidth: '680px', margin: '0 auto', fontWeight: 500 }}>

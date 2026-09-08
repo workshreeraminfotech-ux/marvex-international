@@ -8,11 +8,11 @@ export default function Footer() {
       <div className="container">
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '40px', marginBottom: '40px' }}>
           <div className="footer-brand">
-            <div style={{ marginBottom: '20px' }}>
-              <img src={logoImg} alt="Saheer Paradise Export Logo" style={{ height: '60px', width: 'auto', objectFit: 'contain' }} />
+            <div style={{ background: '#FFFFFF', padding: '10px 18px', borderRadius: '14px', display: 'inline-block', marginBottom: '20px', boxShadow: '0 4px 16px rgba(0,0,0,0.12)' }}>
+              <img src={logoImg} alt="Marvex International Logo" style={{ height: '48px', width: 'auto', objectFit: 'contain', display: 'block' }} />
             </div>
             <p style={{ fontSize: '14px', color: 'rgba(255, 255, 255, 0.75)', margin: '16px 0 20px', lineHeight: 1.6 }}>
-              Saheer Paradise Export is a premier Indian exporter of high-grade agro commodities, spices, seeds, and food commodities. Delivering trust and exporting excellence across the globe.
+              Marvex International is a premier Indian exporter of high-grade agro commodities, spices, seeds, and food commodities. Delivering trust and exporting excellence across the globe.
             </p>
             <div className="social-links">
               <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="social-icon" title="Facebook">
@@ -24,7 +24,7 @@ export default function Footer() {
               <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="social-icon" title="LinkedIn">
                 <Linkedin size={15} />
               </a>
-              <a href="https://api.whatsapp.com/send?phone=919377988770&text=Hi%20Saheer%20Paradise%20Export!" target="_blank" rel="noopener noreferrer" className="social-icon" title="Business WhatsApp">
+              <a href="https://api.whatsapp.com/send?phone=918200712955&text=Hi%20Marvex%20International!" target="_blank" rel="noopener noreferrer" className="social-icon" title="Business WhatsApp">
                 <MessageCircle size={14} />
               </a>
             </div>
@@ -54,19 +54,19 @@ export default function Footer() {
           <div>
             <h4 style={{ fontFamily: 'var(--font-heading)', fontSize: '16px', fontWeight: 700, color: '#fff', marginBottom: '20px' }}>Connect Desk</h4>
             <div className="footer-contact">
-              <strong>Phone / WhatsApp:</strong> +91 93779 88770 (Sahil Sorathiya)
+              <strong>Phone / WhatsApp:</strong> +91 8200712955
             </div>
             <div className="footer-contact">
-              <strong>Email:</strong> saheerparadiseexport@gmail.com
+              <strong>Email:</strong> info@marvexinternational.com
             </div>
             <p style={{ fontSize: '13px', color: 'rgba(255, 255, 255, 0.75)', lineHeight: 1.4 }}>
-              <strong>Address:</strong> Fifth Floor, 501, Shashwat World, 80 Ft Road Rolex, Sardar Chowk, Kothariya Main Road, Rajkot - Gujarat - 360022
+              <strong>Address:</strong> Gujarat, India • Global Export Hub
             </p>
           </div>
         </div>
 
         <div className="footer-bottom">
-          <p>&copy; {new Date().getFullYear()} Saheer Paradise Export. All Rights Reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Marvex International. All Rights Reserved.</p>
           <p>
             Developed by{' '}
             <a 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Eye } from 'lucide-react';
+import { Search, ArrowRight } from 'lucide-react';
 import ProductModal from './ProductModal';
 import { PRODUCT_CATEGORIES } from '../data/products';
 import { useStoreProducts } from '../utils/useStore';
@@ -30,7 +30,7 @@ export default function Products() {
       <div className="container">
         <div className="section-title text-center">
           <span className="eyebrow">Export Commodity Catalog</span>
-          <h2>Explore Saheer Paradise Export <span>Agro & Spices Catalog</span></h2>
+          <h2>Explore Marvex International <span>Agro & Spices Catalog</span></h2>
           <p className="section-desc">Search and filter through our export-grade wholesale ground spices, whole spices, seed spices, and agro commodities.</p>
         </div>
 
@@ -69,9 +69,11 @@ export default function Products() {
               <div className="card-content">
                 <h3>{item.title}</h3>
                 <p>{item.description || item.desc}</p>
-                <div className="card-foot">
-                  <span>View Details</span>
-                  <Eye size={16} />
+                <div className="card-foot" style={{ marginTop: 'auto' }}>
+                  <button className="btn btn-primary" style={{ width: '100%', padding: '9px 14px', fontSize: '13px', justifyContent: 'center' }}>
+                    <span>Request Quote</span>
+                    <ArrowRight size={14} />
+                  </button>
                 </div>
               </div>
             </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Facebook, Instagram, Linkedin, MessageCircle, ChevronRight, Mail, MapPin, Phone } from 'lucide-react';
+import { Facebook, Instagram, Linkedin, ChevronRight, Mail, MapPin, Phone } from 'lucide-react';
 import logoImg from '../assets/logo.png';
 
 export default function FooterSection({ onNavigate }) {
@@ -12,11 +12,12 @@ export default function FooterSection({ onNavigate }) {
             <div 
               className="footer-logo-wrap" 
               onClick={() => { if (onNavigate) onNavigate('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+              style={{ background: '#FFFFFF', padding: '10px 18px', borderRadius: '14px', display: 'inline-block', marginBottom: '16px', cursor: 'pointer', boxShadow: '0 4px 16px rgba(0,0,0,0.12)' }}
             >
-              <img src={logoImg} alt="Saheer Paradise Export" />
+              <img src={logoImg} alt="Marvex International" style={{ height: '48px', width: 'auto', objectFit: 'contain', display: 'block' }} />
             </div>
             <p className="footer-bio-text">
-              Saheer Paradise Export is a premier Indian exporter of high-grade food & agricultural commodities. Delivering trust, exporting excellence directly to global markets.
+              Marvex International is a trusted Indian manufacturer of electrical earthing systems & hardware sanitary items, and a premier merchant exporter of 100% sortex-cleaned Indian spices and agricultural commodities worldwide.
             </p>
             <div className="footer-social-row">
               <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook" title="Facebook">
@@ -47,7 +48,7 @@ export default function FooterSection({ onNavigate }) {
               </li>
               <li>
                 <a href="#" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('products'); }}>
-                  <ChevronRight size={14} className="link-arrow" /> Products
+                  <ChevronRight size={14} className="link-arrow" /> All Products
                 </a>
               </li>
               <li>
@@ -65,26 +66,21 @@ export default function FooterSection({ onNavigate }) {
 
           {/* Col 3: Product Categories */}
           <div className="footer-col">
-            <h3>Product Categories</h3>
+            <h3>Our Business Lines</h3>
             <ul className="footer-links-list">
               <li>
-                <a href="#indian-spices" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('category-indian-spices'); }}>
-                  <ChevronRight size={14} className="link-arrow" /> Indian Spices
+                <a href="#earthing" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('category-earthing-parts'); }}>
+                  <ChevronRight size={14} className="link-arrow" /> Earthing Parts (Mfg)
                 </a>
               </li>
               <li>
-                <a href="#agro-commodities" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('category-agro-commodities'); }}>
-                  <ChevronRight size={14} className="link-arrow" /> Agro Commodities
+                <a href="#spices-agro" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('category-spices-agro'); }}>
+                  <ChevronRight size={14} className="link-arrow" /> Spices & Agro (Merchant)
                 </a>
               </li>
               <li>
-                <a href="#machinery" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('category-machinery'); }}>
-                  <ChevronRight size={14} className="link-arrow" /> Machinery
-                </a>
-              </li>
-              <li>
-                <a href="#pipes" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('category-pipes'); }}>
-                  <ChevronRight size={14} className="link-arrow" /> Pipes & Tubes
+                <a href="#hardware-sanitary" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('category-hardware-items'); }}>
+                  <ChevronRight size={14} className="link-arrow" /> Hardware & Sanitary (Mfg)
                 </a>
               </li>
             </ul>
@@ -96,15 +92,15 @@ export default function FooterSection({ onNavigate }) {
             <div className="footer-contact-list">
               <div className="footer-contact-item" style={{ alignItems: 'flex-start' }}>
                 <MapPin size={18} className="contact-icon" style={{ marginTop: '3px', flexShrink: 0 }} />
-                <span>Fifth Floor, 501, Shashwat World, 80 Ft Road Rolex, Sardar Chowk, Kothariya Main Road, Rajkot - Gujarat - 360022</span>
+                <span>Gujarat, India • Global Export Desk</span>
               </div>
-              <a href="tel:+919377988770" className="footer-contact-item item-link">
+              <a href="tel:+918200712955" className="footer-contact-item item-link">
                 <Phone size={18} className="contact-icon" />
-                <span>+91 93779 88770 (Sahil Sorathiya)</span>
+                <span>+91 8200712955</span>
               </a>
-              <a href="mailto:saheerparadiseexport@gmail.com" className="footer-contact-item item-link">
+              <a href="mailto:info@marvexinternational.com" className="footer-contact-item item-link">
                 <Mail size={18} className="contact-icon" />
-                <span>saheerparadiseexport@gmail.com</span>
+                <span>info@marvexinternational.com</span>
               </a>
             </div>
           </div>
@@ -112,7 +108,18 @@ export default function FooterSection({ onNavigate }) {
 
         {/* Footer Bottom copyright bar */}
         <div className="footer-bottom-bar">
-          <p>© {new Date().getFullYear()} Saheer Paradise Export. All Rights Reserved.</p>
+          <p>
+            © {new Date().getFullYear()} Marvex International. All Rights Reserved. •{' '}
+            <a 
+              href="#admin" 
+              onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('admin'); }}
+              style={{ color: '#94A3B8', textDecoration: 'none', fontSize: '13px', fontWeight: 600 }}
+              onMouseOver={(e) => e.currentTarget.style.color = '#FFFFFF'}
+              onMouseOut={(e) => e.currentTarget.style.color = '#94A3B8'}
+            >
+              Admin Portal
+            </a>
+          </p>
           <div className="footer-bottom-right">
             <span>
               Developed by{' '}

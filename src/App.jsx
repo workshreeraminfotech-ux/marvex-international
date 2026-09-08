@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 import HeaderTop from './components/HeaderTop';
 import Navbar from './components/Navbar';
@@ -8,58 +8,20 @@ import QuoteModal from './components/QuoteModal';
 import WhatsAppFloat from './components/WhatsAppFloat';
 import Preloader from './components/Preloader';
 
-import AdminPanel from './admin/AdminPanel';
-
 // Pages
 import Home from './pages/Home';
 import AboutPage from './pages/AboutPage';
 import ProductsPage from './pages/ProductsPage';
 import BlogPage from './pages/BlogPage';
 import ContactPage from './pages/ContactPage';
+import AdminPage from './pages/AdminPage';
 
 export default function App() {
-  const [isAdmin, setIsAdmin] = useState(false);
   const [activePage, setActivePage] = useState('home');
-  const [selectedCategory, setSelectedCategory] = useState('Indian Spices');
+  const [selectedCategory, setSelectedCategory] = useState('Earthing Parts');
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [quoteProduct, setQuoteProduct] = useState('');
   const [isQuoteOpen, setIsQuoteOpen] = useState(false);
-
-  useEffect(() => {
-    const checkAdminRoute = () => {
-      const hostname = window.location.hostname.toLowerCase();
-      const pathname = window.location.pathname.toLowerCase();
-      const hash = window.location.hash.toLowerCase();
-      const search = window.location.search.toLowerCase();
-
-      const isSubdomainAdmin = hostname.startsWith('admin.') || hostname.includes('admin.') || hostname === 'admin';
-      const isPathAdmin = pathname.includes('admin') || hash.includes('admin') || search.includes('admin');
-
-      if (isSubdomainAdmin || isPathAdmin) {
-        setIsAdmin(true);
-      }
-    };
-
-    const handleKeyDown = (e) => {
-      // Shortcut: Ctrl + Shift + A or Cmd + Shift + A
-      if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
-        e.preventDefault();
-        setIsAdmin(prev => !prev);
-      }
-    };
-
-    checkAdminRoute();
-    window.addEventListener('hashchange', checkAdminRoute);
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('hashchange', checkAdminRoute);
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, []);
-
-  if (isAdmin) {
-    return <AdminPanel />;
-  }
 
   const handleNavigate = (pageId, category = null) => {
     if (category) {
@@ -68,15 +30,19 @@ export default function App() {
     } else if (pageId.startsWith('category-')) {
       setActivePage('products');
       const catMap = {
-        'category-indian-spices': 'Indian Spices',
-        'category-agro-commodities': 'Agro Commodities',
-        'category-machinery': 'Machinery',
-        'category-pipes': 'Pipes'
+        'category-earthing-parts': 'Earthing Parts',
+        'category-spices-agro': 'Spices & Agro Commodities',
+        'category-hardware-items': 'Hardware & Sanitary Items',
+        'category-hardware-sanitary': 'Hardware & Sanitary Items',
+        'category-indian-spices': 'Spices & Agro Commodities',
+        'category-agro-commodities': 'Spices & Agro Commodities',
+        'category-machinery': 'Hardware & Sanitary Items',
+        'category-pipes': 'Hardware & Sanitary Items'
       };
-      setSelectedCategory(catMap[pageId] || 'Indian Spices');
+      setSelectedCategory(catMap[pageId] || 'Earthing Parts');
     } else if (pageId === 'products') {
       setActivePage('products');
-      setSelectedCategory(category || 'Indian Spices');
+      setSelectedCategory(category || 'Earthing Parts');
     } else {
       setActivePage(pageId);
     }
@@ -87,6 +53,16 @@ export default function App() {
     setQuoteProduct(productName);
     setIsQuoteOpen(true);
   };
+
+  // Dedicated Admin Screen
+  if (activePage === 'admin') {
+    return (
+      <div>
+        <AdminPage onNavigate={handleNavigate} />
+        <Preloader />
+      </div>
+    );
+  }
 
   return (
     <div>

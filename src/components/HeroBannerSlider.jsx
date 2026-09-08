@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, FileText } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import heroBgVideo from '../assets/hero-bg.mp4';
 import heroPoster from '../assets/hero-poster.jpg';
@@ -63,26 +63,28 @@ export default function HeroBannerSlider({ onOpenQuote, onNavigate }) {
             initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            style={{ marginBottom: '20px' }}
+            style={{ marginBottom: '18px' }}
           >
             <span 
               style={{ 
                 display: 'inline-flex', 
                 alignItems: 'center', 
                 gap: '8px', 
-                background: 'rgba(10, 34, 64, 0.85)', 
-                border: '1px solid rgba(56, 189, 248, 0.65)', 
+                background: 'rgba(0, 14, 38, 0.9)', 
                 backdropFilter: 'blur(10px)', 
-                padding: '6px 16px', 
+                padding: '6px 18px', 
                 borderRadius: '100px', 
-                fontSize: '13px', 
-                fontWeight: 700, 
-                color: '#BAE6FD',
-                boxShadow: '0 4px 15px rgba(0,0,0,0.25)'
+                fontSize: '12.5px', 
+                fontWeight: 800, 
+                color: '#FFFFFF',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
+                boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
+                letterSpacing: '0.6px',
+                textTransform: 'uppercase'
               }}
             >
-              <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#38BDF8', display: 'inline-block', boxShadow: '0 0 8px #38BDF8' }}></span>
-              <span>Delivering Trust, Exporting Excellence</span>
+              <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#FFFFFF', display: 'inline-block', boxShadow: '0 0 10px rgba(255,255,255,0.8)' }}></span>
+              <span>Precision Manufacturing & Global Merchant Exports</span>
             </span>
           </motion.div>
 
@@ -93,19 +95,16 @@ export default function HeroBannerSlider({ onOpenQuote, onNavigate }) {
             transition={{ duration: 0.6, delay: 0.1 }}
             style={{ 
               fontFamily: 'var(--font-h)', 
-              fontSize: 'clamp(34px, 5.2vw, 50px)', 
+              fontSize: 'clamp(32px, 4.8vw, 48px)', 
               fontWeight: 900, 
               color: '#ffffff', 
-              lineHeight: 1.16, 
-              marginBottom: '18px', 
+              lineHeight: 1.18, 
+              marginBottom: '16px', 
               letterSpacing: '-0.5px',
               textShadow: '0 4px 24px rgba(0,0,0,0.6)' 
             }}
           >
-            Premium Indian Spices & <br />
-            <span style={{ background: 'linear-gradient(135deg, #FFFFFF 0%, #38BDF8 50%, #0284C7 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              Agro Commodities Exporter
-            </span>
+            Manufacturer of Earthing & Sanitary Hardware • Merchant Exporter of Agro Spices
           </motion.h1>
 
           {/* Subtitle / Paragraph */}
@@ -114,15 +113,15 @@ export default function HeroBannerSlider({ onOpenQuote, onNavigate }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             style={{ 
-              fontSize: 'clamp(15px, 1.8vw, 17.5px)', 
+              fontSize: 'clamp(15px, 1.7vw, 17px)', 
               color: 'rgba(255,255,255,0.92)', 
               lineHeight: 1.62, 
               marginBottom: '32px', 
-              maxWidth: '680px', 
+              maxWidth: '720px', 
               textShadow: '0 2px 10px rgba(0,0,0,0.45)' 
             }}
           >
-            Direct sourcing from Gujarat & India's premier fertile regions. Supplying premium whole spices, ground powders, oil seeds, and agro commodities with 100% purity and fast worldwide maritime port dispatch.
+            Marvex International is a trusted Indian manufacturer & exporter of precision electrical earthing parts and premium hardware & sanitary items, alongside being a premier merchant exporter of 100% sortex-cleaned Indian spices and agricultural commodities worldwide.
           </motion.p>
 
           {/* CTA Action Buttons */}
@@ -133,42 +132,37 @@ export default function HeroBannerSlider({ onOpenQuote, onNavigate }) {
             style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}
           >
             <button 
-              className="btn btn-primary" 
               onClick={() => onNavigate ? onNavigate('contact') : null}
               style={{ 
-                padding: '14px 28px', 
-                fontSize: '15px', 
-                fontWeight: 700,
+                padding: '15px 32px', 
+                fontSize: '15.5px', 
+                fontWeight: 800,
                 display: 'inline-flex', 
                 alignItems: 'center', 
-                gap: '8px', 
-                boxShadow: '0 8px 24px rgba(2, 132, 199, 0.4)',
-                borderRadius: '8px'
+                gap: '10px', 
+                background: '#FFFFFF',
+                color: '#011B47',
+                border: '2px solid #FFFFFF',
+                boxShadow: '0 8px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 255, 255, 0.25)',
+                borderRadius: '100px',
+                cursor: 'pointer',
+                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.background = '#011B47';
+                e.currentTarget.style.color = '#FFFFFF';
+                e.currentTarget.style.borderColor = '#FFFFFF';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.background = '#FFFFFF';
+                e.currentTarget.style.color = '#011B47';
+                e.currentTarget.style.borderColor = '#FFFFFF';
+                e.currentTarget.style.transform = 'translateY(0)';
               }}
             >
               <span>Request Quote / CIF Price</span>
               <ArrowRight size={18} />
-            </button>
-
-            <button 
-              className="btn-outline" 
-              onClick={() => onNavigate ? onNavigate('products') : null}
-              style={{ 
-                color: '#ffffff', 
-                borderColor: 'rgba(255,255,255,0.35)', 
-                background: 'rgba(255,255,255,0.1)', 
-                backdropFilter: 'blur(8px)',
-                padding: '13px 24px', 
-                fontSize: '15px', 
-                fontWeight: 600,
-                borderRadius: '8px',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px'
-              }}
-            >
-              <FileText size={16} color="var(--gold-light)" />
-              <span>Explore Products</span>
             </button>
           </motion.div>
 

@@ -75,17 +75,17 @@ export default function WorkProcess() {
                     width: '48px', 
                     height: '48px', 
                     borderRadius: '14px', 
-                    background: 'linear-gradient(135deg, #0A2240 0%, #1B4B7A 100%)', 
-                    color: '#38BDF8', 
-                    border: '1px solid rgba(56, 189, 248, 0.3)',
+                    background: '#011B47', 
+                    color: '#FFFFFF', 
+                    border: '1px solid #011B47',
                     display: 'flex', 
                     alignItems: 'center', 
                     justifyContent: 'center',
-                    boxShadow: '0 6px 16px rgba(27, 75, 122, 0.2)'
+                    boxShadow: '0 6px 16px rgba(1, 27, 71, 0.25)'
                   }}>
                     <Icon size={24} />
                   </div>
-                  <span style={{ fontSize: '24px', fontWeight: 900, color: 'var(--gold)', opacity: 0.95, fontFamily: 'var(--font-h)' }}>
+                  <span style={{ fontSize: '24px', fontWeight: 900, color: '#011B47', opacity: 0.95, fontFamily: 'var(--font-h)' }}>
                     {step.num}
                   </span>
                 </div>

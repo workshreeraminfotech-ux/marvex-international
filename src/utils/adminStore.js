@@ -1,17 +1,18 @@
-// Centralized Dynamic Data & Admin Store
-// Dual-Layer Storage: Reactive In-Memory State + Unlimited IndexedDB + LocalStorage
+// Centralized Dynamic Data & Admin Store for Marvex International
+// Hybrid architecture: Instant Local UI responsiveness + Live Firebase Cloud Realtime Sync
 
-import { PRODUCTS as INITIAL_PRODUCTS, PRODUCT_CATEGORIES } from '../data/products';
+import { PRODUCTS as INITIAL_PRODUCTS } from '../data/products';
 import { BLOGS as INITIAL_BLOGS } from '../data/blogs';
-import { idbGet, idbSet } from './idbStorage';
 import { 
-  fetchCollectionFromCloud, 
-  saveDocToCloud, 
-  deleteDocFromCloud, 
-  syncAllToCloud 
-} from '../services/cloudService';
-
-export { syncAllToCloud };
+  initFirestoreRealtimeSync,
+  saveProductToCloud,
+  deleteProductFromCloud,
+  saveInquiryToCloud,
+  updateInquiryStatusInCloud,
+  deleteInquiryFromCloud,
+  saveBlogToCloud,
+  deleteBlogFromCloud
+} from '../firebase/firestoreSync';
 
 import apedaLogo from '../assets/certificate/apeda.png';
 import spicesBoardLogo from '../assets/certificate/spices board.png';
@@ -19,6 +20,24 @@ import fdaLogo from '../assets/certificate/fda.png';
 import isoLogo from '../assets/certificate/iso.png';
 import fssaiLogo from '../assets/certificate/fssai.png';
 import halalLogo from '../assets/certificate/halal.png';
+
+const STORAGE_KEYS = {
+  PRODUCTS: 'marvex_products_v2',
+  INQUIRIES: 'marvex_inquiries_v2',
+  BLOGS: 'marvex_blogs_v2',
+  SETTINGS: 'marvex_settings_v2',
+  AUTH: 'marvex_admin_session_v2'
+};
+
+const DEFAULT_SETTINGS = {
+  companyName: 'Marvex International',
+  tagline: 'Precision Manufacturing & Global Merchant Exports',
+  phone: '+91 8200712955',
+  email: 'info@marvexinternational.com',
+  address: 'Gujarat, India',
+  whatsapp: '918200712955',
+  exportPorts: 'Mundra Port, Kandla Port, Nhava Sheva (JNPT) Mumbai, India'
+};
 
 const INITIAL_CERTS = [
   { 
@@ -65,634 +84,363 @@ const INITIAL_CERTS = [
   }
 ];
 
-// In-Memory Reactive Cache (Unlimited Capacity — Never constrained by 5MB localStorage)
-let memoryProducts = null;
-let memoryBlogs = null;
-let memoryCerts = null;
-let memoryEnquiries = null;
-
 // Helper: Broadcast store update event to all components
 export function notifyStoreUpdate() {
   try {
     if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('priya_store_updated'));
+      window.dispatchEvent(new CustomEvent('marvex_store_updated'));
     }
   } catch (e) {}
+}
+
+// Automatically start real-time Firestore synchronization on browser load
+if (typeof window !== 'undefined') {
+  setTimeout(() => {
+    initFirestoreRealtimeSync();
+  }, 100);
 }
 
 // Helper to normalize product category and subcategory safely
 export function normalizeProduct(p) {
   if (!p) return null;
-  let category = p.category || p.cat || 'Indian Spices';
+  let category = p.category || p.cat || 'Earthing Parts';
   let subcategory = p.subcategory || '';
   
   const lowerCat = String(category).trim().toLowerCase();
-  if (lowerCat.includes('ground spice') || lowerCat === 'ground spices') {
-    category = 'Indian Spices';
-    subcategory = subcategory || 'Ground Spices';
-  } else if (lowerCat.includes('whole spice') || lowerCat === 'whole spices') {
-    category = 'Indian Spices';
+  if (lowerCat.includes('earth') || lowerCat.includes('ground') || lowerCat.includes('rod') || lowerCat.includes('lightning')) {
+    category = 'Earthing Parts';
+    subcategory = subcategory || 'Earth Rods & Conductors';
+  } else if (lowerCat.includes('spice') || lowerCat.includes('agro') || lowerCat.includes('seed') || lowerCat.includes('cumin') || lowerCat.includes('turmeric') || lowerCat.includes('chilli') || lowerCat.includes('rice')) {
+    category = 'Spices & Agro Commodities';
     subcategory = subcategory || 'Whole Spices';
-  } else if (lowerCat.includes('seed spice') || lowerCat === 'seed spices') {
-    category = 'Indian Spices';
-    subcategory = subcategory || 'Seed Spices';
-  } else if (lowerCat.includes('blend') || lowerCat === 'blended spices') {
-    category = 'Indian Spices';
-    subcategory = subcategory || 'Blended Spices';
-  } else if (lowerCat.includes('exotic') || lowerCat.includes('premium')) {
-    category = 'Indian Spices';
-    subcategory = subcategory || 'Exotic & Premium';
-  } else if (lowerCat.includes('spice') || lowerCat === 'spices') {
-    category = 'Indian Spices';
-    subcategory = subcategory || 'Ground Spices';
-  } else if (lowerCat.includes('agro') || lowerCat.includes('commodit')) {
-    category = 'Agro Commodities';
-    subcategory = subcategory || 'Rice & Grains';
-  } else if (lowerCat.includes('machin')) {
-    category = 'Machinery';
-    subcategory = subcategory || 'Processing Machinery';
-  } else if (lowerCat.includes('pipe')) {
-    category = 'Pipes';
-    subcategory = subcategory || 'Stainless Steel Pipes';
+  } else if (lowerCat.includes('hard') || lowerCat.includes('sanit') || lowerCat.includes('sink') || lowerCat.includes('basin') || lowerCat.includes('tap') || lowerCat.includes('shower') || lowerCat.includes('bath')) {
+    category = 'Hardware & Sanitary Items';
+    subcategory = subcategory || 'Kitchen Sinks';
   }
 
-  if (!subcategory) {
-    if (category === 'Indian Spices') subcategory = 'Ground Spices';
-    else if (category === 'Agro Commodities') subcategory = 'Rice & Grains';
-    else if (category === 'Machinery') subcategory = 'Processing Machinery';
-    else if (category === 'Pipes') subcategory = 'Stainless Steel Pipes';
-  }
+  const businessType = p.businessType || (category === 'Spices & Agro Commodities' ? 'Merchant Exporter' : 'Manufacturer & Exporter');
 
   return {
     ...p,
+    id: p.id || `prod-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+    title: p.title || p.name || 'Export Commodity Item',
     category,
     cat: category,
-    subcategory
+    subcategory: subcategory || 'General',
+    businessType,
+    specs: p.specs || '',
+    origin: p.origin || 'Gujarat, India',
+    packaging: p.packaging || 'Export Standard Packaging',
+    description: p.description || p.desc || '',
+    desc: p.desc || p.description || '',
+    hsCode: p.hsCode || '',
+    image: p.image || 'https://images.unsplash.com/photo-1544724569-5f546fd6f2b5?auto=format&fit=crop&w=800&q=80',
+    isFeatured: Boolean(p.isFeatured)
   };
 }
 
-// Merge default catalog with custom / cloud catalog
-function mergeWithDefaultProducts(incomingList = []) {
-  if (!incomingList || !Array.isArray(incomingList) || incomingList.length === 0) {
-    return INITIAL_PRODUCTS.map(normalizeProduct);
-  }
-
-  // Create lookup of initial products for fallback assets
-  const initialMap = new Map();
-  INITIAL_PRODUCTS.forEach(p => initialMap.set(p.id, p));
-
-  // Map authoritative cloud items, ensuring fallback assets if image is not custom
-  const result = incomingList.map(item => {
-    const norm = normalizeProduct(item);
-    const fallback = initialMap.get(norm.id);
-    return {
-      ...(fallback || {}),
-      ...norm,
-      image: norm.image || (fallback ? fallback.image : '')
-    };
-  });
-
-  return result;
-}
-
-// Global active sync promise
-let cloudSyncPromise = null;
-
-export function syncStoreWithCloud() {
-  if (typeof window === 'undefined') return Promise.resolve();
-  
-  cloudSyncPromise = (async () => {
-    try {
-      const [cloudProds, cloudBlogs, cloudCerts, cloudEnqs] = await Promise.all([
-        fetchCollectionFromCloud('products'),
-        fetchCollectionFromCloud('blogs'),
-        fetchCollectionFromCloud('certificates'),
-        fetchCollectionFromCloud('enquiries')
-      ]);
-
-      let hasCloudUpdate = false;
-      if (cloudProds && Array.isArray(cloudProds) && cloudProds.length > 0) {
-        const merged = mergeWithDefaultProducts(cloudProds);
-        memoryProducts = merged;
-        idbSet('marvex_products', merged);
-        try {
-          localStorage.setItem('marvex_products', JSON.stringify(merged));
-        } catch (e) {}
-        hasCloudUpdate = true;
-      }
-
-      if (cloudBlogs && Array.isArray(cloudBlogs) && cloudBlogs.length > 0) {
-        memoryBlogs = cloudBlogs;
-        idbSet('marvex_blogs', cloudBlogs);
-        try {
-          localStorage.setItem('marvex_blogs', JSON.stringify(cloudBlogs));
-        } catch (e) {}
-        hasCloudUpdate = true;
-      }
-
-      if (cloudCerts && Array.isArray(cloudCerts) && cloudCerts.length > 0) {
-        memoryCerts = cloudCerts;
-        idbSet('marvex_certs', cloudCerts);
-        try {
-          localStorage.setItem('marvex_certs', JSON.stringify(cloudCerts));
-        } catch (e) {}
-        hasCloudUpdate = true;
-      }
-
-      if (cloudEnqs && Array.isArray(cloudEnqs) && cloudEnqs.length > 0) {
-        memoryEnquiries = cloudEnqs;
-        idbSet('marvex_enquiries', cloudEnqs);
-        try {
-          localStorage.setItem('marvex_enquiries', JSON.stringify(cloudEnqs));
-        } catch (e) {}
-        hasCloudUpdate = true;
-      }
-
-      if (hasCloudUpdate) {
-        notifyStoreUpdate();
-      }
-    } catch (cloudErr) {
-      console.warn('[Store] Live Cloud sync error:', cloudErr);
-    }
-  })();
-
-  return cloudSyncPromise;
-}
-
-// Initial Sync on script execution
-if (typeof window !== 'undefined') {
-  // 1. Quick load from localStorage (if any)
-  try {
-    const lp = localStorage.getItem('marvex_products');
-    if (lp) memoryProducts = mergeWithDefaultProducts(JSON.parse(lp));
-    const lb = localStorage.getItem('marvex_blogs');
-    if (lb) memoryBlogs = JSON.parse(lb);
-    const lc = localStorage.getItem('marvex_certs');
-    if (lc) memoryCerts = JSON.parse(lc);
-    const le = localStorage.getItem('marvex_enquiries');
-    if (le) memoryEnquiries = JSON.parse(le);
-  } catch (e) {}
-
-  // 2. Load from IndexedDB and fetch live Firebase Firestore
-  (async () => {
-    try {
-      const [idbProds, idbBlogs, idbCerts, idbEnqs] = await Promise.all([
-        idbGet('marvex_products'),
-        idbGet('marvex_blogs'),
-        idbGet('marvex_certs'),
-        idbGet('marvex_enquiries')
-      ]);
-
-      let hasUpdate = false;
-      if (idbProds && Array.isArray(idbProds) && idbProds.length > 0) {
-        memoryProducts = mergeWithDefaultProducts(idbProds);
-        hasUpdate = true;
-      }
-      if (idbBlogs && Array.isArray(idbBlogs) && idbBlogs.length > 0) {
-        memoryBlogs = idbBlogs;
-        hasUpdate = true;
-      }
-      if (idbCerts && Array.isArray(idbCerts) && idbCerts.length > 0) {
-        memoryCerts = idbCerts;
-        hasUpdate = true;
-      }
-      if (idbEnqs && Array.isArray(idbEnqs) && idbEnqs.length > 0) {
-        memoryEnquiries = idbEnqs;
-        hasUpdate = true;
-      }
-
-      if (hasUpdate) {
-        notifyStoreUpdate();
-      }
-
-      // 3. Perform immediate live Cloud sync
-      await syncStoreWithCloud();
-    } catch (e) {}
-  })();
-}
-
-
-// Global listener for realtime snapshot events
-if (typeof window !== 'undefined') {
-  window.addEventListener('priya_store_updated', (e) => {
-    if (e && e.detail && e.detail.type && e.detail.items) {
-      if (e.detail.type === 'products') memoryProducts = e.detail.items;
-      if (e.detail.type === 'blogs') memoryBlogs = e.detail.items;
-      if (e.detail.type === 'certificates') memoryCerts = e.detail.items;
-      if (e.detail.type === 'enquiries') memoryEnquiries = e.detail.items;
-    }
-  });
-}
-
-// --- ADMIN AUTH STATE ---
-const ADMIN_SESSION_KEY = 'saheer_admin_auth';
-const ADMIN_PASSWORDS = ['admin123', 'saheer123', 'saheer@2026', 'saheerparadise@789', 'admin@2026'];
-
-export function isUserAdmin() {
-  try {
-    if (typeof sessionStorage !== 'undefined') {
-      const auth = sessionStorage.getItem(ADMIN_SESSION_KEY);
-      if (auth === 'true') return true;
-    }
-  } catch (e) {}
-  return false;
-}
-
-export const isAdminLoggedIn = isUserAdmin;
-
-export function loginAdmin(usernameOrPass, optionalPass) {
-  let user = 'admin';
-  let pass = '';
-
-  if (optionalPass !== undefined) {
-    user = (usernameOrPass || '').trim().toLowerCase();
-    pass = (optionalPass || '').trim();
-  } else {
-    pass = (usernameOrPass || '').trim();
-  }
-
-  const validUsers = ['admin', 'saheer', 'saheer paradise', 'saheerparadise', 'saheer paradise export', 'admin@saheerparadise.com'];
-  const validPass = ADMIN_PASSWORDS.includes(pass) || pass === 'admin123' || pass === 'saheer123';
-
-  if ((validUsers.includes(user) || !optionalPass) && validPass) {
-    try {
-      if (typeof sessionStorage !== 'undefined') {
-        sessionStorage.setItem(ADMIN_SESSION_KEY, 'true');
-      }
-    } catch (e) {}
-    return { success: true };
-  }
-
-  return { success: false, message: 'Invalid username or password. Please try again.' };
-}
-
-export function logoutAdmin() {
-  try {
-    if (typeof sessionStorage !== 'undefined') {
-      sessionStorage.removeItem(ADMIN_SESSION_KEY);
-    }
-  } catch (e) {}
-}
-
+// ==========================================
 // --- PRODUCTS STORE ---
+// ==========================================
 export function getProducts() {
-  if (memoryProducts && Array.isArray(memoryProducts) && memoryProducts.length > 0) {
-    return memoryProducts;
-  }
   try {
-    if (typeof localStorage !== 'undefined') {
-      const saved = localStorage.getItem('marvex_products');
-      if (saved) {
-        const parsed = JSON.parse(saved);
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem(STORAGE_KEYS.PRODUCTS);
+      if (stored) {
+        const parsed = JSON.parse(stored);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          const merged = mergeWithDefaultProducts(parsed);
-          memoryProducts = merged;
-          return merged;
+          return parsed.map(normalizeProduct).filter(Boolean);
         }
       }
     }
-  } catch (e) {}
-  const initialMerged = mergeWithDefaultProducts(INITIAL_PRODUCTS);
-  memoryProducts = initialMerged;
-  return initialMerged;
+  } catch (e) {
+    console.error('Error loading products from storage:', e);
+  }
+  return INITIAL_PRODUCTS.map(normalizeProduct).filter(Boolean);
 }
 
-export function saveProducts(productsList) {
-  const normalized = (productsList || []).map(normalizeProduct).filter(Boolean);
-  memoryProducts = normalized;
-  idbSet('marvex_products', normalized);
+export function saveProduct(productData) {
   try {
-    if (typeof localStorage !== 'undefined') {
-      localStorage.setItem('marvex_products', JSON.stringify(normalized));
+    const list = getProducts();
+    const normalized = normalizeProduct(productData);
+    if (!normalized) return false;
+
+    const existingIdx = list.findIndex(p => p.id === normalized.id);
+    let updated;
+    if (existingIdx >= 0) {
+      updated = [...list];
+      updated[existingIdx] = normalized;
+    } else {
+      updated = [normalized, ...list];
     }
-  } catch (e) {}
-  notifyStoreUpdate();
-}
 
-export async function addProduct(newProd) {
-  const list = getProducts();
-  const normalizedNew = normalizeProduct(newProd);
-  const prodWithId = {
-    ...normalizedNew,
-    id: normalizedNew.id || `prod-${Date.now()}`
-  };
-  const updated = [prodWithId, ...list.filter(p => p.id !== prodWithId.id)];
-  saveProducts(updated);
-  saveDocToCloud('products', prodWithId.id, prodWithId).catch(() => {});
-  return updated;
-}
-
-export async function updateProduct(updatedProd) {
-  const list = getProducts();
-  const normalizedUpdated = normalizeProduct(updatedProd);
-  const updated = list.map(p => (p.id === normalizedUpdated.id ? { ...p, ...normalizedUpdated } : p));
-  saveProducts(updated);
-  saveDocToCloud('products', normalizedUpdated.id, normalizedUpdated).catch(() => {});
-  return updated;
-}
-
-export async function deleteProduct(id) {
-  const list = getProducts();
-  const updated = list.filter(p => p.id !== id);
-  saveProducts(updated);
-  deleteDocFromCloud('products', id).catch(() => {});
-  return updated;
-}
-
-// Force re-fetch from Firebase live database
-export async function reloadFromCloud() {
-  try {
-    const [cloudProds, cloudBlogs, cloudCerts, cloudEnqs] = await Promise.all([
-      fetchCollectionFromCloud('products'),
-      fetchCollectionFromCloud('blogs'),
-      fetchCollectionFromCloud('certificates'),
-      fetchCollectionFromCloud('enquiries')
-    ]);
-
-    if (cloudProds && Array.isArray(cloudProds)) {
-      const merged = mergeWithDefaultProducts(cloudProds);
-      memoryProducts = merged;
-      idbSet('marvex_products', merged);
-    }
-    if (cloudBlogs && Array.isArray(cloudBlogs)) {
-      memoryBlogs = cloudBlogs;
-      idbSet('marvex_blogs', cloudBlogs);
-    }
-    if (cloudCerts && Array.isArray(cloudCerts)) {
-      memoryCerts = cloudCerts;
-      idbSet('marvex_certs', cloudCerts);
-    }
-    if (cloudEnqs && Array.isArray(cloudEnqs)) {
-      memoryEnquiries = cloudEnqs;
-      idbSet('marvex_enquiries', cloudEnqs);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(updated));
     }
     notifyStoreUpdate();
-    return { success: true, count: memoryProducts.length };
-  } catch (err) {
-    console.error('Failed to reload from cloud:', err);
-    return { success: false, error: err.message };
+
+    // Async push to Firebase Firestore for cross-browser live sync
+    saveProductToCloud(normalized);
+
+    return true;
+  } catch (e) {
+    console.error('Error saving product:', e);
+    return false;
   }
 }
 
-// 1-Click Sync All Master Products to Firebase
-export async function syncAllMasterProductsToCloud() {
-  const allProds = getProducts();
-  let successCount = 0;
-  for (const prod of allProds) {
-    const normalized = normalizeProduct(prod);
-    const ok = await saveDocToCloud('products', normalized.id, normalized);
-    if (ok) successCount++;
-  }
-  return { success: true, count: successCount, total: allProds.length };
-}
-
-// --- BLOGS STORE ---
-export function getBlogs() {
-  if (memoryBlogs && Array.isArray(memoryBlogs) && memoryBlogs.length > 0) {
-    return memoryBlogs;
-  }
+export function deleteProduct(productId) {
   try {
-    if (typeof localStorage !== 'undefined') {
-      const saved = localStorage.getItem('marvex_blogs');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          memoryBlogs = parsed;
-          return parsed;
-        }
+    const list = getProducts();
+    const updated = list.filter(p => p.id !== productId);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(updated));
+    }
+    notifyStoreUpdate();
+
+    // Async delete from Firebase Firestore
+    deleteProductFromCloud(productId);
+
+    return true;
+  } catch (e) {
+    console.error('Error deleting product:', e);
+    return false;
+  }
+}
+
+export function resetProductsToDefault() {
+  try {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(STORAGE_KEYS.PRODUCTS);
+    }
+    notifyStoreUpdate();
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+// ==========================================
+// --- ENQUIRIES / RFQ STORE ---
+// ==========================================
+export function getEnquiries() {
+  try {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem(STORAGE_KEYS.INQUIRIES);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    }
+  } catch (e) {}
+  return [];
+}
+
+export function addEnquiry(enquiryData) {
+  try {
+    const list = getEnquiries();
+    const newEnquiry = {
+      id: `rfq-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+      createdAt: new Date().toISOString(),
+      status: 'New',
+      name: enquiryData.name || 'Anonymous Buyer',
+      email: enquiryData.email || '',
+      phone: enquiryData.phone || '',
+      country: enquiryData.country || 'International',
+      product: enquiryData.product || enquiryData.productName || 'General Sourcing Inquiry',
+      quantity: enquiryData.quantity || enquiryData.containerQty || '1 x 20ft FCL',
+      destinationPort: enquiryData.destinationPort || enquiryData.port || 'CIF Destination',
+      message: enquiryData.message || enquiryData.notes || '',
+      source: enquiryData.source || 'Website Quote Form'
+    };
+
+    const updated = [newEnquiry, ...list];
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEYS.INQUIRIES, JSON.stringify(updated));
+    }
+    notifyStoreUpdate();
+
+    // Async push to Firestore
+    saveInquiryToCloud(newEnquiry);
+
+    return newEnquiry;
+  } catch (e) {
+    console.error('Error adding inquiry:', e);
+    return null;
+  }
+}
+
+export function updateEnquiryStatus(id, newStatus) {
+  try {
+    const list = getEnquiries();
+    const updated = list.map(item => item.id === id ? { ...item, status: newStatus } : item);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEYS.INQUIRIES, JSON.stringify(updated));
+    }
+    notifyStoreUpdate();
+
+    // Async push to Firestore
+    updateInquiryStatusInCloud(id, newStatus);
+
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+export function deleteEnquiry(id) {
+  try {
+    const list = getEnquiries();
+    const updated = list.filter(item => item.id !== id);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEYS.INQUIRIES, JSON.stringify(updated));
+    }
+    notifyStoreUpdate();
+
+    // Async delete from Firestore
+    deleteInquiryFromCloud(id);
+
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+// ==========================================
+// --- BLOGS STORE ---
+// ==========================================
+export function getBlogs() {
+  try {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem(STORAGE_KEYS.BLOGS);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
       }
     }
   } catch (e) {}
   return INITIAL_BLOGS || [];
 }
 
-export function saveBlogs(blogsList) {
-  memoryBlogs = blogsList;
-  idbSet('marvex_blogs', blogsList);
+export function saveBlog(blogData) {
   try {
-    if (typeof localStorage !== 'undefined') {
-      localStorage.setItem('marvex_blogs', JSON.stringify(blogsList));
+    const list = getBlogs();
+    const id = blogData.id || `blog-${Date.now()}`;
+    const newBlog = {
+      ...blogData,
+      id,
+      date: blogData.date || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    };
+
+    const idx = list.findIndex(b => b.id === id);
+    let updated;
+    if (idx >= 0) {
+      updated = [...list];
+      updated[idx] = newBlog;
+    } else {
+      updated = [newBlog, ...list];
     }
-  } catch (e) {}
-  notifyStoreUpdate();
-}
 
-export async function addBlog(newBlog) {
-  const list = getBlogs();
-  const blogWithId = {
-    ...newBlog,
-    id: newBlog.id || `blog-${Date.now()}`,
-    date: newBlog.date || new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })
-  };
-  const updated = [blogWithId, ...list];
-  saveBlogs(updated);
-  saveDocToCloud('blogs', blogWithId.id, blogWithId).catch(() => {});
-  return updated;
-}
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEYS.BLOGS, JSON.stringify(updated));
+    }
+    notifyStoreUpdate();
 
-export async function updateBlog(updatedBlog) {
-  const list = getBlogs();
-  const updated = list.map(b => (b.id === updatedBlog.id ? { ...b, ...updatedBlog } : b));
-  saveBlogs(updated);
-  saveDocToCloud('blogs', updatedBlog.id, updatedBlog).catch(() => {});
-  return updated;
-}
+    // Async push to Firestore
+    saveBlogToCloud(newBlog);
 
-export async function deleteBlog(id) {
-  const list = getBlogs();
-  const updated = list.filter(b => b.id !== id);
-  saveBlogs(updated);
-  deleteDocFromCloud('blogs', id).catch(() => {});
-  return updated;
-}
-
-// --- CERTIFICATES STORE ---
-export function getCertificates() {
-  if (memoryCerts && Array.isArray(memoryCerts) && memoryCerts.length > 0) {
-    return memoryCerts;
+    return true;
+  } catch (e) {
+    return false;
   }
+}
+
+export function deleteBlog(id) {
   try {
-    if (typeof localStorage !== 'undefined') {
-      const saved = localStorage.getItem('marvex_certs');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          memoryCerts = parsed;
-          return parsed;
-        }
+    const list = getBlogs();
+    const updated = list.filter(b => b.id !== id);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEYS.BLOGS, JSON.stringify(updated));
+    }
+    notifyStoreUpdate();
+
+    // Async delete from Firestore
+    deleteBlogFromCloud(id);
+
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+// ==========================================
+// --- SETTINGS STORE ---
+// ==========================================
+export function getSettings() {
+  try {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem(STORAGE_KEYS.SETTINGS);
+      if (stored) {
+        return { ...DEFAULT_SETTINGS, ...JSON.parse(stored) };
       }
     }
   } catch (e) {}
+  return DEFAULT_SETTINGS;
+}
+
+export function saveSettings(settingsData) {
+  try {
+    const current = getSettings();
+    const updated = { ...current, ...settingsData };
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(updated));
+    }
+    notifyStoreUpdate();
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+// ==========================================
+// --- CERTIFICATES STORE ---
+// ==========================================
+export function getCertificates() {
   return INITIAL_CERTS || [];
 }
 
-export function saveCertificates(certsList) {
-  memoryCerts = certsList;
-  idbSet('marvex_certs', certsList);
+// ==========================================
+// --- AUTHENTICATION ---
+// ==========================================
+export function checkAdminAuth() {
   try {
-    if (typeof localStorage !== 'undefined') {
-      localStorage.setItem('marvex_certs', JSON.stringify(certsList));
+    if (typeof window !== 'undefined') {
+      const auth = sessionStorage.getItem(STORAGE_KEYS.AUTH) || localStorage.getItem(STORAGE_KEYS.AUTH);
+      return auth === 'authenticated';
     }
   } catch (e) {}
-  notifyStoreUpdate();
+  return false;
 }
 
-export async function addCertificate(newCert) {
-  const list = getCertificates();
-  const certWithId = {
-    ...newCert,
-    id: newCert.id || `cert-${Date.now()}`
-  };
-  const updated = [...list, certWithId];
-  saveCertificates(updated);
-  saveDocToCloud('certificates', certWithId.id, certWithId).catch(() => {});
-  return updated;
-}
-
-export async function updateCertificate(updatedCert) {
-  const list = getCertificates();
-  const updated = list.map(c => (c.id === updatedCert.id ? { ...c, ...updatedCert } : c));
-  saveCertificates(updated);
-  saveDocToCloud('certificates', updatedCert.id, updatedCert).catch(() => {});
-  return updated;
-}
-
-export async function deleteCertificate(id) {
-  const list = getCertificates();
-  const updated = list.filter(c => c.id !== id);
-  saveCertificates(updated);
-  deleteDocFromCloud('certificates', id).catch(() => {});
-  return updated;
-}
-
-// --- ENQUIRIES STORE ---
-const INITIAL_ENQUIRIES = [
-  {
-    id: 'enq-101',
-    source: 'Product Quote Request',
-    name: 'Hans Weber',
-    company: 'EuroSpices GmbH',
-    email: 'h.weber@eurospices.de',
-    phone: '+49 171 5550192',
-    product: 'Turmeric Powder (Curcumin > 3.5%)',
-    quantity: '20 MT (1x20ft FCL)',
-    destinationPort: 'Hamburg Port, Germany',
-    notes: 'Please quote CIF Hamburg rates with phytosanitary & lab COA test certificates.',
-    status: 'New',
-    date: 'Aug 08, 2026 10:15 AM'
-  },
-  {
-    id: 'enq-102',
-    source: 'Contact Us Form',
-    name: 'Tariq Al-Mansoor',
-    company: 'Gulf General Trading Co.',
-    email: 'tariq@gulfgeneral.ae',
-    phone: '+971 50 1234567',
-    product: 'Guntur S17 Red Chilli & Cumin Seeds',
-    quantity: '40 MT (2x40ft FCL)',
-    destinationPort: 'Jebel Ali Port, Dubai',
-    notes: 'Urgent container requirement for Ramadan shipment. Halal certification required.',
-    status: 'New',
-    date: 'Aug 07, 2026 04:30 PM'
-  }
-];
-
-export function getEnquiries() {
-  if (memoryEnquiries && Array.isArray(memoryEnquiries) && memoryEnquiries.length > 0) {
-    return memoryEnquiries;
-  }
-  try {
-    if (typeof localStorage !== 'undefined') {
-      const saved = localStorage.getItem('marvex_enquiries');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) {
-          memoryEnquiries = parsed;
-          return parsed;
-        }
+export function adminLogin(password, remember = false) {
+  const validPasscodes = ['marvex123', 'admin@marvex', 'marvex2026', 'admin123'];
+  if (validPasscodes.includes(password.trim())) {
+    try {
+      if (remember) {
+        localStorage.setItem(STORAGE_KEYS.AUTH, 'authenticated');
       }
-    }
-  } catch (e) {}
-  return INITIAL_ENQUIRIES || [];
-}
-
-export function saveEnquiries(enquiriesList) {
-  memoryEnquiries = enquiriesList;
-  idbSet('marvex_enquiries', enquiriesList);
-  try {
-    if (typeof localStorage !== 'undefined') {
-      localStorage.setItem('marvex_enquiries', JSON.stringify(enquiriesList));
-    }
-  } catch (e) {}
-  notifyStoreUpdate();
-}
-
-export async function addEnquiry(enquiryData) {
-  const list = getEnquiries();
-  const newEnquiry = {
-    id: `enq-${Date.now()}`,
-    source: enquiryData.source || 'Website Form',
-    name: enquiryData.name || 'Anonymous Buyer',
-    company: enquiryData.company || 'Private Buyer',
-    email: enquiryData.email || 'N/A',
-    phone: enquiryData.phone || 'N/A',
-    product: enquiryData.product || enquiryData.title || 'General Commodity Enquiry',
-    quantity: enquiryData.quantity || 'N/A',
-    destinationPort: enquiryData.destinationPort || 'Overseas Port',
-    notes: enquiryData.notes || enquiryData.message || 'Product quote request submitted.',
-    status: 'New',
-    date: new Date().toLocaleString('en-US', { month: 'short', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true })
-  };
-  const updated = [newEnquiry, ...list];
-  saveEnquiries(updated);
-  saveDocToCloud('enquiries', newEnquiry.id, newEnquiry).catch(() => {});
-  return updated;
-}
-
-export async function updateEnquiryStatus(id, status) {
-  const list = getEnquiries();
-  const updated = list.map(e => (e.id === id ? { ...e, status } : e));
-  saveEnquiries(updated);
-  const found = updated.find(e => e.id === id);
-  if (found) saveDocToCloud('enquiries', id, found).catch(() => {});
-  return updated;
-}
-
-export async function deleteEnquiry(id) {
-  const list = getEnquiries();
-  const updated = list.filter(e => e.id !== id);
-  saveEnquiries(updated);
-  deleteDocFromCloud('enquiries', id).catch(() => {});
-  return updated;
-}
-
-export function exportEnquiriesCSV(enquiriesList) {
-  const list = enquiriesList || getEnquiries();
-  if (!list || list.length === 0) {
-    alert('No enquiries to export.');
-    return;
+      sessionStorage.setItem(STORAGE_KEYS.AUTH, 'authenticated');
+      return { success: true };
+    } catch (e) {}
   }
-  const headers = ['ID', 'Date', 'Source', 'Buyer Name', 'Company', 'Email', 'Phone', 'Commodity', 'Quantity', 'Destination Port', 'Status', 'Notes'];
-  const rows = list.map(e => [
-    `"${e.id || ''}"`,
-    `"${e.date || ''}"`,
-    `"${e.source || ''}"`,
-    `"${(e.name || '').replace(/"/g, '""')}"`,
-    `"${(e.company || '').replace(/"/g, '""')}"`,
-    `"${e.email || ''}"`,
-    `"${e.phone || ''}"`,
-    `"${(e.product || '').replace(/"/g, '""')}"`,
-    `"${(e.quantity || '').replace(/"/g, '""')}"`,
-    `"${(e.destinationPort || '').replace(/"/g, '""')}"`,
-    `"${e.status || ''}"`,
-    `"${(e.notes || '').replace(/"/g, '""')}"`
-  ]);
-  const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-  const encodedUri = encodeURI(csvContent);
-  const link = document.createElement('a');
-  link.setAttribute('href', encodedUri);
-  link.setAttribute('download', `Saheer_Paradise_Export_Enquiries_${new Date().toISOString().slice(0, 10)}.csv`);
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  return { success: false, error: 'Invalid admin credentials. Please try again.' };
+}
+
+export function adminLogout() {
+  try {
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem(STORAGE_KEYS.AUTH);
+      localStorage.removeItem(STORAGE_KEYS.AUTH);
+    }
+  } catch (e) {}
 }

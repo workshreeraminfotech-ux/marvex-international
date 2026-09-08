@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, Eye, ShieldCheck, MapPin, Sparkles, CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowRight, ShieldCheck, MapPin, Sparkles, CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useStoreProducts } from '../utils/useStore';
 
 export default function MainSeedsShowcase({ onSelectProduct, onOpenQuote, onNavigate }) {
@@ -98,7 +98,7 @@ export default function MainSeedsShowcase({ onSelectProduct, onOpenQuote, onNavi
           </p>
         </div>
 
-        {/* Horizontal Auto-Scrolling Track (No visible scrollbar line) */}
+        {/* Horizontal Auto-Scrolling Track */}
         <div
           ref={scrollContainerRef}
           className="seeds-horizontal-scroll-track"
@@ -108,46 +108,46 @@ export default function MainSeedsShowcase({ onSelectProduct, onOpenQuote, onNavi
           onTouchEnd={() => setIsPaused(false)}
           style={{
             display: 'flex',
+            alignItems: 'stretch',
             gap: '24px',
             overflowX: 'auto',
-            scrollSnapType: 'x mandatory',
             scrollBehavior: 'smooth',
-            paddingBottom: '8px',
-            paddingTop: '6px',
+            padding: '12px 4px 16px',
             WebkitOverflowScrolling: 'touch',
             scrollbarWidth: 'none',
             msOverflowStyle: 'none'
           }}
         >
           {seedProducts.map((item, idx) => (
-            <motion.div
+            <div
               key={item.id || idx}
               className="seeds-showcase-card"
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.35, delay: (idx % 4) * 0.05 }}
               style={{
-                borderRadius: '22px',
+                flex: '0 0 300px',
+                width: '300px',
+                minWidth: '300px',
+                maxWidth: '300px',
+                borderRadius: '20px',
                 overflow: 'hidden',
-                boxShadow: '0 8px 24px rgba(27, 75, 122, 0.07)',
+                boxShadow: '0 4px 20px rgba(1, 27, 71, 0.08)',
                 display: 'flex',
                 flexDirection: 'column',
                 border: '1.5px solid var(--border)',
                 background: '#FFFFFF',
-                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+                transition: 'border-color 0.25s ease, box-shadow 0.25s ease'
               }}
-              whileHover={{ y: -6, boxShadow: '0 16px 36px rgba(2, 132, 199, 0.2)', borderColor: 'var(--gold)' }}
             >
               {/* Product Image Box */}
               <div
                 style={{
-                  height: '230px',
-                  background: 'radial-gradient(circle, #FFFFFF 50%, #F9F7F2 100%)',
+                  height: '210px',
+                  minHeight: '210px',
+                  maxHeight: '210px',
+                  background: '#F8FAFC',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  padding: '24px',
+                  padding: '20px',
                   position: 'relative',
                   cursor: 'pointer',
                   borderBottom: '1px solid var(--border)'
@@ -159,52 +159,66 @@ export default function MainSeedsShowcase({ onSelectProduct, onOpenQuote, onNavi
                   alt={item.title}
                   loading="lazy"
                   style={{
-                    maxWidth: '90%',
-                    maxHeight: '90%',
+                    maxWidth: '85%',
+                    maxHeight: '85%',
                     objectFit: 'contain',
-                    transition: 'transform 0.4s ease'
+                    transition: 'transform 0.3s ease'
                   }}
-                  onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.08)'}
+                  onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
                   onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
                 />
               </div>
 
               {/* Product Info Body */}
-              <div style={{ padding: '22px', display: 'flex', flexDirection: 'column', flex: 1 }}>
-                <h3 
-                  style={{ fontSize: '18px', fontWeight: 800, color: 'var(--navy)', marginBottom: '10px', lineHeight: 1.3, cursor: 'pointer' }}
-                  onClick={() => onSelectProduct ? onSelectProduct(item) : null}
-                >
-                  {item.title}
-                </h3>
+              <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'space-between' }}>
+                <div>
+                  <h3 
+                    style={{ 
+                      fontSize: '17px', 
+                      fontWeight: 800, 
+                      color: 'var(--navy)', 
+                      marginBottom: '8px', 
+                      lineHeight: 1.3, 
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
+                    }}
+                    onClick={() => onSelectProduct ? onSelectProduct(item) : null}
+                    title={item.title}
+                  >
+                    {item.title}
+                  </h3>
 
-                <p style={{ fontSize: '14px', color: '#6B7280', lineHeight: 1.55, marginBottom: '22px', flex: 1, fontWeight: 500 }}>
-                  {item.desc || item.description}
-                </p>
+                  <p style={{ 
+                    fontSize: '13.5px', 
+                    color: 'var(--gray)', 
+                    lineHeight: 1.5, 
+                    marginBottom: '18px', 
+                    height: '40px',
+                    overflow: 'hidden',
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    fontWeight: 500 
+                  }}>
+                    {item.desc || item.description || 'Premium quality export grade seeds sourced directly from authentic origin farms.'}
+                  </p>
+                </div>
 
                 {/* Actions */}
-                <div style={{ display: 'flex', gap: '8px', marginTop: 'auto' }}>
+                <div style={{ marginTop: 'auto' }}>
                   <button
                     onClick={() => onOpenQuote ? onOpenQuote(item.title) : null}
                     className="btn btn-primary"
-                    style={{ flex: 1, padding: '10px 14px', fontSize: '13.5px', fontWeight: 700, justifyContent: 'center', borderRadius: '8px' }}
+                    style={{ width: '100%', padding: '10px 16px', fontSize: '13.5px', fontWeight: 700, justifyContent: 'center', borderRadius: '8px' }}
                   >
-                    <span>Quote</span>
-                    <ArrowRight size={15} />
-                  </button>
-                  
-                  <button
-                    onClick={() => onSelectProduct ? onSelectProduct(item) : null}
-                    className="btn btn-outline"
-                    style={{ padding: '10px 14px', fontSize: '13.5px', borderRadius: '8px', background: '#FFFFFF' }}
-                    title="Quick View Details"
-                  >
-                    <Eye size={15} />
-                    <span>View</span>
+                    <span>Request Quote</span>
+                    <ArrowRight size={14} />
                   </button>
                 </div>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
 
