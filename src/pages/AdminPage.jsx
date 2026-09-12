@@ -960,14 +960,13 @@ export default function AdminPage({ onNavigate }) {
                       <th style={{ padding: '14px 18px' }}>Product Title</th>
                       <th style={{ padding: '14px 18px' }}>Category & Role</th>
                       <th style={{ padding: '14px 18px' }}>Subcategory / HS Code</th>
-                      <th style={{ padding: '14px 18px' }}>Origin</th>
                       <th style={{ padding: '14px 18px', textAlign: 'right' }}>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {filteredProducts.length === 0 ? (
                       <tr>
-                        <td colSpan={6} style={{ padding: '48px 24px', textAlign: 'center' }}>
+                        <td colSpan={5} style={{ padding: '48px 24px', textAlign: 'center' }}>
                           <div style={{ maxWidth: '380px', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
                             <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748B' }}>
                               <Package size={24} />
@@ -1026,9 +1025,6 @@ export default function AdminPage({ onNavigate }) {
                           <td style={{ padding: '12px 18px', color: '#64748B' }}>
                             <div>{prod.subcategory}</div>
                             <div style={{ fontSize: '12px', fontFamily: 'monospace' }}>{prod.hsCode || '—'}</div>
-                          </td>
-                          <td style={{ padding: '12px 18px', color: '#64748B', fontSize: '12.5px' }}>
-                            {prod.origin}
                           </td>
                           <td style={{ padding: '12px 18px', textAlign: 'right' }}>
                             <div style={{ display: 'inline-flex', gap: '8px' }}>
@@ -1459,33 +1455,18 @@ export default function AdminPage({ onNavigate }) {
                 </div>
               </div>
 
-              {/* Subcategory & Origin */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '13px', fontWeight: 800, color: '#1E293B', marginBottom: '6px' }}>
-                    Subcategory
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Kitchen Sinks, Earth Rods, Whole Spices"
-                    value={productForm.subcategory}
-                    onChange={(e) => setProductForm({ ...productForm, subcategory: e.target.value })}
-                    style={{ width: '100%', padding: '12px 14px', borderRadius: '8px', border: '1.5px solid #CBD5E1', fontSize: '14px', boxSizing: 'border-box' }}
-                  />
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '13px', fontWeight: 800, color: '#1E293B', marginBottom: '6px' }}>
-                    Origin / Manufacturing Location
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Gujarat, India (In-House Manufactured)"
-                    value={productForm.origin}
-                    onChange={(e) => setProductForm({ ...productForm, origin: e.target.value })}
-                    style={{ width: '100%', padding: '12px 14px', borderRadius: '8px', border: '1.5px solid #CBD5E1', fontSize: '14px', boxSizing: 'border-box' }}
-                  />
-                </div>
+              {/* Subcategory */}
+              <div>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 800, color: '#1E293B', marginBottom: '6px' }}>
+                  Subcategory
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Kitchen Sinks, Earth Rods, Whole Spices"
+                  value={productForm.subcategory}
+                  onChange={(e) => setProductForm({ ...productForm, subcategory: e.target.value })}
+                  style={{ width: '100%', padding: '12px 14px', borderRadius: '8px', border: '1.5px solid #CBD5E1', fontSize: '14px', boxSizing: 'border-box' }}
+                />
               </div>
 
               {/* Product Photo Upload & URL */}
