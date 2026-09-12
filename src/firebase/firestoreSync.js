@@ -36,6 +36,30 @@ let unsubInquiries = null;
 let unsubBlogs = null;
 let isInitialized = false;
 
+// Helper to clean undefined values before sending to Firestore
+function sanitizeForFirestore(obj) {
+  if (!obj || typeof obj !== 'object') return obj;
+  const clean = {};
+  for (const [key, val] of Object.entries(obj)) {
+    if (val !== undefined && val !== null) {
+      if (typeof val === 'object' && !Array.isArray(val) && !(val instanceof Date)) {
+        clean[key] = sanitizeForFirestore(val);
+      } else {
+        clean[key] = val;
+      }
+    } else if (val === null) {
+      clean[key] = '';
+    }
+  }
+  return clean;
+}
+
+let isLocalSaving = false;
+
+export function setLocalSavingState(isSaving) {
+  isLocalSaving = isSaving;
+}
+
 // Initialize real-time synchronization
 export function initFirestoreRealtimeSync() {
   if (typeof window === 'undefined' || !isFirebaseConfigured() || !db) {
@@ -49,13 +73,27 @@ export function initFirestoreRealtimeSync() {
     // 1. PRODUCTS REALTIME LISTENER
     const productsRef = collection(db, COLLECTIONS.PRODUCTS);
     unsubProducts = onSnapshot(productsRef, (snapshot) => {
-      const remoteProducts = [];
-      snapshot.forEach((docSnap) => {
-        remoteProducts.push({ id: docSnap.id, ...docSnap.data() });
-      });
-      const normalized = remoteProducts.map(normalizeProduct).filter(Boolean);
-      localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(normalized));
-      notifyStoreUpdate();
+      if (isLocalSaving) return;
+
+      if (!snapshot.empty) {
+        const remoteProducts = [];
+        snapshot.forEach((docSnap) => {
+          remoteProducts.push({ id: docSnap.id, ...docSnap.data() });
+        });
+        const normalized = remoteProducts.map(normalizeProduct).filter(Boolean);
+        localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(normalized));
+        notifyStoreUpdate();
+      } else {
+        // If Firestore is empty, check if we currently have local products
+        const local = getLocalProducts();
+        if (local && local.length > 0) {
+          // Push existing local products to Firestore instead of wiping them out
+          local.forEach(p => saveProductToCloud(p));
+        } else {
+          localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify([]));
+          notifyStoreUpdate();
+        }
+      }
     }, (error) => {
       console.warn('Firestore Products sync notice:', error.message);
     });
@@ -78,12 +116,24 @@ export function initFirestoreRealtimeSync() {
     // 3. BLOGS REALTIME LISTENER
     const blogsRef = collection(db, COLLECTIONS.BLOGS);
     unsubBlogs = onSnapshot(blogsRef, (snapshot) => {
-      const remoteBlogs = [];
-      snapshot.forEach((docSnap) => {
-        remoteBlogs.push({ id: docSnap.id, ...docSnap.data() });
-      });
-      localStorage.setItem(STORAGE_KEYS.BLOGS, JSON.stringify(remoteBlogs));
-      notifyStoreUpdate();
+      if (isLocalSaving) return;
+
+      if (!snapshot.empty) {
+        const remoteBlogs = [];
+        snapshot.forEach((docSnap) => {
+          remoteBlogs.push({ id: docSnap.id, ...docSnap.data() });
+        });
+        localStorage.setItem(STORAGE_KEYS.BLOGS, JSON.stringify(remoteBlogs));
+        notifyStoreUpdate();
+      } else {
+        const localBlogs = getLocalBlogs();
+        if (localBlogs && localBlogs.length > 0) {
+          localBlogs.forEach(b => saveBlogToCloud(b));
+        } else {
+          localStorage.setItem(STORAGE_KEYS.BLOGS, JSON.stringify([]));
+          notifyStoreUpdate();
+        }
+      }
     }, (error) => {
       console.warn('Firestore Blogs sync notice:', error.message);
     });
@@ -102,8 +152,9 @@ export async function seedInitialDataToFirestore() {
     const defaultList = INITIAL_PRODUCTS.map(normalizeProduct).filter(Boolean);
     for (const prod of defaultList) {
       if (prod && prod.id) {
+        const clean = sanitizeForFirestore(prod);
         const docRef = doc(db, COLLECTIONS.PRODUCTS, String(prod.id));
-        await setDoc(docRef, prod, { merge: true });
+        await setDoc(docRef, clean, { merge: true });
       }
     }
     console.log('Seeded initial product catalog to Firestore successfully.');
@@ -119,8 +170,9 @@ export async function seedInitialBlogsToFirestore() {
     const defaultBlogs = INITIAL_BLOGS || [];
     for (const b of defaultBlogs) {
       if (b && b.id) {
+        const clean = sanitizeForFirestore(b);
         const docRef = doc(db, COLLECTIONS.BLOGS, String(b.id));
-        await setDoc(docRef, b, { merge: true });
+        await setDoc(docRef, clean, { merge: true });
       }
     }
   } catch (e) {}
@@ -168,8 +220,9 @@ export async function saveProductToCloud(product) {
   try {
     const normalized = normalizeProduct(product);
     if (!normalized || !normalized.id) return false;
+    const clean = sanitizeForFirestore(normalized);
     const docRef = doc(db, COLLECTIONS.PRODUCTS, String(normalized.id));
-    await setDoc(docRef, normalized, { merge: true });
+    await setDoc(docRef, clean, { merge: true });
     return true;
   } catch (e) {
     console.error('Firestore saveProduct error:', e);
@@ -194,8 +247,9 @@ export async function saveInquiryToCloud(inquiry) {
   if (!db || !isFirebaseConfigured()) return false;
   try {
     if (!inquiry || !inquiry.id) return false;
+    const clean = sanitizeForFirestore(inquiry);
     const docRef = doc(db, COLLECTIONS.INQUIRIES, String(inquiry.id));
-    await setDoc(docRef, inquiry, { merge: true });
+    await setDoc(docRef, clean, { merge: true });
     return true;
   } catch (e) {
     console.error('Firestore saveInquiry error:', e);
@@ -232,8 +286,9 @@ export async function saveBlogToCloud(blog) {
   if (!db || !isFirebaseConfigured()) return false;
   try {
     if (!blog || !blog.id) return false;
+    const clean = sanitizeForFirestore(blog);
     const docRef = doc(db, COLLECTIONS.BLOGS, String(blog.id));
-    await setDoc(docRef, blog, { merge: true });
+    await setDoc(docRef, clean, { merge: true });
     return true;
   } catch (e) {
     console.error('Firestore saveBlog error:', e);

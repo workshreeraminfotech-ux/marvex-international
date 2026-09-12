@@ -5,6 +5,7 @@ import { PRODUCTS as INITIAL_PRODUCTS } from '../data/products';
 import { BLOGS as INITIAL_BLOGS } from '../data/blogs';
 import { 
   initFirestoreRealtimeSync,
+  setLocalSavingState,
   saveProductToCloud,
   deleteProductFromCloud,
   clearProductsFromCloud,
@@ -165,9 +166,13 @@ export function getProducts() {
 
 export function saveProduct(productData) {
   try {
+    setLocalSavingState(true);
     const list = getProducts();
     const normalized = normalizeProduct(productData);
-    if (!normalized) return false;
+    if (!normalized) {
+      setLocalSavingState(false);
+      return false;
+    }
 
     const existingIdx = list.findIndex(p => p.id === normalized.id);
     let updated;
@@ -184,10 +189,13 @@ export function saveProduct(productData) {
     notifyStoreUpdate();
 
     // Async push to Firebase Firestore for cross-browser live sync
-    saveProductToCloud(normalized);
+    saveProductToCloud(normalized).finally(() => {
+      setTimeout(() => setLocalSavingState(false), 1000);
+    });
 
     return true;
   } catch (e) {
+    setLocalSavingState(false);
     console.error('Error saving product:', e);
     return false;
   }
@@ -195,6 +203,7 @@ export function saveProduct(productData) {
 
 export function deleteProduct(productId) {
   try {
+    setLocalSavingState(true);
     const list = getProducts();
     const updated = list.filter(p => p.id !== productId);
     if (typeof window !== 'undefined') {
@@ -203,10 +212,13 @@ export function deleteProduct(productId) {
     notifyStoreUpdate();
 
     // Async delete from Firebase Firestore
-    deleteProductFromCloud(productId);
+    deleteProductFromCloud(productId).finally(() => {
+      setTimeout(() => setLocalSavingState(false), 1000);
+    });
 
     return true;
   } catch (e) {
+    setLocalSavingState(false);
     console.error('Error deleting product:', e);
     return false;
   }
@@ -214,16 +226,20 @@ export function deleteProduct(productId) {
 
 export function deleteAllProducts() {
   try {
+    setLocalSavingState(true);
     if (typeof window !== 'undefined') {
       localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify([]));
     }
     notifyStoreUpdate();
 
     // Async clear all from Firebase Firestore
-    clearProductsFromCloud();
+    clearProductsFromCloud().finally(() => {
+      setTimeout(() => setLocalSavingState(false), 1000);
+    });
 
     return true;
   } catch (e) {
+    setLocalSavingState(false);
     console.error('Error deleting all products:', e);
     return false;
   }
@@ -231,6 +247,7 @@ export function deleteAllProducts() {
 
 export function resetProductsToDefault() {
   try {
+    setLocalSavingState(true);
     const defaultList = INITIAL_PRODUCTS.map(normalizeProduct).filter(Boolean);
     if (typeof window !== 'undefined') {
       localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(defaultList));
@@ -238,10 +255,13 @@ export function resetProductsToDefault() {
     notifyStoreUpdate();
 
     // Async seed default catalog to cloud
-    seedInitialDataToFirestore();
+    seedInitialDataToFirestore().finally(() => {
+      setTimeout(() => setLocalSavingState(false), 1000);
+    });
 
     return true;
   } catch (e) {
+    setLocalSavingState(false);
     return false;
   }
 }
@@ -350,6 +370,7 @@ export function getBlogs() {
 
 export function saveBlog(blogData) {
   try {
+    setLocalSavingState(true);
     const list = getBlogs();
     const id = blogData.id || `blog-${Date.now()}`;
     const newBlog = {
@@ -373,16 +394,20 @@ export function saveBlog(blogData) {
     notifyStoreUpdate();
 
     // Async push to Firestore
-    saveBlogToCloud(newBlog);
+    saveBlogToCloud(newBlog).finally(() => {
+      setTimeout(() => setLocalSavingState(false), 1000);
+    });
 
     return true;
   } catch (e) {
+    setLocalSavingState(false);
     return false;
   }
 }
 
 export function deleteBlog(id) {
   try {
+    setLocalSavingState(true);
     const list = getBlogs();
     const updated = list.filter(b => b.id !== id);
     if (typeof window !== 'undefined') {
@@ -391,32 +416,40 @@ export function deleteBlog(id) {
     notifyStoreUpdate();
 
     // Async delete from Firestore
-    deleteBlogFromCloud(id);
+    deleteBlogFromCloud(id).finally(() => {
+      setTimeout(() => setLocalSavingState(false), 1000);
+    });
 
     return true;
   } catch (e) {
+    setLocalSavingState(false);
     return false;
   }
 }
 
 export function deleteAllBlogs() {
   try {
+    setLocalSavingState(true);
     if (typeof window !== 'undefined') {
       localStorage.setItem(STORAGE_KEYS.BLOGS, JSON.stringify([]));
     }
     notifyStoreUpdate();
 
     // Async clear all blogs from cloud
-    clearBlogsFromCloud();
+    clearBlogsFromCloud().finally(() => {
+      setTimeout(() => setLocalSavingState(false), 1000);
+    });
 
     return true;
   } catch (e) {
+    setLocalSavingState(false);
     return false;
   }
 }
 
 export function resetBlogsToDefault() {
   try {
+    setLocalSavingState(true);
     const defaultBlogs = INITIAL_BLOGS || [];
     if (typeof window !== 'undefined') {
       localStorage.setItem(STORAGE_KEYS.BLOGS, JSON.stringify(defaultBlogs));
@@ -424,10 +457,13 @@ export function resetBlogsToDefault() {
     notifyStoreUpdate();
 
     // Async seed default blogs to cloud
-    seedInitialBlogsToFirestore();
+    seedInitialBlogsToFirestore().finally(() => {
+      setTimeout(() => setLocalSavingState(false), 1000);
+    });
 
     return true;
   } catch (e) {
+    setLocalSavingState(false);
     return false;
   }
 }
