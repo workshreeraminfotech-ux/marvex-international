@@ -299,6 +299,23 @@ export default function BlogPage() {
             ))}
           </div>
 
+          {filtered.length === 0 && (
+            <div style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: '24px',
+              padding: '60px 20px',
+              textAlign: 'center',
+              border: '1.5px dashed var(--border)',
+              marginTop: '20px'
+            }}>
+              <h3 style={{ fontSize: '20px', fontWeight: 800, color: 'var(--navy)', marginBottom: '8px' }}>
+                No blog articles found
+              </h3>
+              <p style={{ fontSize: '14px', color: 'var(--gray)', margin: 0 }}>
+                {blogsList.length === 0 ? 'No articles published yet.' : 'Try adjusting your search query.'}
+              </p>
+            </div>
+          )}
         </div>
       </div>
 

@@ -30,6 +30,10 @@ export default function MainSeedsShowcase({ onSelectProduct, onOpenQuote, onNavi
     );
   });
 
+  if (seedProducts.length === 0) {
+    return null;
+  }
+
   const handleScroll = (direction) => {
     if (scrollContainerRef.current) {
       const cardEl = scrollContainerRef.current.querySelector('.seeds-showcase-card');

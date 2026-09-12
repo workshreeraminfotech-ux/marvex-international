@@ -160,7 +160,7 @@ export function getProducts() {
   } catch (e) {
     console.error('Error loading products from storage:', e);
   }
-  return INITIAL_PRODUCTS.map(normalizeProduct).filter(Boolean);
+  return [];
 }
 
 export function saveProduct(productData) {
@@ -345,7 +345,7 @@ export function getBlogs() {
       }
     }
   } catch (e) {}
-  return INITIAL_BLOGS || [];
+  return [];
 }
 
 export function saveBlog(blogData) {
