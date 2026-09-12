@@ -152,14 +152,30 @@ export async function seedInitialDataToFirestore() {
     const defaultList = INITIAL_PRODUCTS.map(normalizeProduct).filter(Boolean);
     for (const prod of defaultList) {
       if (prod && prod.id) {
-        const clean = sanitizeForFirestore(prod);
-        const docRef = doc(db, COLLECTIONS.PRODUCTS, String(prod.id));
-        await setDoc(docRef, clean, { merge: true });
+        await saveProductToCloud(prod);
       }
     }
     console.log('Seeded initial product catalog to Firestore successfully.');
   } catch (e) {
     console.warn('Auto-seed products note:', e.message);
+  }
+}
+
+// Push all current local products to Firestore
+export async function pushAllLocalProductsToCloud() {
+  if (!db || !isFirebaseConfigured()) return false;
+  try {
+    const local = getLocalProducts();
+    if (!local || local.length === 0) return true;
+    for (const prod of local) {
+      if (prod && prod.id) {
+        await saveProductToCloud(prod);
+      }
+    }
+    return true;
+  } catch (e) {
+    console.error('Error syncing local products to cloud:', e);
+    return false;
   }
 }
 
@@ -170,9 +186,7 @@ export async function seedInitialBlogsToFirestore() {
     const defaultBlogs = INITIAL_BLOGS || [];
     for (const b of defaultBlogs) {
       if (b && b.id) {
-        const clean = sanitizeForFirestore(b);
-        const docRef = doc(db, COLLECTIONS.BLOGS, String(b.id));
-        await setDoc(docRef, clean, { merge: true });
+        await saveBlogToCloud(b);
       }
     }
   } catch (e) {}
@@ -182,12 +196,18 @@ export async function seedInitialBlogsToFirestore() {
 export async function clearProductsFromCloud() {
   if (!db || !isFirebaseConfigured()) return false;
   try {
-    const productsRef = collection(db, COLLECTIONS.PRODUCTS);
-    const snapshot = await getDocs(productsRef);
     const deletePromises = [];
-    snapshot.forEach((docSnap) => {
-      deletePromises.push(deleteDoc(docSnap.ref));
-    });
+    
+    // Clear marvex_products
+    const ref1 = collection(db, 'marvex_products');
+    const snap1 = await getDocs(ref1);
+    snap1.forEach((docSnap) => deletePromises.push(deleteDoc(docSnap.ref)));
+
+    // Clear products alias
+    const ref2 = collection(db, 'products');
+    const snap2 = await getDocs(ref2);
+    snap2.forEach((docSnap) => deletePromises.push(deleteDoc(docSnap.ref)));
+
     await Promise.all(deletePromises);
     return true;
   } catch (e) {
@@ -200,12 +220,16 @@ export async function clearProductsFromCloud() {
 export async function clearBlogsFromCloud() {
   if (!db || !isFirebaseConfigured()) return false;
   try {
-    const blogsRef = collection(db, COLLECTIONS.BLOGS);
-    const snapshot = await getDocs(blogsRef);
     const deletePromises = [];
-    snapshot.forEach((docSnap) => {
-      deletePromises.push(deleteDoc(docSnap.ref));
-    });
+    
+    const ref1 = collection(db, 'marvex_blogs');
+    const snap1 = await getDocs(ref1);
+    snap1.forEach((docSnap) => deletePromises.push(deleteDoc(docSnap.ref)));
+
+    const ref2 = collection(db, 'blogs');
+    const snap2 = await getDocs(ref2);
+    snap2.forEach((docSnap) => deletePromises.push(deleteDoc(docSnap.ref)));
+
     await Promise.all(deletePromises);
     return true;
   } catch (e) {
@@ -221,8 +245,15 @@ export async function saveProductToCloud(product) {
     const normalized = normalizeProduct(product);
     if (!normalized || !normalized.id) return false;
     const clean = sanitizeForFirestore(normalized);
-    const docRef = doc(db, COLLECTIONS.PRODUCTS, String(normalized.id));
-    await setDoc(docRef, clean, { merge: true });
+
+    // Save to both marvex_products and products collection for maximum accessibility
+    const docRef1 = doc(db, 'marvex_products', String(normalized.id));
+    const docRef2 = doc(db, 'products', String(normalized.id));
+    await Promise.all([
+      setDoc(docRef1, clean, { merge: true }),
+      setDoc(docRef2, clean, { merge: true })
+    ]);
+    console.log('Product synced to Firestore:', normalized.id, normalized.title);
     return true;
   } catch (e) {
     console.error('Firestore saveProduct error:', e);
@@ -233,8 +264,12 @@ export async function saveProductToCloud(product) {
 export async function deleteProductFromCloud(productId) {
   if (!db || !isFirebaseConfigured()) return false;
   try {
-    const docRef = doc(db, COLLECTIONS.PRODUCTS, String(productId));
-    await deleteDoc(docRef);
+    const docRef1 = doc(db, 'marvex_products', String(productId));
+    const docRef2 = doc(db, 'products', String(productId));
+    await Promise.all([
+      deleteDoc(docRef1),
+      deleteDoc(docRef2)
+    ]);
     return true;
   } catch (e) {
     console.error('Firestore deleteProduct error:', e);

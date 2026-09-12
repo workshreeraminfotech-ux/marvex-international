@@ -20,7 +20,7 @@ import {
   saveCustomFirebaseConfig, 
   clearCustomFirebaseConfig 
 } from '../firebase/config';
-import { seedInitialDataToFirestore } from '../firebase/firestoreSync';
+import { seedInitialDataToFirestore, pushAllLocalProductsToCloud } from '../firebase/firestoreSync';
 import { useStoreProducts, useStoreEnquiries, useStoreBlogs } from '../utils/useStore';
 import logoImg from '../assets/logo.png';
 
@@ -201,7 +201,7 @@ export default function AdminPage({ onNavigate }) {
   };
 
   // Save Product
-  const handleSaveProduct = (e) => {
+  const handleSaveProduct = async (e) => {
     e.preventDefault();
     if (!productForm.title.trim()) return;
 
@@ -210,10 +210,10 @@ export default function AdminPage({ onNavigate }) {
       id: editingProduct ? editingProduct.id : `prod-${Date.now()}`
     };
 
-    const ok = saveProduct(payload);
+    const ok = await saveProduct(payload);
     if (ok) {
       setIsProductModalOpen(false);
-      showToast(editingProduct ? 'Product updated successfully!' : 'New product published successfully!');
+      showToast(editingProduct ? 'Product updated successfully & synced live!' : 'New product published & synced live!');
     }
   };
 
@@ -1671,9 +1671,9 @@ export default function AdminPage({ onNavigate }) {
                   disabled={isPushingCloud}
                   onClick={async () => {
                     setIsPushingCloud(true);
-                    await seedInitialDataToFirestore();
+                    await pushAllLocalProductsToCloud();
                     setIsPushingCloud(false);
-                    showToast('Catalog uploaded to Firebase Firestore successfully!');
+                    showToast('All products synced to Firebase Firestore successfully!');
                   }}
                   style={{
                     padding: '10px 18px',
