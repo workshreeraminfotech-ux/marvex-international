@@ -9,9 +9,9 @@ import {
   Cloud, Wifi, Check, Copy
 } from 'lucide-react';
 import { 
-  getProducts, saveProduct, deleteProduct, resetProductsToDefault,
+  getProducts, saveProduct, deleteProduct, deleteAllProducts, resetProductsToDefault,
   getEnquiries, updateEnquiryStatus, deleteEnquiry,
-  getBlogs, saveBlog, deleteBlog,
+  getBlogs, saveBlog, deleteBlog, deleteAllBlogs, resetBlogsToDefault,
   checkAdminAuth, adminLogin, adminLogout
 } from '../utils/adminStore';
 import { 
@@ -225,6 +225,14 @@ export default function AdminPage({ onNavigate }) {
     }
   };
 
+  // Delete All Products
+  const handleDeleteAllProducts = () => {
+    if (window.confirm('⚠️ Are you sure you want to delete ALL products? This action cannot be undone.')) {
+      deleteAllProducts();
+      showToast('All products deleted successfully.');
+    }
+  };
+
   // Export Inquiries to CSV
   const handleExportInquiriesCSV = () => {
     if (!inquiries || inquiries.length === 0) {
@@ -255,13 +263,27 @@ export default function AdminPage({ onNavigate }) {
     showToast('Inquiries exported to CSV successfully!');
   };
 
-
-
   // Reset to Factory Default
   const handleResetToDefault = () => {
     if (window.confirm('⚠️ Reset all products to default catalog? Any custom products added will be removed.')) {
       resetProductsToDefault();
       showToast('Catalog reset to default specifications.');
+    }
+  };
+
+  // Delete All Blogs
+  const handleDeleteAllBlogs = () => {
+    if (window.confirm('⚠️ Are you sure you want to delete ALL blog posts?')) {
+      deleteAllBlogs();
+      showToast('All blogs deleted successfully.');
+    }
+  };
+
+  // Reset Blogs to Default
+  const handleResetBlogs = () => {
+    if (window.confirm('Reset blogs to default articles?')) {
+      resetBlogsToDefault();
+      showToast('Blogs reset to default articles.');
     }
   };
 
@@ -842,6 +864,29 @@ export default function AdminPage({ onNavigate }) {
                     <span>Add New Product</span>
                   </button>
 
+                  {products.length > 0 && (
+                    <button
+                      onClick={handleDeleteAllProducts}
+                      title="Delete all products from catalog"
+                      style={{
+                        padding: '12px 16px',
+                        background: '#FEF2F2',
+                        color: '#DC2626',
+                        borderRadius: '10px',
+                        border: '1.5px solid #FCA5A5',
+                        fontSize: '13px',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px'
+                      }}
+                    >
+                      <Trash2 size={14} />
+                      <span>Delete All</span>
+                    </button>
+                  )}
+
                   <button
                     onClick={handleResetToDefault}
                     title="Reset to original default catalog"
@@ -920,56 +965,92 @@ export default function AdminPage({ onNavigate }) {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredProducts.map(prod => (
-                      <tr key={prod.id} style={{ borderBottom: '1px solid #F1F5F9' }}>
-                        <td style={{ padding: '12px 18px' }}>
-                          <img 
-                            src={prod.image} 
-                            alt={prod.title} 
-                            style={{ width: '48px', height: '48px', borderRadius: '8px', objectFit: 'contain', border: '1px solid #E2E8F0', background: '#FFFFFF' }} 
-                          />
-                        </td>
-                        <td style={{ padding: '12px 18px', fontWeight: 800, color: '#011B47' }}>
-                          <div>{prod.title}</div>
-                          {prod.isFeatured && (
-                            <span style={{ fontSize: '11px', color: '#D97706', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
-                              ★ Featured
-                            </span>
-                          )}
-                        </td>
-                        <td style={{ padding: '12px 18px' }}>
-                          <div style={{ fontWeight: 700, color: '#1E293B' }}>{prod.category}</div>
-                          <span style={{ fontSize: '11.5px', background: '#F1F5F9', color: '#011B47', padding: '2px 8px', borderRadius: '4px', fontWeight: 700 }}>
-                            {prod.businessType}
-                          </span>
-                        </td>
-                        <td style={{ padding: '12px 18px', color: '#64748B' }}>
-                          <div>{prod.subcategory}</div>
-                          <div style={{ fontSize: '12px', fontFamily: 'monospace' }}>{prod.hsCode || '—'}</div>
-                        </td>
-                        <td style={{ padding: '12px 18px', color: '#64748B', fontSize: '12.5px' }}>
-                          {prod.origin}
-                        </td>
-                        <td style={{ padding: '12px 18px', textAlign: 'right' }}>
-                          <div style={{ display: 'inline-flex', gap: '8px' }}>
-                            <button
-                              onClick={() => handleOpenEditProduct(prod)}
-                              style={{ padding: '6px 12px', background: '#F1F5F9', color: '#011B47', border: 'none', borderRadius: '6px', fontSize: '12.5px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
-                            >
-                              <Edit3 size={13} />
-                              <span>Edit</span>
-                            </button>
-                            <button
-                              onClick={() => handleDeleteProduct(prod.id, prod.title)}
-                              style={{ padding: '6px 10px', background: '#FEE2E2', color: '#DC2626', border: 'none', borderRadius: '6px', fontSize: '12.5px', cursor: 'pointer' }}
-                              title="Delete Product"
-                            >
-                              <Trash2 size={14} />
-                            </button>
+                    {filteredProducts.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} style={{ padding: '48px 24px', textAlign: 'center' }}>
+                          <div style={{ maxWidth: '380px', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+                            <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748B' }}>
+                              <Package size={24} />
+                            </div>
+                            <div style={{ fontWeight: 800, color: '#011B47', fontSize: '16px' }}>
+                              {products.length === 0 ? 'No Products in Catalog' : 'No Matching Products'}
+                            </div>
+                            <p style={{ fontSize: '13px', color: '#64748B', margin: 0, lineHeight: 1.4 }}>
+                              {products.length === 0 
+                                ? 'You have deleted all products or none have been added yet.' 
+                                : 'Try changing your search query or category filter.'}
+                            </p>
+                            <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
+                              <button
+                                onClick={handleOpenAddProduct}
+                                style={{ padding: '8px 16px', background: '#011B47', color: '#FFFFFF', borderRadius: '8px', border: 'none', fontSize: '12.5px', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                              >
+                                <Plus size={14} /> Add Product
+                              </button>
+                              {products.length === 0 && (
+                                <button
+                                  onClick={handleResetToDefault}
+                                  style={{ padding: '8px 16px', background: '#FFFFFF', color: '#64748B', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '12.5px', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                                >
+                                  <RefreshCw size={14} /> Restore Defaults
+                                </button>
+                              )}
+                            </div>
                           </div>
                         </td>
                       </tr>
-                    ))}
+                    ) : (
+                      filteredProducts.map(prod => (
+                        <tr key={prod.id} style={{ borderBottom: '1px solid #F1F5F9' }}>
+                          <td style={{ padding: '12px 18px' }}>
+                            <img 
+                              src={prod.image} 
+                              alt={prod.title} 
+                              style={{ width: '48px', height: '48px', borderRadius: '8px', objectFit: 'contain', border: '1px solid #E2E8F0', background: '#FFFFFF' }} 
+                            />
+                          </td>
+                          <td style={{ padding: '12px 18px', fontWeight: 800, color: '#011B47' }}>
+                            <div>{prod.title}</div>
+                            {prod.isFeatured && (
+                              <span style={{ fontSize: '11px', color: '#D97706', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                                ★ Featured
+                              </span>
+                            )}
+                          </td>
+                          <td style={{ padding: '12px 18px' }}>
+                            <div style={{ fontWeight: 700, color: '#1E293B' }}>{prod.category}</div>
+                            <span style={{ fontSize: '11.5px', background: '#F1F5F9', color: '#011B47', padding: '2px 8px', borderRadius: '4px', fontWeight: 700 }}>
+                              {prod.businessType}
+                            </span>
+                          </td>
+                          <td style={{ padding: '12px 18px', color: '#64748B' }}>
+                            <div>{prod.subcategory}</div>
+                            <div style={{ fontSize: '12px', fontFamily: 'monospace' }}>{prod.hsCode || '—'}</div>
+                          </td>
+                          <td style={{ padding: '12px 18px', color: '#64748B', fontSize: '12.5px' }}>
+                            {prod.origin}
+                          </td>
+                          <td style={{ padding: '12px 18px', textAlign: 'right' }}>
+                            <div style={{ display: 'inline-flex', gap: '8px' }}>
+                              <button
+                                onClick={() => handleOpenEditProduct(prod)}
+                                style={{ padding: '6px 12px', background: '#F1F5F9', color: '#011B47', border: 'none', borderRadius: '6px', fontSize: '12.5px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                              >
+                                <Edit3 size={13} />
+                                <span>Edit</span>
+                              </button>
+                              <button
+                                onClick={() => handleDeleteProduct(prod.id, prod.title)}
+                                style={{ padding: '6px 10px', background: '#FEE2E2', color: '#DC2626', border: 'none', borderRadius: '6px', fontSize: '12.5px', cursor: 'pointer' }}
+                                title="Delete Product"
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -1172,7 +1253,7 @@ export default function AdminPage({ onNavigate }) {
           {/* =============================================================== */}
           {activeTab === 'blogs' && (
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '14px' }}>
                 <div>
                   <h2 style={{ fontSize: '26px', fontWeight: 900, color: '#011B47', margin: 0 }}>
                     Blog & Export Articles
@@ -1181,35 +1262,99 @@ export default function AdminPage({ onNavigate }) {
                     Publish market updates and engineering guides
                   </p>
                 </div>
+
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  {blogs.length > 0 && (
+                    <button
+                      onClick={handleDeleteAllBlogs}
+                      style={{
+                        padding: '10px 16px',
+                        background: '#FEF2F2',
+                        color: '#DC2626',
+                        borderRadius: '10px',
+                        border: '1.5px solid #FCA5A5',
+                        fontSize: '13px',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px'
+                      }}
+                    >
+                      <Trash2 size={14} />
+                      <span>Delete All</span>
+                    </button>
+                  )}
+
+                  <button
+                    onClick={handleResetBlogs}
+                    style={{
+                      padding: '10px 16px',
+                      background: '#FFFFFF',
+                      color: '#64748B',
+                      borderRadius: '10px',
+                      border: '1.5px solid #CBD5E1',
+                      fontSize: '13px',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <RefreshCw size={14} />
+                    <span>Reset Defaults</span>
+                  </button>
+                </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
-                {blogs.map(blog => (
-                  <div key={blog.id} style={{ background: '#FFFFFF', borderRadius: '16px', overflow: 'hidden', border: '1px solid #E2E8F0' }}>
-                    <img src={blog.image} alt={blog.title} style={{ width: '100%', height: '160px', objectFit: 'cover' }} />
-                    <div style={{ padding: '18px' }}>
-                      <span style={{ fontSize: '11px', fontWeight: 800, background: '#F1F5F9', color: '#011B47', padding: '3px 8px', borderRadius: '4px' }}>
-                        {blog.category}
-                      </span>
-                      <h3 style={{ fontSize: '16px', fontWeight: 800, color: '#011B47', margin: '8px 0', lineHeight: 1.3 }}>
-                        {blog.title}
-                      </h3>
-                      <p style={{ fontSize: '13px', color: '#64748B', lineHeight: 1.5, marginBottom: '14px' }}>
-                        {blog.excerpt}
-                      </p>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #F1F5F9', paddingTop: '12px' }}>
-                        <span style={{ fontSize: '12px', color: '#94A3B8' }}>{blog.date}</span>
-                        <button
-                          onClick={() => deleteBlog(blog.id)}
-                          style={{ background: '#FEE2E2', color: '#DC2626', border: 'none', padding: '4px 8px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer' }}
-                        >
-                          Delete
-                        </button>
+              {blogs.length === 0 ? (
+                <div style={{ background: '#FFFFFF', borderRadius: '18px', border: '1px solid #E2E8F0', padding: '48px 24px', textAlign: 'center' }}>
+                  <div style={{ maxWidth: '360px', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+                    <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748B' }}>
+                      <FileText size={24} />
+                    </div>
+                    <div style={{ fontWeight: 800, color: '#011B47', fontSize: '16px' }}>No Blog Articles</div>
+                    <p style={{ fontSize: '13px', color: '#64748B', margin: 0 }}>
+                      You have deleted all blog articles.
+                    </p>
+                    <button
+                      onClick={handleResetBlogs}
+                      style={{ padding: '8px 16px', background: '#011B47', color: '#FFFFFF', borderRadius: '8px', border: 'none', fontSize: '12.5px', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px', marginTop: '6px' }}
+                    >
+                      <RefreshCw size={14} /> Restore Default Articles
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+                  {blogs.map(blog => (
+                    <div key={blog.id} style={{ background: '#FFFFFF', borderRadius: '16px', overflow: 'hidden', border: '1px solid #E2E8F0' }}>
+                      <img src={blog.image} alt={blog.title} style={{ width: '100%', height: '160px', objectFit: 'cover' }} />
+                      <div style={{ padding: '18px' }}>
+                        <span style={{ fontSize: '11px', fontWeight: 800, background: '#F1F5F9', color: '#011B47', padding: '3px 8px', borderRadius: '4px' }}>
+                          {blog.category}
+                        </span>
+                        <h3 style={{ fontSize: '16px', fontWeight: 800, color: '#011B47', margin: '8px 0', lineHeight: 1.3 }}>
+                          {blog.title}
+                        </h3>
+                        <p style={{ fontSize: '13px', color: '#64748B', lineHeight: 1.5, marginBottom: '14px' }}>
+                          {blog.excerpt}
+                        </p>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #F1F5F9', paddingTop: '12px' }}>
+                          <span style={{ fontSize: '12px', color: '#94A3B8' }}>{blog.date}</span>
+                          <button
+                            onClick={() => deleteBlog(blog.id)}
+                            style={{ background: '#FEE2E2', color: '#DC2626', border: 'none', padding: '4px 8px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer' }}
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 

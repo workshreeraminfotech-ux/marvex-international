@@ -16,6 +16,9 @@ import {
   getBlogs as getLocalBlogs 
 } from '../utils/adminStore';
 
+import { PRODUCTS as INITIAL_PRODUCTS } from '../data/products';
+import { BLOGS as INITIAL_BLOGS } from '../data/blogs';
+
 const COLLECTIONS = {
   PRODUCTS: 'marvex_products',
   INQUIRIES: 'marvex_inquiries',
@@ -46,18 +49,13 @@ export function initFirestoreRealtimeSync() {
     // 1. PRODUCTS REALTIME LISTENER
     const productsRef = collection(db, COLLECTIONS.PRODUCTS);
     unsubProducts = onSnapshot(productsRef, (snapshot) => {
-      if (!snapshot.empty) {
-        const remoteProducts = [];
-        snapshot.forEach((docSnap) => {
-          remoteProducts.push({ id: docSnap.id, ...docSnap.data() });
-        });
-        const normalized = remoteProducts.map(normalizeProduct).filter(Boolean);
-        localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(normalized));
-        notifyStoreUpdate();
-      } else {
-        // If Firestore is completely empty, seed initial catalog once
-        seedInitialDataToFirestore();
-      }
+      const remoteProducts = [];
+      snapshot.forEach((docSnap) => {
+        remoteProducts.push({ id: docSnap.id, ...docSnap.data() });
+      });
+      const normalized = remoteProducts.map(normalizeProduct).filter(Boolean);
+      localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(normalized));
+      notifyStoreUpdate();
     }, (error) => {
       console.warn('Firestore Products sync notice:', error.message);
     });
@@ -80,16 +78,12 @@ export function initFirestoreRealtimeSync() {
     // 3. BLOGS REALTIME LISTENER
     const blogsRef = collection(db, COLLECTIONS.BLOGS);
     unsubBlogs = onSnapshot(blogsRef, (snapshot) => {
-      if (!snapshot.empty) {
-        const remoteBlogs = [];
-        snapshot.forEach((docSnap) => {
-          remoteBlogs.push({ id: docSnap.id, ...docSnap.data() });
-        });
-        localStorage.setItem(STORAGE_KEYS.BLOGS, JSON.stringify(remoteBlogs));
-        notifyStoreUpdate();
-      } else {
-        seedInitialBlogsToFirestore();
-      }
+      const remoteBlogs = [];
+      snapshot.forEach((docSnap) => {
+        remoteBlogs.push({ id: docSnap.id, ...docSnap.data() });
+      });
+      localStorage.setItem(STORAGE_KEYS.BLOGS, JSON.stringify(remoteBlogs));
+      notifyStoreUpdate();
     }, (error) => {
       console.warn('Firestore Blogs sync notice:', error.message);
     });
@@ -101,11 +95,11 @@ export function initFirestoreRealtimeSync() {
   }
 }
 
-// Seed initial products to Firestore if collection is empty
+// Seed initial products to Firestore when explicitly requested
 export async function seedInitialDataToFirestore() {
   if (!db || !isFirebaseConfigured()) return;
   try {
-    const defaultList = getLocalProducts();
+    const defaultList = INITIAL_PRODUCTS.map(normalizeProduct).filter(Boolean);
     for (const prod of defaultList) {
       if (prod && prod.id) {
         const docRef = doc(db, COLLECTIONS.PRODUCTS, String(prod.id));
@@ -118,11 +112,11 @@ export async function seedInitialDataToFirestore() {
   }
 }
 
-// Seed initial blogs to Firestore if collection is empty
+// Seed initial blogs to Firestore when explicitly requested
 export async function seedInitialBlogsToFirestore() {
   if (!db || !isFirebaseConfigured()) return;
   try {
-    const defaultBlogs = getLocalBlogs();
+    const defaultBlogs = INITIAL_BLOGS || [];
     for (const b of defaultBlogs) {
       if (b && b.id) {
         const docRef = doc(db, COLLECTIONS.BLOGS, String(b.id));
@@ -130,6 +124,42 @@ export async function seedInitialBlogsToFirestore() {
       }
     }
   } catch (e) {}
+}
+
+// Clear all products from cloud
+export async function clearProductsFromCloud() {
+  if (!db || !isFirebaseConfigured()) return false;
+  try {
+    const productsRef = collection(db, COLLECTIONS.PRODUCTS);
+    const snapshot = await getDocs(productsRef);
+    const deletePromises = [];
+    snapshot.forEach((docSnap) => {
+      deletePromises.push(deleteDoc(docSnap.ref));
+    });
+    await Promise.all(deletePromises);
+    return true;
+  } catch (e) {
+    console.error('Firestore clearProductsFromCloud error:', e);
+    return false;
+  }
+}
+
+// Clear all blogs from cloud
+export async function clearBlogsFromCloud() {
+  if (!db || !isFirebaseConfigured()) return false;
+  try {
+    const blogsRef = collection(db, COLLECTIONS.BLOGS);
+    const snapshot = await getDocs(blogsRef);
+    const deletePromises = [];
+    snapshot.forEach((docSnap) => {
+      deletePromises.push(deleteDoc(docSnap.ref));
+    });
+    await Promise.all(deletePromises);
+    return true;
+  } catch (e) {
+    console.error('Firestore clearBlogsFromCloud error:', e);
+    return false;
+  }
 }
 
 // --- CLOUD CRUD: PRODUCTS ---

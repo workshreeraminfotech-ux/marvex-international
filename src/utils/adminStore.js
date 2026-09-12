@@ -7,11 +7,15 @@ import {
   initFirestoreRealtimeSync,
   saveProductToCloud,
   deleteProductFromCloud,
+  clearProductsFromCloud,
+  seedInitialDataToFirestore,
   saveInquiryToCloud,
   updateInquiryStatusInCloud,
   deleteInquiryFromCloud,
   saveBlogToCloud,
-  deleteBlogFromCloud
+  deleteBlogFromCloud,
+  clearBlogsFromCloud,
+  seedInitialBlogsToFirestore
 } from '../firebase/firestoreSync';
 
 import apedaLogo from '../assets/certificate/apeda.png';
@@ -146,9 +150,9 @@ export function getProducts() {
   try {
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem(STORAGE_KEYS.PRODUCTS);
-      if (stored) {
+      if (stored !== null) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
+        if (Array.isArray(parsed)) {
           return parsed.map(normalizeProduct).filter(Boolean);
         }
       }
@@ -208,12 +212,34 @@ export function deleteProduct(productId) {
   }
 }
 
-export function resetProductsToDefault() {
+export function deleteAllProducts() {
   try {
     if (typeof window !== 'undefined') {
-      localStorage.removeItem(STORAGE_KEYS.PRODUCTS);
+      localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify([]));
     }
     notifyStoreUpdate();
+
+    // Async clear all from Firebase Firestore
+    clearProductsFromCloud();
+
+    return true;
+  } catch (e) {
+    console.error('Error deleting all products:', e);
+    return false;
+  }
+}
+
+export function resetProductsToDefault() {
+  try {
+    const defaultList = INITIAL_PRODUCTS.map(normalizeProduct).filter(Boolean);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(defaultList));
+    }
+    notifyStoreUpdate();
+
+    // Async seed default catalog to cloud
+    seedInitialDataToFirestore();
+
     return true;
   } catch (e) {
     return false;
@@ -313,9 +339,9 @@ export function getBlogs() {
   try {
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem(STORAGE_KEYS.BLOGS);
-      if (stored) {
+      if (stored !== null) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed)) return parsed;
       }
     }
   } catch (e) {}
@@ -366,6 +392,39 @@ export function deleteBlog(id) {
 
     // Async delete from Firestore
     deleteBlogFromCloud(id);
+
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+export function deleteAllBlogs() {
+  try {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEYS.BLOGS, JSON.stringify([]));
+    }
+    notifyStoreUpdate();
+
+    // Async clear all blogs from cloud
+    clearBlogsFromCloud();
+
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+export function resetBlogsToDefault() {
+  try {
+    const defaultBlogs = INITIAL_BLOGS || [];
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEYS.BLOGS, JSON.stringify(defaultBlogs));
+    }
+    notifyStoreUpdate();
+
+    // Async seed default blogs to cloud
+    seedInitialBlogsToFirestore();
 
     return true;
   } catch (e) {
