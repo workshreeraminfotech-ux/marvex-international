@@ -1,22 +1,24 @@
 import React, { useState } from 'react';
 import { Search, ArrowRight } from 'lucide-react';
 import ProductModal from './ProductModal';
-import { PRODUCT_CATEGORIES } from '../data/products';
-import { useStoreProducts } from '../utils/useStore';
+import { useStoreProducts, useStoreCategories } from '../utils/useStore';
 
 export default function Products() {
-  const [activeCategory, setActiveCategory] = useState('Ground Spices');
+  const categories = useStoreCategories();
+  const [activeCategory, setActiveCategory] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   const productsList = useStoreProducts();
 
+  const activeCatName = activeCategory || (categories[0]?.name || 'Earthing Parts');
+
   const filteredProducts = productsList.filter(item => {
     if (!item) return false;
     const cat = String(item.category || item.cat || '');
     const subcat = String(item.subcategory || '');
-    const matchesCategory = cat.toLowerCase() === activeCategory.toLowerCase() || 
-      subcat.toLowerCase() === activeCategory.toLowerCase();
+    const matchesCategory = cat.toLowerCase() === activeCatName.toLowerCase() || 
+      subcat.toLowerCase() === activeCatName.toLowerCase();
     const q = searchTerm.toLowerCase();
     const matchesSearch = q === '' ||
       item.title.toLowerCase().includes(q) || 
@@ -30,8 +32,8 @@ export default function Products() {
       <div className="container">
         <div className="section-title text-center">
           <span className="eyebrow">Export Commodity Catalog</span>
-          <h2>Explore Marvex International <span>Agro & Spices Catalog</span></h2>
-          <p className="section-desc">Search and filter through our export-grade wholesale ground spices, whole spices, seed spices, and agro commodities.</p>
+          <h2>Explore Marvex International <span>Export Catalog</span></h2>
+          <p className="section-desc">Search and filter through our export-grade manufactured parts, whole & ground spices, and sanitary hardware.</p>
         </div>
 
         {/* Controls */}
@@ -40,20 +42,20 @@ export default function Products() {
             <Search size={18} />
             <input 
               type="text" 
-              placeholder="Search commodities (e.g. Turmeric, Cumin, Chilli, Cardamom...)"
+              placeholder="Search commodities (e.g. Earth Rods, Turmeric, Kitchen Sinks...)"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
 
           <div className="filter-pills">
-            {PRODUCT_CATEGORIES.map((cat, idx) => (
+            {categories.map((c, idx) => (
               <button 
-                key={idx}
-                className={`filter-pill ${activeCategory === cat ? 'active' : ''}`}
-                onClick={() => setActiveCategory(cat)}
+                key={c.id || idx}
+                className={`filter-pill ${activeCatName === c.name ? 'active' : ''}`}
+                onClick={() => setActiveCategory(c.name)}
               >
-                {cat}
+                {c.name}
               </button>
             ))}
           </div>

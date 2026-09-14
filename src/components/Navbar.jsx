@@ -1,42 +1,47 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { 
   Menu, X, ArrowRight, MapPin, Mail, Phone, ChevronDown, 
-  Zap, Flame, Wrench, ChevronRight, Factory, Ship 
+  Zap, Flame, Wrench, ChevronRight, Factory, Ship,
+  Layers, Tag, Award, Truck, Box, Cpu, Sun, Compass, Shield, Package, Globe, Sparkles
 } from 'lucide-react';
 import logoImg from '../assets/logo.png';
+import { useStoreCategories } from '../utils/useStore';
 
-const CATEGORIES_MENU = [
-  {
-    id: 'category-earthing-parts',
-    categoryKey: 'Earthing Parts',
-    title: 'Earthing Parts',
-    badge: 'Manufacturer',
-    icon: Zap,
-    color: '#011B47'
-  },
-  {
-    id: 'category-spices-agro',
-    categoryKey: 'Spices & Agro Commodities',
-    title: 'Spices & Agro Commodities',
-    badge: 'Merchant Exporter',
-    icon: Flame,
-    color: '#011B47'
-  },
-  {
-    id: 'category-hardware-items',
-    categoryKey: 'Hardware & Sanitary Items',
-    title: 'Hardware & Sanitary Items',
-    badge: 'Manufacturer',
-    icon: Wrench,
-    color: '#011B47'
-  }
-];
+const ICON_MAP = {
+  Zap, Flame, Wrench, Shield, Package, Globe, Layers, Sparkles, Factory, Ship, Sun, Cpu, Box, Award, Truck, Tag, Compass
+};
+
+function getCategoryIcon(iconName) {
+  if (!iconName) return Layers;
+  if (typeof iconName !== 'string') return iconName;
+  return ICON_MAP[iconName] || Layers;
+}
 
 export default function Navbar({ activePage, onNavigate }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileCategoriesOpen, setMobileCategoriesOpen] = useState(true);
   const dropdownTimeoutRef = useRef(null);
+
+  const categories = useStoreCategories();
+
+  const categoriesMenu = useMemo(() => {
+    if (!categories || categories.length === 0) {
+      return [
+        { id: 'category-earthing-parts', categoryKey: 'Earthing Parts', title: 'Earthing Parts', icon: Zap, color: '#011B47' },
+        { id: 'category-spices-agro', categoryKey: 'Spices & Agro Commodities', title: 'Spices & Agro Commodities', icon: Flame, color: '#011B47' },
+        { id: 'category-hardware-items', categoryKey: 'Hardware & Sanitary Items', title: 'Hardware & Sanitary Items', icon: Wrench, color: '#011B47' }
+      ];
+    }
+    return categories.map(cat => ({
+      id: `category-${cat.id}`,
+      categoryKey: cat.name,
+      title: cat.name,
+      badge: cat.businessRole || 'Manufacturer',
+      icon: getCategoryIcon(cat.icon),
+      color: '#011B47'
+    }));
+  }, [categories]);
 
   const handleNav = (id, categoryKey = null) => {
     if (onNavigate) {
@@ -194,7 +199,7 @@ export default function Navbar({ activePage, onNavigate }) {
                       zIndex: 10000
                     }}
                   >
-                    {CATEGORIES_MENU.map((item) => {
+                    {categoriesMenu.map((item) => {
                       const Icon = item.icon;
                       const isCurrentActive = activePage === item.id;
                       return (
@@ -386,7 +391,7 @@ export default function Navbar({ activePage, onNavigate }) {
 
                 {mobileCategoriesOpen && (
                   <div style={{ padding: '6px', display: 'flex', flexDirection: 'column', gap: '2px', backgroundColor: '#FFFFFF' }}>
-                    {CATEGORIES_MENU.map(item => {
+                    {categoriesMenu.map(item => {
                       const Icon = item.icon;
                       return (
                         <a

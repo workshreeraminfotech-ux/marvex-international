@@ -2,60 +2,35 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Search, ArrowRight, Sparkles, Filter, CheckCircle2, 
-  Zap, Flame, Wrench, Factory, Ship, LayoutGrid, Layers, Tag
+  Zap, Flame, Wrench, Factory, Ship, LayoutGrid, Layers, Tag,
+  Award, Truck, Box, Cpu, Sun, Compass, Shield, Package, Globe
 } from 'lucide-react';
-import { PRODUCT_CATEGORIES } from '../data/products';
-import { useStoreProducts } from '../utils/useStore';
+import { useStoreProducts, useStoreCategories } from '../utils/useStore';
 import { normalizeProduct } from '../utils/adminStore';
 
-const CATEGORY_META = {
-  'Earthing Parts': {
-    title: 'Electrical Earthing & Grounding Systems',
-    businessRole: 'Manufacturer & Exporter',
-    highlight: '1st Vertical: Earthing Systems (Manufacturer & Exporter)',
-    eyebrow: 'UL 467 & IEC 62305 Standard Compliant • In-House Manufacturing',
-    desc: 'High-conductivity molecularly bonded copper earth rods (254 microns), pure solid copper rods, heavy-duty brass ground clamps, grounding tapes, lightning air terminals, and chemical earthing electrodes.',
-    bgImg: 'https://images.unsplash.com/photo-1544724569-5f546fd6f2b5?auto=format&fit=crop&w=1920&q=80',
-    icon: Zap,
-    color: '#011B47',
-    badges: ['In-House Manufacturer', 'UL / IEC Standard Compliant', '254 Micron Molecular Copper Coating', 'Custom Technical Drawings'],
-    subcategories: ['All Earthing', 'Earth Rods & Conductors', 'Earth Clamps & Couplers', 'Chemical Electrodes & Compounds', 'Lightning Protection']
-  },
-  'Spices & Agro Commodities': {
-    title: 'Pure Indian Spices & Agro Commodities',
-    businessRole: 'Merchant Exporter',
-    highlight: '2nd Vertical: Spices & Agro (Merchant Exporter)',
-    eyebrow: 'APEDA & Spices Board of India Certified • Direct Mandi Procurement',
-    desc: 'Premier merchant export of 100% Sortex-cleaned whole bold spices, ultra-fine ground spice powders, oilseeds (sesame, mustard), and long-grain Basmati rice with fast maritime container dispatch.',
-    bgImg: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=1920&q=80',
-    icon: Flame,
-    color: '#011B47',
-    badges: ['Merchant Exporter', '100% Sortex 99.5%+ Purity', 'APEDA / FSSAI / Spices Board Certified', 'Moisture Proof Packaging'],
-    subcategories: ['All Agro & Spices', 'Seed Spices', 'Whole Spices', 'Ground Spices', 'Oilseeds & Grains']
-  },
-  'Hardware & Sanitary Items': {
-    title: 'Hardware & Sanitary Items',
-    businessRole: 'Manufacturer & Exporter',
-    highlight: '3rd Vertical: Hardware & Sanitary Items (Manufacturer & Exporter)',
-    eyebrow: 'SS Kitchen Sinks, Wash Basins, Taps, Showers & Sanitaryware • In-House Manufacturing',
-    desc: 'Export-grade stainless steel SS 304 & quartz kitchen sinks, designer ceramic wash basins, precision brass mixer taps, rainfall shower sets, and sanitary bathroom fittings.',
-    bgImg: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1920&q=80',
-    icon: Wrench,
-    color: '#011B47',
-    badges: ['In-House Manufacturer', 'Food-Grade SS 304 & Vitreous Ceramic', 'Tested Drip-Free Cartridges', 'Seaworthy Export Packing'],
-    subcategories: ['All Sanitary & Hardware', 'Kitchen Sinks', 'Wash Basins & Ceramics', 'Taps & Faucets', 'Showers & Bath Sets', 'Sanitary Fittings & Accessories']
-  }
+const ICON_MAP = {
+  Zap, Flame, Wrench, Shield, Package, Globe, Layers, Sparkles, Factory, Ship, Sun, Cpu, Box, Award, Truck, Tag, Compass
 };
 
+function getCategoryIcon(iconName) {
+  if (!iconName) return Layers;
+  if (typeof iconName !== 'string') return iconName;
+  return ICON_MAP[iconName] || Layers;
+}
+
 export default function ProductsPage({ initialCategory = 'Earthing Parts', onSelectProduct, onOpenQuote }) {
+  const categories = useStoreCategories();
+  const productsList = useStoreProducts();
+
   const getValidCategory = (cat) => {
-    if (!cat || cat === 'All') return 'Earthing Parts';
-    if (CATEGORY_META[cat]) return cat;
+    if (!categories || categories.length === 0) return 'Earthing Parts';
+    if (!cat || cat === 'All') return categories[0].name;
+    const exact = categories.find(c => c.name.toLowerCase() === String(cat).toLowerCase() || c.id === cat);
+    if (exact) return exact.name;
     const lower = String(cat).toLowerCase();
-    if (lower.includes('earth') || lower.includes('ground') || lower.includes('rod') || lower.includes('lightning') || lower.includes('clamp')) return 'Earthing Parts';
-    if (lower.includes('spice') || lower.includes('agro') || lower.includes('seed') || lower.includes('rice') || lower.includes('cumin') || lower.includes('chilli') || lower.includes('turmeric')) return 'Spices & Agro Commodities';
-    if (lower.includes('hard') || lower.includes('sanit') || lower.includes('sink') || lower.includes('basin') || lower.includes('tap') || lower.includes('shower') || lower.includes('faucet') || lower.includes('bath')) return 'Hardware & Sanitary Items';
-    return 'Earthing Parts';
+    const fuzzy = categories.find(c => lower.includes(c.name.toLowerCase()) || c.name.toLowerCase().includes(lower));
+    if (fuzzy) return fuzzy.name;
+    return categories[0].name;
   };
 
   const [activeTab, setActiveTab] = useState(() => getValidCategory(initialCategory));
@@ -68,12 +43,32 @@ export default function ProductsPage({ initialCategory = 'Earthing Parts', onSel
       setActiveTab(getValidCategory(initialCategory));
       setActiveSubcategory('All');
     }
-  }, [initialCategory]);
+  }, [initialCategory, categories]);
 
-  const productsList = useStoreProducts();
+  const currentMeta = useMemo(() => {
+    const found = categories.find(c => c.name.toLowerCase() === activeTab.toLowerCase());
+    if (found) return found;
+    if (categories.length > 0) return categories[0];
+    return {
+      name: 'Earthing Parts',
+      title: 'Electrical Earthing & Grounding Systems',
+      businessRole: 'Manufacturer & Exporter',
+      eyebrow: 'UL 467 & IEC 62305 Standard Compliant • In-House Manufacturing',
+      desc: 'High-conductivity molecularly bonded copper earth rods (254 microns), pure solid copper rods, heavy-duty brass ground clamps, and grounding systems.',
+      bgImg: 'https://images.unsplash.com/photo-1544724569-5f546fd6f2b5?auto=format&fit=crop&w=1920&q=80',
+      icon: 'Zap',
+      badges: ['In-House Manufacturer', 'UL / IEC Standard Compliant', '254 Micron Molecular Copper Coating', 'Custom Technical Drawings'],
+      subcategories: ['Earth Rods & Conductors', 'Earth Clamps & Couplers', 'Chemical Electrodes & Compounds', 'Lightning Protection']
+    };
+  }, [activeTab, categories]);
 
-  const currentMeta = CATEGORY_META[activeTab] || CATEGORY_META['Earthing Parts'];
-  const HeaderIcon = currentMeta.icon || Zap;
+  const HeaderIcon = getCategoryIcon(currentMeta.icon);
+
+  // Subcategories array for pills
+  const subcategoryPills = useMemo(() => {
+    const subs = Array.isArray(currentMeta.subcategories) ? currentMeta.subcategories : [];
+    return [`All ${currentMeta.name || ''}`, ...subs];
+  }, [currentMeta]);
 
   // Filter logic safely with strict category isolation
   const filteredProducts = useMemo(() => {
@@ -115,8 +110,8 @@ export default function ProductsPage({ initialCategory = 'Earthing Parts', onSel
   // Exact Counts for master tabs
   const categoryCounts = useMemo(() => {
     const counts = {};
-    PRODUCT_CATEGORIES.forEach(c => {
-      counts[c] = 0;
+    categories.forEach(c => {
+      counts[c.name] = 0;
     });
 
     (productsList || []).forEach(p => {
@@ -128,7 +123,7 @@ export default function ProductsPage({ initialCategory = 'Earthing Parts', onSel
       }
     });
     return counts;
-  }, [productsList]);
+  }, [productsList, categories]);
 
   const handleTabChange = (cat) => {
     setActiveTab(cat);
@@ -335,15 +330,15 @@ export default function ProductsPage({ initialCategory = 'Earthing Parts', onSel
                 flexWrap: 'wrap',
                 alignItems: 'center'
               }}>
-                {PRODUCT_CATEGORIES.map((cat) => {
+                {categories.map((c) => {
+                  const cat = c.name;
                   const isActive = activeTab === cat;
                   const count = categoryCounts[cat] || 0;
-                  const itemMeta = CATEGORY_META[cat];
-                  const TabIcon = itemMeta?.icon || Flame;
+                  const TabIcon = getCategoryIcon(c.icon);
 
                   return (
                     <button
-                      key={cat}
+                      key={c.id || cat}
                       onClick={() => handleTabChange(cat)}
                       style={{
                         padding: '10px 20px',
@@ -379,13 +374,13 @@ export default function ProductsPage({ initialCategory = 'Earthing Parts', onSel
               </div>
             </div>
 
-            {/* Subcategories Filter Pills (e.g. Ground Spices, Whole Spices, Seed Spices, etc. for Indian Spices) */}
-            {currentMeta.subcategories && currentMeta.subcategories.length > 0 && (
+            {/* Subcategories Filter Pills */}
+            {subcategoryPills && subcategoryPills.length > 0 && (
               <div style={{ paddingTop: '14px', borderTop: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                 <span style={{ fontSize: '12px', fontWeight: 800, color: 'var(--navy)', display: 'flex', alignItems: 'center', gap: '5px', textTransform: 'uppercase', letterSpacing: '0.6px' }}>
                   <Tag size={13} style={{ color: 'var(--gold-deep)' }} /> Sub-Types:
                 </span>
-                {currentMeta.subcategories.map((subcat) => {
+                {subcategoryPills.map((subcat) => {
                   const isSubActive = activeSubcategory === subcat || (subcat.startsWith('All ') && activeSubcategory === 'All');
                   return (
                     <button

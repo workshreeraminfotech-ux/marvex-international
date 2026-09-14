@@ -6,12 +6,13 @@ import {
   ExternalLink, Download, Upload, RefreshCw, Eye, 
   Phone, MessageSquare, Zap, Flame, Wrench, Shield,
   Globe, AlertCircle, Sparkles, Filter, X, ArrowRight,
-  Cloud, Wifi, Check, Copy
+  Cloud, Wifi, Check, Copy, Layers, Tag, Award, Truck, Box, Cpu, Sun, Factory, Ship, FolderPlus, Compass
 } from 'lucide-react';
 import { 
   getProducts, saveProduct, deleteProduct, deleteAllProducts, resetProductsToDefault,
   getEnquiries, updateEnquiryStatus, deleteEnquiry,
   getBlogs, saveBlog, deleteBlog, deleteAllBlogs, resetBlogsToDefault,
+  getCategories, saveCategory, deleteCategory, addSubcategory, editSubcategory, deleteSubcategory, resetCategoriesToDefault,
   checkAdminAuth, adminLogin, adminLogout
 } from '../utils/adminStore';
 import { 
@@ -21,20 +22,17 @@ import {
   clearCustomFirebaseConfig 
 } from '../firebase/config';
 import { seedInitialDataToFirestore, pushAllLocalProductsToCloud } from '../firebase/firestoreSync';
-import { useStoreProducts, useStoreEnquiries, useStoreBlogs } from '../utils/useStore';
+import { useStoreProducts, useStoreEnquiries, useStoreBlogs, useStoreCategories } from '../utils/useStore';
 import logoImg from '../assets/logo.png';
 
-const CATEGORIES = [
-  'Earthing Parts',
-  'Spices & Agro Commodities',
-  'Hardware & Sanitary Items'
-];
-
-const SUBCATEGORY_PRESETS = {
-  'Earthing Parts': ['Earth Rods & Conductors', 'Earth Clamps & Couplers', 'Chemical Electrodes & Compounds', 'Lightning Protection'],
-  'Spices & Agro Commodities': ['Seed Spices', 'Whole Spices', 'Ground Spices', 'Oilseeds & Grains'],
-  'Hardware & Sanitary Items': ['Kitchen Sinks', 'Wash Basins & Ceramics', 'Taps & Faucets', 'Showers & Bath Sets', 'Sanitary Fittings & Accessories']
+const ICON_MAP = {
+  Zap, Flame, Wrench, Shield, Package, Globe, Layers, Sparkles, Factory, Ship, Sun, Cpu, Box, Award, Truck, Tag, Compass
 };
+
+export function getCategoryIcon(iconName) {
+  if (!iconName) return Layers;
+  return ICON_MAP[iconName] || Layers;
+}
 
 export default function AdminPage({ onNavigate }) {
   const [isAuthenticated, setIsAuthenticated] = useState(() => checkAdminAuth());
@@ -42,12 +40,34 @@ export default function AdminPage({ onNavigate }) {
   const [loginError, setLoginError] = useState('');
   const [rememberMe, setRememberMe] = useState(true);
 
-  const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'products' | 'inquiries' | 'blogs'
+  const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'categories' | 'products' | 'inquiries' | 'blogs'
 
   // Dynamic Store Data
+  const categories = useStoreCategories();
   const products = useStoreProducts();
   const inquiries = useStoreEnquiries();
   const blogs = useStoreBlogs();
+
+  // Category State
+  const [categorySearch, setCategorySearch] = useState('');
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [editingCategory, setEditingCategory] = useState(null);
+  const [categoryForm, setCategoryForm] = useState({
+    id: '',
+    name: '',
+    businessRole: 'Manufacturer & Exporter',
+    eyebrow: '',
+    desc: '',
+    bgImg: '',
+    icon: 'Layers',
+    subcategories: []
+  });
+  const [tempSubcatInput, setTempSubcatInput] = useState('');
+
+  // Subcategory Edit Modal State
+  const [isSubcatEditModalOpen, setIsSubcatEditModalOpen] = useState(false);
+  const [editingSubcatInfo, setEditingSubcatInfo] = useState({ categoryId: '', oldName: '', newName: '' });
+  const [inlineSubcatInputs, setInlineSubcatInputs] = useState({});
 
   // Products Filter & Search
   const [productCategoryFilter, setProductCategoryFilter] = useState('All');
@@ -77,6 +97,7 @@ export default function AdminPage({ onNavigate }) {
 
   // Blog Modal State
   const [isBlogModalOpen, setIsBlogModalOpen] = useState(false);
+  const [editingBlog, setEditingBlog] = useState(null);
   const [blogForm, setBlogForm] = useState({
     id: '',
     title: '',
@@ -287,9 +308,6 @@ export default function AdminPage({ onNavigate }) {
     }
   };
 
-  // Blog editing state
-  const [editingBlog, setEditingBlog] = useState(null);
-
   // Open Add Blog Modal
   const handleOpenAddBlog = () => {
     setEditingBlog(null);
@@ -351,6 +369,153 @@ export default function AdminPage({ onNavigate }) {
     };
     reader.readAsDataURL(file);
   };
+
+  // ==========================================
+  // --- CATEGORY & SUBCATEGORY HANDLERS ---
+  // ==========================================
+  const handleOpenAddCategory = () => {
+    setEditingCategory(null);
+    setCategoryForm({
+      id: '',
+      name: '',
+      businessRole: 'Manufacturer & Exporter',
+      eyebrow: 'UL / IEC Standard Compliant • In-House Manufacturing',
+      desc: '',
+      bgImg: 'https://images.unsplash.com/photo-1544724569-5f546fd6f2b5?auto=format&fit=crop&w=1920&q=80',
+      icon: 'Layers',
+      subcategories: []
+    });
+    setTempSubcatInput('');
+    setIsCategoryModalOpen(true);
+  };
+
+  const handleOpenEditCategory = (cat) => {
+    setEditingCategory(cat);
+    setCategoryForm({
+      id: cat.id,
+      name: cat.name || cat.title || '',
+      businessRole: cat.businessRole || 'Manufacturer & Exporter',
+      eyebrow: cat.eyebrow || '',
+      desc: cat.desc || cat.description || '',
+      bgImg: cat.bgImg || cat.image || '',
+      icon: cat.icon || 'Layers',
+      subcategories: Array.isArray(cat.subcategories) ? [...cat.subcategories] : []
+    });
+    setTempSubcatInput('');
+    setIsCategoryModalOpen(true);
+  };
+
+  const handleCategoryImageUpload = (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Please select an image smaller than 5MB.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (uploadEvent) => {
+      setCategoryForm(prev => ({ ...prev, bgImg: uploadEvent.target.result }));
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleAddSubcatTag = (e) => {
+    if (e) e.preventDefault();
+    const val = tempSubcatInput.trim();
+    if (!val) return;
+    if (!categoryForm.subcategories.includes(val)) {
+      setCategoryForm(prev => ({
+        ...prev,
+        subcategories: [...prev.subcategories, val]
+      }));
+    }
+    setTempSubcatInput('');
+  };
+
+  const handleRemoveSubcatTag = (subcatToRemove) => {
+    setCategoryForm(prev => ({
+      ...prev,
+      subcategories: prev.subcategories.filter(s => s !== subcatToRemove)
+    }));
+  };
+
+  const handleSaveCategory = (e) => {
+    e.preventDefault();
+    if (!categoryForm.name.trim()) {
+      alert('Please enter category title/name.');
+      return;
+    }
+    const catId = editingCategory 
+      ? editingCategory.id 
+      : (categoryForm.id || categoryForm.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''));
+    
+    // Add pending subcategory tag if user typed but didn't click add
+    let currentSubcats = [...categoryForm.subcategories];
+    if (tempSubcatInput.trim() && !currentSubcats.includes(tempSubcatInput.trim())) {
+      currentSubcats.push(tempSubcatInput.trim());
+    }
+
+    const payload = {
+      ...categoryForm,
+      id: catId,
+      name: categoryForm.name.trim(),
+      title: categoryForm.name.trim(),
+      subcategories: currentSubcats
+    };
+
+    const ok = saveCategory(payload);
+    if (ok) {
+      setIsCategoryModalOpen(false);
+      showToast(editingCategory ? 'Category updated & synced live!' : 'New category created & synced live!');
+    }
+  };
+
+  const handleDeleteCategory = (cat) => {
+    const associatedProds = products.filter(p => (p.category === cat.name || p.cat === cat.name));
+    const confirmMsg = associatedProds.length > 0 
+      ? `Are you sure you want to delete category "${cat.name}"? It currently has ${associatedProds.length} product(s) associated.`
+      : `Are you sure you want to delete category "${cat.name}"?`;
+    if (window.confirm(confirmMsg)) {
+      deleteCategory(cat.id);
+      showToast(`Category "${cat.name}" deleted.`);
+    }
+  };
+
+  const handleQuickAddSubcategory = (categoryId) => {
+    const text = (inlineSubcatInputs[categoryId] || '').trim();
+    if (!text) return;
+    addSubcategory(categoryId, text);
+    setInlineSubcatInputs(prev => ({ ...prev, [categoryId]: '' }));
+    showToast(`Subcategory "${text}" added!`);
+  };
+
+  const handleOpenEditSubcat = (categoryId, subcatName) => {
+    setEditingSubcatInfo({ categoryId, oldName: subcatName, newName: subcatName });
+    setIsSubcatEditModalOpen(true);
+  };
+
+  const handleSaveSubcatEdit = (e) => {
+    e.preventDefault();
+    if (!editingSubcatInfo.newName.trim()) return;
+    editSubcategory(editingSubcatInfo.categoryId, editingSubcatInfo.oldName, editingSubcatInfo.newName.trim());
+    setIsSubcatEditModalOpen(false);
+    showToast(`Subcategory updated to "${editingSubcatInfo.newName.trim()}"!`);
+  };
+
+  const handleDeleteSubcategory = (categoryId, subcatName) => {
+    if (window.confirm(`Are you sure you want to delete subcategory "${subcatName}"?`)) {
+      deleteSubcategory(categoryId, subcatName);
+      showToast(`Subcategory "${subcatName}" deleted.`);
+    }
+  };
+
+  const handleResetCategories = () => {
+    if (window.confirm('Reset all categories & subcategories to factory defaults?')) {
+      resetCategoriesToDefault();
+      showToast('Categories reset to factory defaults.');
+    }
+  };
+
 
 
 
@@ -657,6 +822,7 @@ export default function AdminPage({ onNavigate }) {
         }}>
           {[
             { id: 'overview', label: 'Dashboard Overview', icon: LayoutDashboard },
+            { id: 'categories', label: 'Categories & Subcats', icon: Layers, count: categories.length },
             { id: 'products', label: 'Products Manager', icon: Package, count: products.length },
             { id: 'inquiries', label: 'Inquiries & RFQs', icon: Mail, count: inquiries.filter(i => i.status === 'New').length, badgeColor: '#EF4444' },
             { id: 'blogs', label: 'Blog Posts', icon: FileText, count: blogs.length }
@@ -896,7 +1062,404 @@ export default function AdminPage({ onNavigate }) {
           )}
 
           {/* =============================================================== */}
-          {/* 2.2 PRODUCTS MANAGER TAB */}
+          {/* 2.2 CATEGORIES & SUBCATEGORIES TAB */}
+          {/* =============================================================== */}
+          {activeTab === 'categories' && (
+            <div>
+              {/* Header */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '14px' }}>
+                <div>
+                  <h2 style={{ fontSize: '26px', fontWeight: 900, color: '#011B47', margin: 0 }}>
+                    Category & Subcategory Management
+                  </h2>
+                  <p style={{ fontSize: '14px', color: '#64748B', margin: '4px 0 0' }}>
+                    Create, modify, and delete product categories and subcategories live across the website
+                  </p>
+                </div>
+
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <button
+                    onClick={handleOpenAddCategory}
+                    style={{
+                      padding: '12px 22px',
+                      background: '#011B47',
+                      color: '#FFFFFF',
+                      borderRadius: '10px',
+                      border: 'none',
+                      fontSize: '14px',
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      boxShadow: '0 4px 14px rgba(1, 27, 71, 0.2)'
+                    }}
+                  >
+                    <Plus size={16} />
+                    <span>Add New Category</span>
+                  </button>
+
+                  <button
+                    onClick={handleResetCategories}
+                    style={{
+                      padding: '10px 16px',
+                      background: '#FFFFFF',
+                      color: '#64748B',
+                      borderRadius: '10px',
+                      border: '1.5px solid #CBD5E1',
+                      fontSize: '13px',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <RefreshCw size={14} />
+                    <span>Reset Defaults</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Stats Summary Bar */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+                <div style={{ background: '#FFFFFF', padding: '16px 20px', borderRadius: '14px', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', gap: '14px' }}>
+                  <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: 'rgba(1, 27, 71, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#011B47' }}>
+                    <Layers size={22} />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '12px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase' }}>Active Categories</div>
+                    <div style={{ fontSize: '22px', fontWeight: 900, color: '#011B47' }}>{categories.length}</div>
+                  </div>
+                </div>
+
+                <div style={{ background: '#FFFFFF', padding: '16px 20px', borderRadius: '14px', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', gap: '14px' }}>
+                  <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#10B981' }}>
+                    <Tag size={22} />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '12px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase' }}>Total Subcategories</div>
+                    <div style={{ fontSize: '22px', fontWeight: 900, color: '#011B47' }}>
+                      {categories.reduce((acc, c) => acc + (c.subcategories?.length || 0), 0)}
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ background: '#FFFFFF', padding: '16px 20px', borderRadius: '14px', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', gap: '14px' }}>
+                  <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: 'rgba(245, 158, 11, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#D97706' }}>
+                    <Package size={22} />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '12px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase' }}>Products in Catalog</div>
+                    <div style={{ fontSize: '22px', fontWeight: 900, color: '#011B47' }}>{products.length}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Search Toolbar */}
+              <div style={{ background: '#FFFFFF', padding: '16px 20px', borderRadius: '16px', border: '1px solid #E2E8F0', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <Search size={18} style={{ color: '#64748B' }} />
+                <input
+                  type="text"
+                  placeholder="Search categories or subcategories..."
+                  value={categorySearch}
+                  onChange={(e) => setCategorySearch(e.target.value)}
+                  style={{ border: 'none', outline: 'none', background: 'transparent', width: '100%', fontSize: '14px' }}
+                />
+                {categorySearch && (
+                  <button onClick={() => setCategorySearch('')} style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#94A3B8' }}>✕</button>
+                )}
+              </div>
+
+              {/* Categories Cards List */}
+              {(() => {
+                const q = categorySearch.trim().toLowerCase();
+                const filteredCategories = categories.filter(c => {
+                  if (!q) return true;
+                  const nameMatch = (c.name || '').toLowerCase().includes(q);
+                  const descMatch = (c.desc || '').toLowerCase().includes(q);
+                  const subMatch = (c.subcategories || []).some(s => s.toLowerCase().includes(q));
+                  return nameMatch || descMatch || subMatch;
+                });
+
+                if (filteredCategories.length === 0) {
+                  return (
+                    <div style={{ background: '#FFFFFF', borderRadius: '18px', border: '1px solid #E2E8F0', padding: '48px 24px', textAlign: 'center' }}>
+                      <div style={{ maxWidth: '360px', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+                        <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748B' }}>
+                          <Layers size={24} />
+                        </div>
+                        <div style={{ fontWeight: 800, color: '#011B47', fontSize: '16px' }}>No Categories Found</div>
+                        <p style={{ fontSize: '13px', color: '#64748B', margin: 0 }}>
+                          {categorySearch ? `No categories match "${categorySearch}"` : 'Get started by creating your first product category.'}
+                        </p>
+                        <button
+                          onClick={handleOpenAddCategory}
+                          style={{ marginTop: '8px', padding: '9px 18px', background: '#011B47', color: '#FFFFFF', borderRadius: '8px', border: 'none', fontSize: '13px', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                        >
+                          <Plus size={14} /> Add Category
+                        </button>
+                      </div>
+                    </div>
+                  );
+                }
+
+                return (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    {filteredCategories.map((cat, idx) => {
+                      const CatIcon = getCategoryIcon(cat.icon);
+                      const catProducts = products.filter(p => (p.category === cat.name || p.cat === cat.name));
+                      const subcats = Array.isArray(cat.subcategories) ? cat.subcategories : [];
+
+                      return (
+                        <div 
+                          key={cat.id || idx}
+                          style={{
+                            background: '#FFFFFF',
+                            borderRadius: '18px',
+                            border: '1.5px solid #E2E8F0',
+                            boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
+                            overflow: 'hidden',
+                            transition: 'border-color 0.2s'
+                          }}
+                        >
+                          {/* Card Header Top */}
+                          <div style={{
+                            padding: '20px 24px',
+                            background: '#FAFCFF',
+                            borderBottom: '1px solid #E2E8F0',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            flexWrap: 'wrap',
+                            gap: '14px'
+                          }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                              <div style={{
+                                width: '44px',
+                                height: '44px',
+                                borderRadius: '12px',
+                                background: '#011B47',
+                                color: '#FACC15',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                flexShrink: 0
+                              }}>
+                                <CatIcon size={22} />
+                              </div>
+                              <div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                                  <h3 style={{ fontSize: '18px', fontWeight: 900, color: '#011B47', margin: 0 }}>
+                                    {cat.name}
+                                  </h3>
+                                  <span style={{
+                                    fontSize: '11.5px',
+                                    fontWeight: 800,
+                                    background: '#011B47',
+                                    color: '#FFFFFF',
+                                    padding: '3px 10px',
+                                    borderRadius: '6px'
+                                  }}>
+                                    {cat.businessRole || 'Manufacturer & Exporter'}
+                                  </span>
+                                  <span style={{
+                                    fontSize: '12px',
+                                    fontWeight: 700,
+                                    color: '#059669',
+                                    background: '#ECFDF5',
+                                    padding: '3px 10px',
+                                    borderRadius: '6px',
+                                    border: '1px solid #A7F3D0'
+                                  }}>
+                                    {catProducts.length} Product{catProducts.length === 1 ? '' : 's'}
+                                  </span>
+                                </div>
+                                {cat.eyebrow && (
+                                  <div style={{ fontSize: '12.5px', color: '#64748B', marginTop: '3px', fontWeight: 600 }}>
+                                    {cat.eyebrow}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Category Actions */}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <button
+                                onClick={() => handleOpenEditCategory(cat)}
+                                style={{
+                                  padding: '8px 14px',
+                                  background: '#F1F5F9',
+                                  color: '#011B47',
+                                  border: '1px solid #CBD5E1',
+                                  borderRadius: '8px',
+                                  fontSize: '13px',
+                                  fontWeight: 700,
+                                  cursor: 'pointer',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '6px'
+                                }}
+                              >
+                                <Edit3 size={14} />
+                                <span>Edit Category</span>
+                              </button>
+                              <button
+                                onClick={() => handleDeleteCategory(cat)}
+                                style={{
+                                  padding: '8px 12px',
+                                  background: '#FEF2F2',
+                                  color: '#DC2626',
+                                  border: '1px solid #FCA5A5',
+                                  borderRadius: '8px',
+                                  fontSize: '13px',
+                                  cursor: 'pointer',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '4px'
+                                }}
+                                title="Delete Category"
+                              >
+                                <Trash2 size={14} />
+                                <span>Delete</span>
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Card Content & Subcategories */}
+                          <div style={{ padding: '20px 24px' }}>
+                            {cat.desc && (
+                              <p style={{ fontSize: '13.5px', color: '#475569', margin: '0 0 16px', lineHeight: 1.5 }}>
+                                {cat.desc}
+                              </p>
+                            )}
+
+                            {/* Subcategories Subsection */}
+                            <div>
+                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+                                <div style={{ fontSize: '13px', fontWeight: 800, color: '#1E293B', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                  <Tag size={15} style={{ color: '#011B47' }} />
+                                  <span>Subcategories ({subcats.length})</span>
+                                </div>
+                                <span style={{ fontSize: '12px', color: '#64748B' }}>
+                                  Click pencil to rename or trash to remove subcategory
+                                </span>
+                              </div>
+
+                              {/* Subcategory Pills Grid */}
+                              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '14px' }}>
+                                {subcats.length === 0 ? (
+                                  <div style={{ fontSize: '13px', color: '#94A3B8', fontStyle: 'italic', padding: '6px 0' }}>
+                                    No subcategories created yet for this category. Add one below!
+                                  </div>
+                                ) : (
+                                  subcats.map((subcat, sIdx) => {
+                                    const subcatCount = catProducts.filter(p => p.subcategory === subcat).length;
+                                    return (
+                                      <div
+                                        key={sIdx}
+                                        style={{
+                                          display: 'inline-flex',
+                                          alignItems: 'center',
+                                          gap: '6px',
+                                          background: '#F8FAFC',
+                                          border: '1.5px solid #CBD5E1',
+                                          borderRadius: '8px',
+                                          padding: '6px 10px',
+                                          fontSize: '13px',
+                                          fontWeight: 700,
+                                          color: '#011B47'
+                                        }}
+                                      >
+                                        <span>{subcat}</span>
+                                        <span style={{
+                                          fontSize: '11px',
+                                          background: subcatCount > 0 ? '#011B47' : '#E2E8F0',
+                                          color: subcatCount > 0 ? '#FFFFFF' : '#64748B',
+                                          padding: '1px 6px',
+                                          borderRadius: '100px',
+                                          fontWeight: 800
+                                        }}>
+                                          {subcatCount}
+                                        </span>
+                                        <button
+                                          type="button"
+                                          onClick={() => handleOpenEditSubcat(cat.id, subcat)}
+                                          style={{ background: 'none', border: 'none', color: '#64748B', cursor: 'pointer', padding: '2px 3px', display: 'flex', alignItems: 'center' }}
+                                          title="Rename Subcategory"
+                                        >
+                                          <Edit3 size={12} />
+                                        </button>
+                                        <button
+                                          type="button"
+                                          onClick={() => handleDeleteSubcategory(cat.id, subcat)}
+                                          style={{ background: 'none', border: 'none', color: '#DC2626', cursor: 'pointer', padding: '2px 3px', display: 'flex', alignItems: 'center' }}
+                                          title="Delete Subcategory"
+                                        >
+                                          <X size={13} />
+                                        </button>
+                                      </div>
+                                    );
+                                  })
+                                )}
+                              </div>
+
+                              {/* Quick Inline Add Subcategory */}
+                              <div style={{ display: 'flex', gap: '8px', maxWidth: '420px' }}>
+                                <input
+                                  type="text"
+                                  placeholder="Add new subcategory (e.g. Earth Clamps, Ground Spices)..."
+                                  value={inlineSubcatInputs[cat.id] || ''}
+                                  onChange={(e) => setInlineSubcatInputs({ ...inlineSubcatInputs, [cat.id]: e.target.value })}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                      e.preventDefault();
+                                      handleQuickAddSubcategory(cat.id);
+                                    }
+                                  }}
+                                  style={{
+                                    flex: 1,
+                                    padding: '8px 12px',
+                                    borderRadius: '8px',
+                                    border: '1.5px solid #CBD5E1',
+                                    fontSize: '13px',
+                                    outline: 'none'
+                                  }}
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => handleQuickAddSubcategory(cat.id)}
+                                  style={{
+                                    padding: '8px 14px',
+                                    background: '#011B47',
+                                    color: '#FFFFFF',
+                                    border: 'none',
+                                    borderRadius: '8px',
+                                    fontSize: '13px',
+                                    fontWeight: 800,
+                                    cursor: 'pointer',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '4px'
+                                  }}
+                                >
+                                  <Plus size={14} />
+                                  <span>Add</span>
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
+            </div>
+          )}
+
+          {/* =============================================================== */}
+          {/* 2.3 PRODUCTS MANAGER TAB */}
           {/* =============================================================== */}
           {activeTab === 'products' && (
             <div>
@@ -996,7 +1559,7 @@ export default function AdminPage({ onNavigate }) {
 
                 {/* Vertical Category Filter Pills */}
                 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                  {['All', ...CATEGORIES].map(cat => (
+                  {['All', ...categories.map(c => c.name)].map(cat => (
                     <button
                       key={cat}
                       onClick={() => setProductCategoryFilter(cat)}
@@ -1704,15 +2267,16 @@ export default function AdminPage({ onNavigate }) {
                   <select
                     value={productForm.category}
                     onChange={(e) => {
-                      const cat = e.target.value;
-                      const defaultRole = cat === 'Spices & Agro Commodities' ? 'Merchant Exporter' : 'Manufacturer & Exporter';
-                      const defaultSub = SUBCATEGORY_PRESETS[cat] ? SUBCATEGORY_PRESETS[cat][0] : 'General';
-                      setProductForm({ ...productForm, category: cat, businessType: defaultRole, subcategory: defaultSub });
+                      const catName = e.target.value;
+                      const catObj = categories.find(c => c.name === catName);
+                      const defaultRole = catObj?.businessRole || (catName === 'Spices & Agro Commodities' ? 'Merchant Exporter' : 'Manufacturer & Exporter');
+                      const defaultSub = (catObj?.subcategories && catObj.subcategories.length > 0) ? catObj.subcategories[0] : 'General';
+                      setProductForm({ ...productForm, category: catName, businessType: defaultRole, subcategory: defaultSub });
                     }}
                     style={{ width: '100%', padding: '12px 14px', borderRadius: '8px', border: '1.5px solid #CBD5E1', fontSize: '14px', boxSizing: 'border-box' }}
                   >
-                    {CATEGORIES.map(c => (
-                      <option key={c} value={c}>{c}</option>
+                    {categories.map(c => (
+                      <option key={c.id || c.name} value={c.name}>{c.name}</option>
                     ))}
                   </select>
                 </div>
@@ -1728,22 +2292,50 @@ export default function AdminPage({ onNavigate }) {
                   >
                     <option value="Manufacturer & Exporter">Manufacturer & Exporter</option>
                     <option value="Merchant Exporter">Merchant Exporter</option>
+                    <option value="Custom / OEM Supplier">Custom / OEM Supplier</option>
                   </select>
                 </div>
               </div>
 
               {/* Subcategory */}
               <div>
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: 800, color: '#1E293B', marginBottom: '6px' }}>
-                  Subcategory
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. Kitchen Sinks, Earth Rods, Whole Spices"
-                  value={productForm.subcategory}
-                  onChange={(e) => setProductForm({ ...productForm, subcategory: e.target.value })}
-                  style={{ width: '100%', padding: '12px 14px', borderRadius: '8px', border: '1.5px solid #CBD5E1', fontSize: '14px', boxSizing: 'border-box' }}
-                />
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <label style={{ fontSize: '13px', fontWeight: 800, color: '#1E293B' }}>
+                    Subcategory
+                  </label>
+                  <span style={{ fontSize: '12px', color: '#64748B' }}>Select preset or type custom</span>
+                </div>
+                {(() => {
+                  const currentCatObj = categories.find(c => c.name === productForm.category);
+                  const subcats = currentCatObj?.subcategories || [];
+                  return (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      {subcats.length > 0 && (
+                        <select
+                          value={subcats.includes(productForm.subcategory) ? productForm.subcategory : ''}
+                          onChange={(e) => {
+                            if (e.target.value) {
+                              setProductForm({ ...productForm, subcategory: e.target.value });
+                            }
+                          }}
+                          style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1.5px solid #CBD5E1', fontSize: '13.5px', background: '#F8FAFC' }}
+                        >
+                          <option value="">— Select from preset subcategories —</option>
+                          {subcats.map(sub => (
+                            <option key={sub} value={sub}>{sub}</option>
+                          ))}
+                        </select>
+                      )}
+                      <input
+                        type="text"
+                        placeholder="Or enter custom subcategory name..."
+                        value={productForm.subcategory}
+                        onChange={(e) => setProductForm({ ...productForm, subcategory: e.target.value })}
+                        style={{ width: '100%', padding: '12px 14px', borderRadius: '8px', border: '1.5px solid #CBD5E1', fontSize: '14px', boxSizing: 'border-box' }}
+                      />
+                    </div>
+                  );
+                })()}
               </div>
 
               {/* Product Photo Upload & URL */}
@@ -2063,6 +2655,371 @@ export default function AdminPage({ onNavigate }) {
         </div>
       )}
 
+      {/* ===================================================================== */}
+      {/* 6. ADD / EDIT CATEGORY MODAL */}
+      {/* ===================================================================== */}
+      {isCategoryModalOpen && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0,0,0,0.6)',
+          zIndex: 9999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '20px',
+          backdropFilter: 'blur(4px)'
+        }}>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            style={{
+              width: '100%',
+              maxWidth: '680px',
+              maxHeight: '92vh',
+              background: '#FFFFFF',
+              borderRadius: '24px',
+              padding: '32px',
+              boxShadow: '0 25px 60px rgba(0,0,0,0.3)',
+              overflowY: 'auto',
+              border: '1.5px solid #E2E8F0'
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid #E2E8F0', paddingBottom: '14px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#011B47', color: '#FACC15', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Layers size={20} />
+                </div>
+                <h3 style={{ fontSize: '20px', fontWeight: 900, color: '#011B47', margin: 0 }}>
+                  {editingCategory ? 'Edit Product Category' : 'Create New Product Category'}
+                </h3>
+              </div>
+              <button
+                onClick={() => setIsCategoryModalOpen(false)}
+                style={{ background: 'none', border: 'none', color: '#64748B', cursor: 'pointer' }}
+              >
+                <X size={22} />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveCategory} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+
+              {/* Category Name & Business Role */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '13px', fontWeight: 800, color: '#1E293B', marginBottom: '6px' }}>
+                    Category Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Solar & Renewable Equipment"
+                    value={categoryForm.name}
+                    onChange={(e) => setCategoryForm({ ...categoryForm, name: e.target.value })}
+                    style={{ width: '100%', padding: '12px 14px', borderRadius: '8px', border: '1.5px solid #CBD5E1', fontSize: '14px', boxSizing: 'border-box' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '13px', fontWeight: 800, color: '#1E293B', marginBottom: '6px' }}>
+                    Business Role Badge *
+                  </label>
+                  <select
+                    value={categoryForm.businessRole}
+                    onChange={(e) => setCategoryForm({ ...categoryForm, businessRole: e.target.value })}
+                    style={{ width: '100%', padding: '12px 14px', borderRadius: '8px', border: '1.5px solid #CBD5E1', fontSize: '14px', boxSizing: 'border-box' }}
+                  >
+                    <option value="Manufacturer & Exporter">Manufacturer & Exporter</option>
+                    <option value="Merchant Exporter">Merchant Exporter</option>
+                    <option value="Custom / OEM Supplier">Custom / OEM Supplier</option>
+                    <option value="Direct Producer & Exporter">Direct Producer & Exporter</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Eyebrow / Tagline */}
+              <div>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 800, color: '#1E293B', marginBottom: '6px' }}>
+                  Tagline / Eyebrow Header
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. UL 467 & IEC 62305 Standard Compliant • In-House Manufacturing"
+                  value={categoryForm.eyebrow}
+                  onChange={(e) => setCategoryForm({ ...categoryForm, eyebrow: e.target.value })}
+                  style={{ width: '100%', padding: '12px 14px', borderRadius: '8px', border: '1.5px solid #CBD5E1', fontSize: '14px', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              {/* Description */}
+              <div>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 800, color: '#1E293B', marginBottom: '6px' }}>
+                  Category Banner Description
+                </label>
+                <textarea
+                  rows={3}
+                  placeholder="Detailed description of this commodity vertical for catalog pages..."
+                  value={categoryForm.desc}
+                  onChange={(e) => setCategoryForm({ ...categoryForm, desc: e.target.value })}
+                  style={{ width: '100%', padding: '12px 14px', borderRadius: '8px', border: '1.5px solid #CBD5E1', fontSize: '14px', boxSizing: 'border-box', lineHeight: 1.5 }}
+                />
+              </div>
+
+              {/* Icon Selection */}
+              <div>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 800, color: '#1E293B', marginBottom: '8px' }}>
+                  Select Category Icon
+                </label>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(68px, 1fr))', gap: '8px' }}>
+                  {[
+                    { name: 'Zap', label: 'Zap' },
+                    { name: 'Flame', label: 'Flame' },
+                    { name: 'Wrench', label: 'Wrench' },
+                    { name: 'Shield', label: 'Shield' },
+                    { name: 'Package', label: 'Package' },
+                    { name: 'Globe', label: 'Globe' },
+                    { name: 'Layers', label: 'Layers' },
+                    { name: 'Sparkles', label: 'Sparkles' },
+                    { name: 'Factory', label: 'Factory' },
+                    { name: 'Ship', label: 'Ship' },
+                    { name: 'Sun', label: 'Sun' },
+                    { name: 'Cpu', label: 'Cpu' },
+                    { name: 'Box', label: 'Box' },
+                    { name: 'Award', label: 'Award' },
+                    { name: 'Truck', label: 'Truck' },
+                    { name: 'Compass', label: 'Compass' }
+                  ].map(item => {
+                    const IconComponent = getCategoryIcon(item.name);
+                    const isSelected = categoryForm.icon === item.name;
+                    return (
+                      <button
+                        key={item.name}
+                        type="button"
+                        onClick={() => setCategoryForm({ ...categoryForm, icon: item.name })}
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          gap: '4px',
+                          padding: '8px 4px',
+                          borderRadius: '8px',
+                          border: isSelected ? '2px solid #011B47' : '1px solid #E2E8F0',
+                          background: isSelected ? '#011B47' : '#F8FAFC',
+                          color: isSelected ? '#FACC15' : '#475569',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s ease'
+                        }}
+                      >
+                        <IconComponent size={18} />
+                        <span style={{ fontSize: '10.5px', fontWeight: 700, color: isSelected ? '#FFFFFF' : '#64748B' }}>
+                          {item.label}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Cover Photo */}
+              <div>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 800, color: '#1E293B', marginBottom: '6px' }}>
+                  Hero Cover Background Photo (Upload or Paste URL)
+                </label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <label style={{ padding: '10px 16px', background: '#011B47', color: '#FFFFFF', borderRadius: '8px', fontSize: '13px', fontWeight: 800, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                      <Upload size={15} />
+                      <span>Upload Photo</span>
+                      <input type="file" accept="image/*" onChange={handleCategoryImageUpload} style={{ display: 'none' }} />
+                    </label>
+                    <span style={{ fontSize: '12px', color: '#64748B' }}>PNG, JPG, WEBP (High Resolution)</span>
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Or paste direct image URL (https://...)"
+                    value={categoryForm.bgImg}
+                    onChange={(e) => setCategoryForm({ ...categoryForm, bgImg: e.target.value })}
+                    style={{ width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1.5px solid #CBD5E1', fontSize: '13.5px', boxSizing: 'border-box' }}
+                  />
+                  {categoryForm.bgImg && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: '#F8FAFC', padding: '10px 14px', borderRadius: '10px', border: '1.5px solid #E2E8F0' }}>
+                      <img src={categoryForm.bgImg} alt="Preview" style={{ width: '70px', height: '44px', borderRadius: '6px', objectFit: 'cover', border: '1px solid #CBD5E1' }} />
+                      <div style={{ flex: 1, fontSize: '12.5px', fontWeight: 700, color: '#10B981', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <CheckCircle2 size={14} /> Background Image Ready
+                      </div>
+                      <button type="button" onClick={() => setCategoryForm({ ...categoryForm, bgImg: '' })} style={{ background: '#FEE2E2', border: 'none', color: '#DC2626', padding: '5px 10px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', fontWeight: 700 }}>Remove</button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Subcategories Tag Builder */}
+              <div>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 800, color: '#1E293B', marginBottom: '6px' }}>
+                  Subcategories
+                </label>
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
+                  <input
+                    type="text"
+                    placeholder="Type subcategory name (e.g. Copper Clamps, Ground Spices)..."
+                    value={tempSubcatInput}
+                    onChange={(e) => setTempSubcatInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleAddSubcatTag();
+                      }
+                    }}
+                    style={{ flex: 1, padding: '10px 14px', borderRadius: '8px', border: '1.5px solid #CBD5E1', fontSize: '13.5px', boxSizing: 'border-box' }}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddSubcatTag}
+                    style={{ padding: '10px 16px', background: '#011B47', color: '#FFFFFF', border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: 800, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                  >
+                    <Plus size={15} /> Add
+                  </button>
+                </div>
+
+                {categoryForm.subcategories && categoryForm.subcategories.length > 0 && (
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', background: '#F8FAFC', padding: '12px', borderRadius: '10px', border: '1px solid #E2E8F0' }}>
+                    {categoryForm.subcategories.map((sub, idx) => (
+                      <span
+                        key={idx}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          background: '#FFFFFF',
+                          border: '1px solid #CBD5E1',
+                          padding: '5px 10px',
+                          borderRadius: '6px',
+                          fontSize: '12.5px',
+                          fontWeight: 700,
+                          color: '#011B47'
+                        }}
+                      >
+                        <span>{sub}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveSubcatTag(sub)}
+                          style={{ background: 'none', border: 'none', color: '#DC2626', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center' }}
+                        >
+                          <X size={13} />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Modal Action Buttons */}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '10px', borderTop: '1px solid #E2E8F0', paddingTop: '16px' }}>
+                <button
+                  type="button"
+                  onClick={() => setIsCategoryModalOpen(false)}
+                  style={{ padding: '12px 20px', background: '#F1F5F9', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: 700, cursor: 'pointer', color: '#475569' }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  style={{ padding: '12px 26px', background: '#011B47', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: 800, cursor: 'pointer', color: '#FFFFFF' }}
+                >
+                  {editingCategory ? 'Update Category' : 'Create Category'}
+                </button>
+              </div>
+
+            </form>
+          </motion.div>
+        </div>
+      )}
+
+      {/* ===================================================================== */}
+      {/* 7. EDIT SUBCATEGORY MODAL */}
+      {/* ===================================================================== */}
+      {isSubcatEditModalOpen && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0,0,0,0.6)',
+          zIndex: 99999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '20px',
+          backdropFilter: 'blur(4px)'
+        }}>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            style={{
+              width: '100%',
+              maxWidth: '460px',
+              background: '#FFFFFF',
+              borderRadius: '20px',
+              padding: '28px',
+              boxShadow: '0 25px 60px rgba(0,0,0,0.3)',
+              border: '1.5px solid #E2E8F0'
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px', borderBottom: '1px solid #E2E8F0', paddingBottom: '12px' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: 900, color: '#011B47', margin: 0 }}>
+                Rename Subcategory
+              </h3>
+              <button
+                onClick={() => setIsSubcatEditModalOpen(false)}
+                style={{ background: 'none', border: 'none', color: '#64748B', cursor: 'pointer' }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveSubcatEdit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '12.5px', fontWeight: 800, color: '#64748B', marginBottom: '4px', textTransform: 'uppercase' }}>
+                  Current Name:
+                </label>
+                <div style={{ padding: '8px 12px', background: '#F8FAFC', borderRadius: '8px', border: '1px solid #E2E8F0', fontSize: '13.5px', fontWeight: 700, color: '#011B47' }}>
+                  {editingSubcatInfo.oldName}
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 800, color: '#1E293B', marginBottom: '6px' }}>
+                  New Subcategory Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  autoFocus
+                  value={editingSubcatInfo.newName}
+                  onChange={(e) => setEditingSubcatInfo({ ...editingSubcatInfo, newName: e.target.value })}
+                  style={{ width: '100%', padding: '12px 14px', borderRadius: '8px', border: '1.5px solid #CBD5E1', fontSize: '14px', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '10px', borderTop: '1px solid #E2E8F0', paddingTop: '14px' }}>
+                <button
+                  type="button"
+                  onClick={() => setIsSubcatEditModalOpen(false)}
+                  style={{ padding: '10px 18px', background: '#F1F5F9', border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', color: '#475569' }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  style={{ padding: '10px 22px', background: '#011B47', border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: 800, cursor: 'pointer', color: '#FFFFFF' }}
+                >
+                  Save Rename
+                </button>
+              </div>
+            </form>
+          </motion.div>
+        </div>
+      )}
+
     </div>
   );
 }
+

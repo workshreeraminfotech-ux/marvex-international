@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getProducts, getBlogs, getCertificates, getEnquiries } from './adminStore';
+import { getProducts, getBlogs, getCertificates, getEnquiries, getCategories } from './adminStore';
 
 export function useStoreProducts() {
   const [products, setProducts] = useState(() => {
@@ -17,6 +17,24 @@ export function useStoreProducts() {
   }, []);
 
   return Array.isArray(products) ? products : [];
+}
+
+export function useStoreCategories() {
+  const [categories, setCategories] = useState(() => {
+    const list = getCategories();
+    return Array.isArray(list) ? list : [];
+  });
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      const list = getCategories();
+      setCategories(Array.isArray(list) ? list : []);
+    };
+    window.addEventListener('marvex_store_updated', handleUpdate);
+    return () => window.removeEventListener('marvex_store_updated', handleUpdate);
+  }, []);
+
+  return Array.isArray(categories) ? categories : [];
 }
 
 export function useStoreBlogs() {
@@ -72,3 +90,4 @@ export function useStoreEnquiries() {
 
   return Array.isArray(enquiries) ? enquiries : [];
 }
+

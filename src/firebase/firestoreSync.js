@@ -11,27 +11,32 @@ import {
 import { db, isFirebaseConfigured } from './config';
 import { 
   normalizeProduct, 
+  normalizeCategory,
   notifyStoreUpdate 
 } from '../utils/adminStore';
 
 import { PRODUCTS as INITIAL_PRODUCTS } from '../data/products';
 import { BLOGS as INITIAL_BLOGS } from '../data/blogs';
+import { INITIAL_CATEGORIES } from '../data/categories';
 
 const COLLECTIONS = {
   PRODUCTS: 'marvex_products',
   INQUIRIES: 'marvex_inquiries',
-  BLOGS: 'marvex_blogs'
+  BLOGS: 'marvex_blogs',
+  CATEGORIES: 'marvex_categories'
 };
 
 const STORAGE_KEYS = {
   PRODUCTS: 'marvex_products_v2',
   INQUIRIES: 'marvex_inquiries_v2',
-  BLOGS: 'marvex_blogs_v2'
+  BLOGS: 'marvex_blogs_v2',
+  CATEGORIES: 'marvex_categories_v2'
 };
 
 let unsubProducts = null;
 let unsubInquiries = null;
 let unsubBlogs = null;
+let unsubCategories = null;
 let isInitialized = false;
 
 // Helper to clean undefined values before sending to Firestore
@@ -81,7 +86,6 @@ export function initFirestoreRealtimeSync() {
         const normalized = remoteProducts.map(normalizeProduct).filter(Boolean);
         localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(normalized));
       } else {
-        // Firestore is empty — respect the empty state, do NOT push local products back
         localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify([]));
       }
       notifyStoreUpdate();
@@ -116,12 +120,31 @@ export function initFirestoreRealtimeSync() {
         });
         localStorage.setItem(STORAGE_KEYS.BLOGS, JSON.stringify(remoteBlogs));
       } else {
-        // Firestore is empty — respect the empty state, do NOT push local blogs back
         localStorage.setItem(STORAGE_KEYS.BLOGS, JSON.stringify([]));
       }
       notifyStoreUpdate();
     }, (error) => {
       console.warn('Firestore Blogs sync notice:', error.message);
+    });
+
+    // 4. CATEGORIES & SUBCATEGORIES REALTIME LISTENER
+    const categoriesRef = collection(db, COLLECTIONS.CATEGORIES);
+    unsubCategories = onSnapshot(categoriesRef, (snapshot) => {
+      if (isLocalSaving) return;
+
+      if (!snapshot.empty) {
+        const remoteCategories = [];
+        snapshot.forEach((docSnap) => {
+          remoteCategories.push({ id: docSnap.id, ...docSnap.data() });
+        });
+        const normalized = remoteCategories.map(normalizeCategory).filter(Boolean);
+        localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(normalized));
+      } else {
+        // If empty in Firestore, don't clear completely if first run, or keep initialized
+      }
+      notifyStoreUpdate();
+    }, (error) => {
+      console.warn('Firestore Categories sync notice:', error.message);
     });
 
     return true;
@@ -328,3 +351,76 @@ export async function deleteBlogFromCloud(id) {
     return false;
   }
 }
+
+// --- CLOUD CRUD: CATEGORIES & SUBCATEGORIES ---
+export async function saveCategoryToCloud(category) {
+  if (!db || !isFirebaseConfigured()) return false;
+  try {
+    const normalized = normalizeCategory(category);
+    if (!normalized || !normalized.id) return false;
+    const clean = sanitizeForFirestore(normalized);
+
+    const docRef1 = doc(db, COLLECTIONS.CATEGORIES, String(normalized.id));
+    const docRef2 = doc(db, 'categories', String(normalized.id));
+    await Promise.all([
+      setDoc(docRef1, clean, { merge: true }),
+      setDoc(docRef2, clean, { merge: true })
+    ]);
+    console.log('Category synced to Firestore:', normalized.id, normalized.name);
+    return true;
+  } catch (e) {
+    console.error('Firestore saveCategory error:', e);
+    return false;
+  }
+}
+
+export async function deleteCategoryFromCloud(categoryId) {
+  if (!db || !isFirebaseConfigured()) return false;
+  try {
+    const docRef1 = doc(db, COLLECTIONS.CATEGORIES, String(categoryId));
+    const docRef2 = doc(db, 'categories', String(categoryId));
+    await Promise.all([
+      deleteDoc(docRef1),
+      deleteDoc(docRef2)
+    ]);
+    return true;
+  } catch (e) {
+    console.error('Firestore deleteCategory error:', e);
+    return false;
+  }
+}
+
+export async function clearCategoriesFromCloud() {
+  if (!db || !isFirebaseConfigured()) return false;
+  try {
+    const deletePromises = [];
+    const ref1 = collection(db, COLLECTIONS.CATEGORIES);
+    const snap1 = await getDocs(ref1);
+    snap1.forEach((docSnap) => deletePromises.push(deleteDoc(docSnap.ref)));
+
+    const ref2 = collection(db, 'categories');
+    const snap2 = await getDocs(ref2);
+    snap2.forEach((docSnap) => deletePromises.push(deleteDoc(docSnap.ref)));
+
+    await Promise.all(deletePromises);
+    return true;
+  } catch (e) {
+    console.error('Firestore clearCategories error:', e);
+    return false;
+  }
+}
+
+export async function seedInitialCategoriesToFirestore() {
+  if (!db || !isFirebaseConfigured()) return;
+  try {
+    const defaultCats = INITIAL_CATEGORIES.map(normalizeCategory).filter(Boolean);
+    for (const cat of defaultCats) {
+      if (cat && cat.id) {
+        await saveCategoryToCloud(cat);
+      }
+    }
+  } catch (e) {
+    console.warn('Auto-seed categories notice:', e.message);
+  }
+}
+

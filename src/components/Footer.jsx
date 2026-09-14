@@ -1,8 +1,10 @@
 import React from 'react';
 import { Instagram, Linkedin, Facebook, MessageCircle } from 'lucide-react';
 import logoImg from '../assets/logo.png';
+import { useStoreCategories } from '../utils/useStore';
 
 export default function Footer() {
+  const categories = useStoreCategories();
   return (
     <footer className="footer" style={{ background: '#0A2240', color: '#fff', padding: '60px 0 20px', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
       <div className="container">
@@ -44,10 +46,11 @@ export default function Footer() {
           <div>
             <h4 style={{ fontFamily: 'var(--font-heading)', fontSize: '16px', fontWeight: 700, color: '#fff', marginBottom: '20px' }}>Product Categories</h4>
             <ul style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '14px' }}>
-              <li><a href="#products" style={{ color: 'rgba(255, 255, 255, 0.75)' }}>Indian Spices</a></li>
-              <li><a href="#products" style={{ color: 'rgba(255, 255, 255, 0.75)' }}>Agro Commodities</a></li>
-              <li><a href="#products" style={{ color: 'rgba(255, 255, 255, 0.75)' }}>Machinery</a></li>
-              <li><a href="#products" style={{ color: 'rgba(255, 255, 255, 0.75)' }}>Pipes & Tubes</a></li>
+              {categories.map(c => (
+                <li key={c.id || c.name}>
+                  <a href="#products" style={{ color: 'rgba(255, 255, 255, 0.75)' }}>{c.name}</a>
+                </li>
+              ))}
             </ul>
           </div>
 

@@ -3,6 +3,7 @@
 
 import { PRODUCTS as INITIAL_PRODUCTS } from '../data/products';
 import { BLOGS as INITIAL_BLOGS } from '../data/blogs';
+import { INITIAL_CATEGORIES } from '../data/categories';
 import { 
   initFirestoreRealtimeSync,
   setLocalSavingState,
@@ -16,7 +17,11 @@ import {
   saveBlogToCloud,
   deleteBlogFromCloud,
   clearBlogsFromCloud,
-  seedInitialBlogsToFirestore
+  seedInitialBlogsToFirestore,
+  saveCategoryToCloud,
+  deleteCategoryFromCloud,
+  clearCategoriesFromCloud,
+  seedInitialCategoriesToFirestore
 } from '../firebase/firestoreSync';
 
 import apedaLogo from '../assets/certificate/apeda.png';
@@ -30,6 +35,7 @@ const STORAGE_KEYS = {
   PRODUCTS: 'marvex_products_v2',
   INQUIRIES: 'marvex_inquiries_v2',
   BLOGS: 'marvex_blogs_v2',
+  CATEGORIES: 'marvex_categories_v2',
   SETTINGS: 'marvex_settings_v2',
   AUTH: 'marvex_admin_session_v2'
 };
@@ -105,22 +111,48 @@ if (typeof window !== 'undefined') {
   }, 100);
 }
 
+// Helper to normalize category data safely
+export function normalizeCategory(c) {
+  if (!c) return null;
+  const name = (c.name || c.title || 'General Category').trim();
+  const id = c.id || name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || `cat-${Date.now()}`;
+  const subcategories = Array.isArray(c.subcategories) 
+    ? c.subcategories
+        .filter(s => typeof s === 'string' && s.trim().length > 0)
+        .map(s => s.trim())
+    : [];
+  
+  return {
+    ...c,
+    id,
+    name,
+    title: name,
+    businessRole: c.businessRole || 'Manufacturer & Exporter',
+    highlight: c.highlight || `${name} (${c.businessRole || 'Manufacturer & Exporter'})`,
+    eyebrow: c.eyebrow || 'Export Standard Compliance • Direct Factory Dispatch',
+    desc: c.desc || c.description || '',
+    description: c.description || c.desc || '',
+    bgImg: c.bgImg || c.image || 'https://images.unsplash.com/photo-1544724569-5f546fd6f2b5?auto=format&fit=crop&w=1920&q=80',
+    icon: c.icon || 'Layers',
+    badges: Array.isArray(c.badges) && c.badges.length > 0 ? c.badges : ['Quality Guaranteed', 'Global Export Ready', 'Direct Procurement'],
+    subcategories
+  };
+}
+
 // Helper to normalize product category and subcategory safely
 export function normalizeProduct(p) {
   if (!p) return null;
-  let category = p.category || p.cat || 'Earthing Parts';
-  let subcategory = p.subcategory || '';
+  let category = (p.category || p.cat || 'Earthing Parts').trim();
+  let subcategory = (p.subcategory || '').trim();
   
-  const lowerCat = String(category).trim().toLowerCase();
+  const lowerCat = category.toLowerCase();
+  // If matches known aliases, standardize
   if (lowerCat.includes('earth') || lowerCat.includes('ground') || lowerCat.includes('rod') || lowerCat.includes('lightning')) {
     category = 'Earthing Parts';
-    subcategory = subcategory || 'Earth Rods & Conductors';
   } else if (lowerCat.includes('spice') || lowerCat.includes('agro') || lowerCat.includes('seed') || lowerCat.includes('cumin') || lowerCat.includes('turmeric') || lowerCat.includes('chilli') || lowerCat.includes('rice')) {
     category = 'Spices & Agro Commodities';
-    subcategory = subcategory || 'Whole Spices';
   } else if (lowerCat.includes('hard') || lowerCat.includes('sanit') || lowerCat.includes('sink') || lowerCat.includes('basin') || lowerCat.includes('tap') || lowerCat.includes('shower') || lowerCat.includes('bath')) {
     category = 'Hardware & Sanitary Items';
-    subcategory = subcategory || 'Kitchen Sinks';
   }
 
   const businessType = p.businessType || (category === 'Spices & Agro Commodities' ? 'Merchant Exporter' : 'Manufacturer & Exporter');
@@ -467,6 +499,170 @@ export function resetBlogsToDefault() {
     return false;
   }
 }
+
+// ==========================================
+// --- CATEGORIES & SUBCATEGORIES STORE ---
+// ==========================================
+export function getCategories() {
+  try {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem(STORAGE_KEYS.CATEGORIES);
+      if (stored !== null) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.map(normalizeCategory).filter(Boolean);
+        }
+      }
+    }
+  } catch (e) {
+    console.error('Error loading categories from storage:', e);
+  }
+  return INITIAL_CATEGORIES.map(normalizeCategory).filter(Boolean);
+}
+
+export function saveCategory(categoryData) {
+  try {
+    setLocalSavingState(true);
+    const list = getCategories();
+    const normalized = normalizeCategory(categoryData);
+    if (!normalized) {
+      setLocalSavingState(false);
+      return false;
+    }
+
+    const existingIdx = list.findIndex(c => c.id === normalized.id || c.name.toLowerCase() === normalized.name.toLowerCase());
+    let updated;
+    if (existingIdx >= 0) {
+      updated = [...list];
+      updated[existingIdx] = normalized;
+    } else {
+      updated = [...list, normalized];
+    }
+
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(updated));
+    }
+    notifyStoreUpdate();
+
+    // Async push to Firebase Firestore
+    saveCategoryToCloud(normalized).finally(() => {
+      setTimeout(() => setLocalSavingState(false), 1000);
+    });
+
+    return true;
+  } catch (e) {
+    setLocalSavingState(false);
+    console.error('Error saving category:', e);
+    return false;
+  }
+}
+
+export function deleteCategory(categoryId) {
+  try {
+    setLocalSavingState(true);
+    const list = getCategories();
+    const target = list.find(c => c.id === categoryId || c.name === categoryId);
+    const updated = list.filter(c => c.id !== categoryId && c.name !== categoryId);
+    
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(updated));
+    }
+    notifyStoreUpdate();
+
+    // Async delete from Firestore
+    const cloudId = target ? target.id : categoryId;
+    deleteCategoryFromCloud(cloudId).finally(() => {
+      setTimeout(() => setLocalSavingState(false), 1000);
+    });
+
+    return true;
+  } catch (e) {
+    setLocalSavingState(false);
+    console.error('Error deleting category:', e);
+    return false;
+  }
+}
+
+export function addSubcategory(categoryId, subcategoryName) {
+  if (!subcategoryName || !subcategoryName.trim()) return false;
+  const list = getCategories();
+  const cat = list.find(c => c.id === categoryId || c.name === categoryId);
+  if (!cat) return false;
+  
+  const cleanSub = subcategoryName.trim();
+  if (cat.subcategories.includes(cleanSub)) return true;
+  
+  const updatedSubcategories = [...cat.subcategories, cleanSub];
+  return saveCategory({
+    ...cat,
+    subcategories: updatedSubcategories
+  });
+}
+
+export function editSubcategory(categoryId, oldName, newName) {
+  if (!newName || !newName.trim()) return false;
+  const list = getCategories();
+  const cat = list.find(c => c.id === categoryId || c.name === categoryId);
+  if (!cat) return false;
+
+  const cleanNew = newName.trim();
+  const updatedSubcategories = cat.subcategories.map(s => s === oldName ? cleanNew : s);
+  
+  // Also update any products currently having this old subcategory
+  try {
+    const products = getProducts();
+    let prodsChanged = false;
+    const updatedProducts = products.map(p => {
+      if ((p.category === cat.name || p.cat === cat.name) && p.subcategory === oldName) {
+        prodsChanged = true;
+        return { ...p, subcategory: cleanNew };
+      }
+      return p;
+    });
+    if (prodsChanged && typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(updatedProducts));
+    }
+  } catch (err) {}
+
+  return saveCategory({
+    ...cat,
+    subcategories: updatedSubcategories
+  });
+}
+
+export function deleteSubcategory(categoryId, subcategoryName) {
+  const list = getCategories();
+  const cat = list.find(c => c.id === categoryId || c.name === categoryId);
+  if (!cat) return false;
+
+  const updatedSubcategories = cat.subcategories.filter(s => s !== subcategoryName);
+  return saveCategory({
+    ...cat,
+    subcategories: updatedSubcategories
+  });
+}
+
+export function resetCategoriesToDefault() {
+  try {
+    setLocalSavingState(true);
+    const defaults = INITIAL_CATEGORIES.map(normalizeCategory).filter(Boolean);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(defaults));
+    }
+    notifyStoreUpdate();
+
+    // Async seed initial categories to Firestore
+    seedInitialCategoriesToFirestore().finally(() => {
+      setTimeout(() => setLocalSavingState(false), 1000);
+    });
+
+    return true;
+  } catch (e) {
+    setLocalSavingState(false);
+    return false;
+  }
+}
+
 
 // ==========================================
 // --- SETTINGS STORE ---

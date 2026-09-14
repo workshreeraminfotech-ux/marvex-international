@@ -1,8 +1,10 @@
 import React from 'react';
 import { Facebook, Instagram, Linkedin, ChevronRight, Mail, MapPin, Phone } from 'lucide-react';
 import logoImg from '../assets/logo.png';
+import { useStoreCategories } from '../utils/useStore';
 
 export default function FooterSection({ onNavigate }) {
+  const categories = useStoreCategories();
   return (
     <footer className="footer-redesign-section">
       <div className="container">
@@ -48,12 +50,12 @@ export default function FooterSection({ onNavigate }) {
               </li>
               <li>
                 <a href="#" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('products'); }}>
-                  <ChevronRight size={14} className="link-arrow" /> All Products
+                  <ChevronRight size={14} className="link-arrow" /> Product Catalog
                 </a>
               </li>
               <li>
                 <a href="#" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('blog'); }}>
-                  <ChevronRight size={14} className="link-arrow" /> Blogs
+                  <ChevronRight size={14} className="link-arrow" /> Blog & Insights
                 </a>
               </li>
               <li>
@@ -68,21 +70,13 @@ export default function FooterSection({ onNavigate }) {
           <div className="footer-col">
             <h3>Our Business Lines</h3>
             <ul className="footer-links-list">
-              <li>
-                <a href="#earthing" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('category-earthing-parts'); }}>
-                  <ChevronRight size={14} className="link-arrow" /> Earthing Parts (Mfg)
-                </a>
-              </li>
-              <li>
-                <a href="#spices-agro" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('category-spices-agro'); }}>
-                  <ChevronRight size={14} className="link-arrow" /> Spices & Agro (Merchant)
-                </a>
-              </li>
-              <li>
-                <a href="#hardware-sanitary" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('category-hardware-items'); }}>
-                  <ChevronRight size={14} className="link-arrow" /> Hardware & Sanitary (Mfg)
-                </a>
-              </li>
+              {categories.map(cat => (
+                <li key={cat.id || cat.name}>
+                  <a href={`#${cat.id}`} onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('products', cat.name); }}>
+                    <ChevronRight size={14} className="link-arrow" /> {cat.name}
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
 
