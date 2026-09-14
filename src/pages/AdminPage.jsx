@@ -23,6 +23,7 @@ import {
 } from '../firebase/config';
 import { seedInitialDataToFirestore, pushAllLocalProductsToCloud } from '../firebase/firestoreSync';
 import { useStoreProducts, useStoreEnquiries, useStoreBlogs, useStoreCategories } from '../utils/useStore';
+import { compressImage } from '../utils/imageCompressor';
 import logoImg from '../assets/logo.png';
 
 const ICON_MAP = {
@@ -172,19 +173,20 @@ export default function AdminPage({ onNavigate }) {
     });
   }, [inquiries, inquiryStatusFilter, inquirySearch]);
 
-  // Image file upload handler
-  const handleImageUpload = (e) => {
+  // Image file upload handler with auto-compression for Firestore
+  const handleImageUpload = async (e) => {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-      alert('Please select an image smaller than 5MB.');
-      return;
+    try {
+      showToast('Optimizing photo for cloud sync...');
+      const compressed = await compressImage(file, 1000, 1000, 0.75);
+      if (compressed) {
+        setProductForm(prev => ({ ...prev, image: compressed }));
+        showToast('Photo optimized & ready!');
+      }
+    } catch (err) {
+      console.error('Image compression error:', err);
     }
-    const reader = new FileReader();
-    reader.onload = (uploadEvent) => {
-      setProductForm(prev => ({ ...prev, image: uploadEvent.target.result }));
-    };
-    reader.readAsDataURL(file);
   };
 
   // Open Add Product Modal
@@ -237,10 +239,11 @@ export default function AdminPage({ onNavigate }) {
       id: editingProduct ? editingProduct.id : `prod-${Date.now()}`
     };
 
+    showToast('Saving & syncing product to Firebase...');
     const ok = await saveProduct(payload);
     if (ok) {
       setIsProductModalOpen(false);
-      showToast(editingProduct ? 'Product updated successfully & synced live!' : 'New product published & synced live!');
+      showToast(editingProduct ? 'Product updated & synced live across all browsers!' : 'New product published & synced live across all browsers!');
     }
   };
 
@@ -345,19 +348,20 @@ export default function AdminPage({ onNavigate }) {
     }
   };
 
-  // Blog image upload handler
-  const handleBlogImageUpload = (e) => {
+  // Blog Image file upload handler with auto-compression
+  const handleBlogImageUpload = async (e) => {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-      alert('Please select an image smaller than 5MB.');
-      return;
+    try {
+      showToast('Optimizing blog photo...');
+      const compressed = await compressImage(file, 1000, 1000, 0.75);
+      if (compressed) {
+        setBlogForm(prev => ({ ...prev, image: compressed }));
+        showToast('Blog photo optimized!');
+      }
+    } catch (err) {
+      console.error('Blog image error:', err);
     }
-    const reader = new FileReader();
-    reader.onload = (uploadEvent) => {
-      setBlogForm(prev => ({ ...prev, image: uploadEvent.target.result }));
-    };
-    reader.readAsDataURL(file);
   };
 
   // ==========================================
@@ -395,18 +399,19 @@ export default function AdminPage({ onNavigate }) {
     setIsCategoryModalOpen(true);
   };
 
-  const handleCategoryImageUpload = (e) => {
+  const handleCategoryImageUpload = async (e) => {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-      alert('Please select an image smaller than 5MB.');
-      return;
+    try {
+      showToast('Optimizing category banner...');
+      const compressed = await compressImage(file, 1200, 800, 0.75);
+      if (compressed) {
+        setCategoryForm(prev => ({ ...prev, bgImg: compressed }));
+        showToast('Category banner optimized!');
+      }
+    } catch (err) {
+      console.error('Category image error:', err);
     }
-    const reader = new FileReader();
-    reader.onload = (uploadEvent) => {
-      setCategoryForm(prev => ({ ...prev, bgImg: uploadEvent.target.result }));
-    };
-    reader.readAsDataURL(file);
   };
 
   const handleAddSubcatTag = (e) => {
@@ -954,6 +959,35 @@ export default function AdminPage({ onNavigate }) {
                   </button>
 
                   <button
+                    onClick={async () => {
+                      showToast('Syncing all catalog products to Firebase Firestore...');
+                      const ok = await pushAllLocalProductsToCloud();
+                      if (ok) {
+                        showToast('✅ All products synced live to Firebase Cloud!');
+                      } else {
+                        showToast('Sync completed.');
+                      }
+                    }}
+                    title="Push all products to Firebase Cloud for all devices"
+                    style={{
+                      padding: '12px 16px',
+                      background: '#F0FDF4',
+                      color: '#15803D',
+                      borderRadius: '10px',
+                      border: '1.5px solid #BBF7D0',
+                      fontSize: '13px',
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <Cloud size={15} />
+                    <span>Sync to Cloud</span>
+                  </button>
+
+                  <button
                     onClick={() => setActiveTab('inquiries')}
                     style={{
                       padding: '12px 22px',
@@ -1455,6 +1489,35 @@ export default function AdminPage({ onNavigate }) {
                   >
                     <Plus size={16} />
                     <span>Add New Product</span>
+                  </button>
+
+                  <button
+                    onClick={async () => {
+                      showToast('Syncing all catalog products to Firebase Firestore...');
+                      const ok = await pushAllLocalProductsToCloud();
+                      if (ok) {
+                        showToast('✅ All products synced live to Firebase Cloud!');
+                      } else {
+                        showToast('Sync completed.');
+                      }
+                    }}
+                    title="Push all products to Firebase Cloud for all devices"
+                    style={{
+                      padding: '12px 16px',
+                      background: '#F0FDF4',
+                      color: '#15803D',
+                      borderRadius: '10px',
+                      border: '1.5px solid #BBF7D0',
+                      fontSize: '13px',
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <Cloud size={15} />
+                    <span>Sync to Cloud</span>
                   </button>
 
                   {products.length > 0 && (

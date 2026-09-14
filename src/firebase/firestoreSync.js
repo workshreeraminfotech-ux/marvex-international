@@ -14,6 +14,7 @@ import {
   normalizeCategory,
   notifyStoreUpdate 
 } from '../utils/adminStore';
+import { compressImage } from '../utils/imageCompressor';
 
 import { PRODUCTS as INITIAL_PRODUCTS } from '../data/products';
 import { BLOGS as INITIAL_BLOGS } from '../data/blogs';
@@ -85,10 +86,8 @@ export function initFirestoreRealtimeSync() {
         });
         const normalized = remoteProducts.map(normalizeProduct).filter(Boolean);
         localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(normalized));
-      } else {
-        localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify([]));
+        notifyStoreUpdate();
       }
-      notifyStoreUpdate();
     }, (error) => {
       console.warn('Firestore Products sync notice:', error.message);
     });
@@ -255,6 +254,15 @@ export async function saveProductToCloud(product) {
     if (!normalized || !normalized.id) return false;
     const clean = sanitizeForFirestore(normalized);
 
+    // Compress base64 image if needed to stay safely within Firestore 1MB doc limits
+    if (clean.image && typeof clean.image === 'string' && clean.image.startsWith('data:image')) {
+      try {
+        clean.image = await compressImage(clean.image, 1000, 1000, 0.75);
+      } catch (imgErr) {
+        console.warn('Image compression note:', imgErr);
+      }
+    }
+
     // Save to both marvex_products and products collection for maximum accessibility
     const docRef1 = doc(db, 'marvex_products', String(normalized.id));
     const docRef2 = doc(db, 'products', String(normalized.id));
@@ -262,7 +270,7 @@ export async function saveProductToCloud(product) {
       setDoc(docRef1, clean, { merge: true }),
       setDoc(docRef2, clean, { merge: true })
     ]);
-    console.log('Product synced to Firestore:', normalized.id, normalized.title);
+    console.log('✅ Product synced to Firestore:', normalized.id, normalized.title);
     return true;
   } catch (e) {
     console.error('Firestore saveProduct error:', e);
@@ -331,6 +339,15 @@ export async function saveBlogToCloud(blog) {
   try {
     if (!blog || !blog.id) return false;
     const clean = sanitizeForFirestore(blog);
+
+    if (clean.image && typeof clean.image === 'string' && clean.image.startsWith('data:image')) {
+      try {
+        clean.image = await compressImage(clean.image, 1000, 1000, 0.75);
+      } catch (imgErr) {
+        console.warn('Blog image compression note:', imgErr);
+      }
+    }
+
     const docRef = doc(db, COLLECTIONS.BLOGS, String(blog.id));
     await setDoc(docRef, clean, { merge: true });
     return true;
@@ -359,6 +376,12 @@ export async function saveCategoryToCloud(category) {
     const normalized = normalizeCategory(category);
     if (!normalized || !normalized.id) return false;
     const clean = sanitizeForFirestore(normalized);
+
+    if (clean.bgImg && typeof clean.bgImg === 'string' && clean.bgImg.startsWith('data:image')) {
+      try {
+        clean.bgImg = await compressImage(clean.bgImg, 1000, 1000, 0.75);
+      } catch (imgErr) {}
+    }
 
     const docRef1 = doc(db, COLLECTIONS.CATEGORIES, String(normalized.id));
     const docRef2 = doc(db, 'categories', String(normalized.id));

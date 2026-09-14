@@ -145,16 +145,6 @@ export function normalizeProduct(p) {
   let category = (p.category || p.cat || 'Earthing Parts').trim();
   let subcategory = (p.subcategory || '').trim();
   
-  const lowerCat = category.toLowerCase();
-  // If matches known aliases, standardize
-  if (lowerCat.includes('earth') || lowerCat.includes('ground') || lowerCat.includes('rod') || lowerCat.includes('lightning')) {
-    category = 'Earthing Parts';
-  } else if (lowerCat.includes('spice') || lowerCat.includes('agro') || lowerCat.includes('seed') || lowerCat.includes('cumin') || lowerCat.includes('turmeric') || lowerCat.includes('chilli') || lowerCat.includes('rice')) {
-    category = 'Spices & Agro Commodities';
-  } else if (lowerCat.includes('hard') || lowerCat.includes('sanit') || lowerCat.includes('sink') || lowerCat.includes('basin') || lowerCat.includes('tap') || lowerCat.includes('shower') || lowerCat.includes('bath')) {
-    category = 'Hardware & Sanitary Items';
-  }
-
   const businessType = p.businessType || (category === 'Spices & Agro Commodities' ? 'Merchant Exporter' : 'Manufacturer & Exporter');
 
   return {
@@ -185,7 +175,7 @@ export function getProducts() {
       const stored = localStorage.getItem(STORAGE_KEYS.PRODUCTS);
       if (stored !== null) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) {
+        if (Array.isArray(parsed) && parsed.length > 0) {
           return parsed.map(normalizeProduct).filter(Boolean);
         }
       }
@@ -193,10 +183,10 @@ export function getProducts() {
   } catch (e) {
     console.error('Error loading products from storage:', e);
   }
-  return [];
+  return (INITIAL_PRODUCTS || []).map(normalizeProduct).filter(Boolean);
 }
 
-export function saveProduct(productData) {
+export async function saveProduct(productData) {
   try {
     setLocalSavingState(true);
     const list = getProducts();
@@ -216,14 +206,17 @@ export function saveProduct(productData) {
     }
 
     if (typeof window !== 'undefined') {
-      localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(updated));
+      try {
+        localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(updated));
+      } catch (storageErr) {
+        console.warn('localStorage quota warning:', storageErr);
+      }
     }
     notifyStoreUpdate();
 
     // Async push to Firebase Firestore for cross-browser live sync
-    saveProductToCloud(normalized).finally(() => {
-      setTimeout(() => setLocalSavingState(false), 1000);
-    });
+    const cloudResult = await saveProductToCloud(normalized);
+    setTimeout(() => setLocalSavingState(false), 800);
 
     return true;
   } catch (e) {
@@ -233,7 +226,7 @@ export function saveProduct(productData) {
   }
 }
 
-export function deleteProduct(productId) {
+export async function deleteProduct(productId) {
   try {
     setLocalSavingState(true);
     const list = getProducts();
@@ -244,9 +237,8 @@ export function deleteProduct(productId) {
     notifyStoreUpdate();
 
     // Async delete from Firebase Firestore
-    deleteProductFromCloud(productId).finally(() => {
-      setTimeout(() => setLocalSavingState(false), 1000);
-    });
+    await deleteProductFromCloud(productId);
+    setTimeout(() => setLocalSavingState(false), 800);
 
     return true;
   } catch (e) {
