@@ -190,12 +190,18 @@ export default function AdminPage({ onNavigate }) {
   // Open Add Product Modal
   const handleOpenAddProduct = () => {
     setEditingProduct(null);
+    const initialCat = (categories && categories.length > 0) ? categories[0] : null;
+    const initialCatName = initialCat ? initialCat.name : 'Earthing Parts';
+    const initialSubcat = (initialCat?.subcategories && initialCat.subcategories.length > 0)
+      ? initialCat.subcategories[0]
+      : '';
+    const initialRole = initialCat?.businessRole || (initialCatName === 'Spices & Agro Commodities' ? 'Merchant Exporter' : 'Manufacturer & Exporter');
     setProductForm({
       id: '',
       title: '',
-      category: 'Earthing Parts',
-      subcategory: 'Earth Rods & Conductors',
-      businessType: 'Manufacturer & Exporter',
+      category: initialCatName,
+      subcategory: initialSubcat,
+      businessType: initialRole,
       origin: 'Gujarat, India',
       description: '',
       image: 'https://images.unsplash.com/photo-1544724569-5f546fd6f2b5?auto=format&fit=crop&w=800&q=80',
@@ -2172,8 +2178,13 @@ export default function AdminPage({ onNavigate }) {
                       const catName = e.target.value;
                       const catObj = categories.find(c => c.name === catName);
                       const defaultRole = catObj?.businessRole || (catName === 'Spices & Agro Commodities' ? 'Merchant Exporter' : 'Manufacturer & Exporter');
-                      const defaultSub = (catObj?.subcategories && catObj.subcategories.length > 0) ? catObj.subcategories[0] : 'General';
-                      setProductForm({ ...productForm, category: catName, businessType: defaultRole, subcategory: defaultSub });
+                      const defaultSub = (catObj?.subcategories && catObj.subcategories.length > 0) ? catObj.subcategories[0] : '';
+                      setProductForm(prev => ({
+                        ...prev,
+                        category: catName,
+                        businessType: defaultRole,
+                        subcategory: defaultSub
+                      }));
                     }}
                     style={{ width: '100%', padding: '12px 14px', borderRadius: '8px', border: '1.5px solid #CBD5E1', fontSize: '14px', boxSizing: 'border-box' }}
                   >
@@ -2199,42 +2210,86 @@ export default function AdminPage({ onNavigate }) {
                 </div>
               </div>
 
-              {/* Subcategory */}
+              {/* Subcategory - Dynamically connected to selected Category */}
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                   <label style={{ fontSize: '13px', fontWeight: 800, color: '#1E293B' }}>
-                    Subcategory
+                    Subcategory (for "{productForm.category}") *
                   </label>
-                  <span style={{ fontSize: '12px', color: '#64748B' }}>Select preset or type custom</span>
+                  <span style={{ fontSize: '12px', color: '#011B47', fontWeight: 700 }}>
+                    {(() => {
+                      const count = categories.find(c => c.name === productForm.category)?.subcategories?.length || 0;
+                      return `${count} preset options`;
+                    })()}
+                  </span>
                 </div>
                 {(() => {
                   const currentCatObj = categories.find(c => c.name === productForm.category);
                   const subcats = currentCatObj?.subcategories || [];
+                  const isPreset = subcats.includes(productForm.subcategory);
+
                   return (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      {subcats.length > 0 && (
-                        <select
-                          value={subcats.includes(productForm.subcategory) ? productForm.subcategory : ''}
-                          onChange={(e) => {
-                            if (e.target.value) {
-                              setProductForm({ ...productForm, subcategory: e.target.value });
-                            }
-                          }}
-                          style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1.5px solid #CBD5E1', fontSize: '13.5px', background: '#F8FAFC' }}
-                        >
-                          <option value="">— Select from preset subcategories —</option>
-                          {subcats.map(sub => (
-                            <option key={sub} value={sub}>{sub}</option>
-                          ))}
-                        </select>
+                      {subcats.length > 0 ? (
+                        <>
+                          <select
+                            value={isPreset ? productForm.subcategory : (productForm.subcategory ? '__custom__' : '')}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              if (val === '__custom__') {
+                                setProductForm(prev => ({ ...prev, subcategory: '' }));
+                              } else {
+                                setProductForm(prev => ({ ...prev, subcategory: val }));
+                              }
+                            }}
+                            style={{ width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1.5px solid #CBD5E1', fontSize: '13.5px', background: '#F8FAFC', fontWeight: 600, color: '#0F172A' }}
+                          >
+                            <option value="">— Select Subcategory from {productForm.category} —</option>
+                            {subcats.map(sub => (
+                              <option key={sub} value={sub}>{sub}</option>
+                            ))}
+                            <option value="__custom__">➕ Type Custom Subcategory...</option>
+                          </select>
+
+                          {/* Quick clickable chips for 1-click select */}
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                            {subcats.map(sub => {
+                              const isSelected = productForm.subcategory === sub;
+                              return (
+                                <button
+                                  key={sub}
+                                  type="button"
+                                  onClick={() => setProductForm(prev => ({ ...prev, subcategory: sub }))}
+                                  style={{
+                                    padding: '5px 10px',
+                                    borderRadius: '6px',
+                                    fontSize: '12px',
+                                    fontWeight: 700,
+                                    cursor: 'pointer',
+                                    border: isSelected ? '1.5px solid #011B47' : '1px solid #CBD5E1',
+                                    background: isSelected ? '#011B47' : '#F1F5F9',
+                                    color: isSelected ? '#FFFFFF' : '#334155',
+                                    transition: 'all 0.15s ease'
+                                  }}
+                                >
+                                  {sub} {isSelected && '✓'}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </>
+                      ) : null}
+
+                      {/* Text input if user wants custom name or no presets available */}
+                      {(!isPreset || subcats.length === 0) && (
+                        <input
+                          type="text"
+                          placeholder={subcats.length === 0 ? `Enter subcategory for ${productForm.category}...` : 'Enter custom subcategory name...'}
+                          value={productForm.subcategory}
+                          onChange={(e) => setProductForm(prev => ({ ...prev, subcategory: e.target.value }))}
+                          style={{ width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1.5px solid #011B47', fontSize: '13.5px', boxSizing: 'border-box' }}
+                        />
                       )}
-                      <input
-                        type="text"
-                        placeholder="Or enter custom subcategory name..."
-                        value={productForm.subcategory}
-                        onChange={(e) => setProductForm({ ...productForm, subcategory: e.target.value })}
-                        style={{ width: '100%', padding: '12px 14px', borderRadius: '8px', border: '1.5px solid #CBD5E1', fontSize: '14px', boxSizing: 'border-box' }}
-                      />
                     </div>
                   );
                 })()}
