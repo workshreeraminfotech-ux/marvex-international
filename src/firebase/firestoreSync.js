@@ -15,6 +15,7 @@ import {
   notifyStoreUpdate 
 } from '../utils/adminStore';
 import { compressImage } from '../utils/imageCompressor';
+import { uploadOrCompressImage } from './imageUpload';
 
 import { PRODUCTS as INITIAL_PRODUCTS } from '../data/products';
 import { BLOGS as INITIAL_BLOGS } from '../data/blogs';
@@ -254,12 +255,12 @@ export async function saveProductToCloud(product) {
     if (!normalized || !normalized.id) return false;
     const clean = sanitizeForFirestore(normalized);
 
-    // Compress base64 image if needed to stay safely within Firestore 1MB doc limits
+    // Upload to Firebase Storage or compress to ultra-lightweight JPEG (<25KB)
     if (clean.image && typeof clean.image === 'string' && clean.image.startsWith('data:image')) {
       try {
-        clean.image = await compressImage(clean.image, 1000, 1000, 0.75);
+        clean.image = await uploadOrCompressImage(clean.image, 'products', clean.id);
       } catch (imgErr) {
-        console.warn('Image compression note:', imgErr);
+        console.warn('Product image storage note:', imgErr);
       }
     }
 
@@ -342,9 +343,9 @@ export async function saveBlogToCloud(blog) {
 
     if (clean.image && typeof clean.image === 'string' && clean.image.startsWith('data:image')) {
       try {
-        clean.image = await compressImage(clean.image, 1000, 1000, 0.75);
+        clean.image = await uploadOrCompressImage(clean.image, 'blogs', clean.id);
       } catch (imgErr) {
-        console.warn('Blog image compression note:', imgErr);
+        console.warn('Blog image storage note:', imgErr);
       }
     }
 
@@ -379,7 +380,7 @@ export async function saveCategoryToCloud(category) {
 
     if (clean.bgImg && typeof clean.bgImg === 'string' && clean.bgImg.startsWith('data:image')) {
       try {
-        clean.bgImg = await compressImage(clean.bgImg, 1000, 1000, 0.75);
+        clean.bgImg = await uploadOrCompressImage(clean.bgImg, 'categories', clean.id);
       } catch (imgErr) {}
     }
 

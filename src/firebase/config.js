@@ -1,5 +1,6 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
 
 // Default project configuration for Marvex International
 export const DEFAULT_FIREBASE_CONFIG = {
@@ -73,15 +74,19 @@ export function clearCustomFirebaseConfig() {
 
 let app = null;
 let db = null;
+let storage = null;
 
 try {
   const config = getActiveFirebaseConfig();
   if (config && config.projectId && config.apiKey) {
     app = getApps().length === 0 ? initializeApp(config) : getApp();
     db = getFirestore(app);
+    try {
+      storage = getStorage(app);
+    } catch (sErr) {}
   }
 } catch (err) {
   console.warn('Firebase initialization notice:', err);
 }
 
-export { app, db };
+export { app, db, storage };

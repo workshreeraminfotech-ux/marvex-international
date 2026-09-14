@@ -24,6 +24,7 @@ import {
 import { seedInitialDataToFirestore, pushAllLocalProductsToCloud } from '../firebase/firestoreSync';
 import { useStoreProducts, useStoreEnquiries, useStoreBlogs, useStoreCategories } from '../utils/useStore';
 import { compressImage } from '../utils/imageCompressor';
+import { uploadOrCompressImage } from '../firebase/imageUpload';
 import logoImg from '../assets/logo.png';
 
 const ICON_MAP = {
@@ -229,21 +230,36 @@ export default function AdminPage({ onNavigate }) {
     setIsProductModalOpen(true);
   };
 
-  // Save Product
+  // Save Product with Auto-Upload & Compression
   const handleSaveProduct = async (e) => {
     e.preventDefault();
     if (!productForm.title.trim()) return;
 
-    const payload = {
-      ...productForm,
-      id: editingProduct ? editingProduct.id : `prod-${Date.now()}`
-    };
+    try {
+      showToast('Saving & syncing product to Firebase...');
+      const prodId = editingProduct ? editingProduct.id : `prod-${Date.now()}`;
+      
+      let finalImg = productForm.image || '';
+      if (finalImg && finalImg.startsWith('data:image')) {
+        finalImg = await uploadOrCompressImage(finalImg, 'products', prodId);
+      }
 
-    showToast('Saving & syncing product to Firebase...');
-    const ok = await saveProduct(payload);
-    if (ok) {
-      setIsProductModalOpen(false);
-      showToast(editingProduct ? 'Product updated & synced live across all browsers!' : 'New product published & synced live across all browsers!');
+      const payload = {
+        ...productForm,
+        id: prodId,
+        image: finalImg
+      };
+
+      const ok = await saveProduct(payload);
+      if (ok) {
+        setIsProductModalOpen(false);
+        showToast(editingProduct ? 'Product updated & synced live across all browsers!' : 'New product published & synced live across all browsers!');
+      } else {
+        showToast('Warning: Local saved, check connection for cloud.');
+      }
+    } catch (saveErr) {
+      console.error('handleSaveProduct error:', saveErr);
+      showToast('Error saving: ' + saveErr.message);
     }
   };
 
@@ -334,17 +350,31 @@ export default function AdminPage({ onNavigate }) {
   };
 
   // Save Blog handler
-  const handleSaveBlog = (e) => {
+  const handleSaveBlog = async (e) => {
     e.preventDefault();
     if (!blogForm.title.trim()) return;
-    const payload = {
-      ...blogForm,
-      id: editingBlog ? editingBlog.id : `blog-${Date.now()}`
-    };
-    const ok = saveBlog(payload);
-    if (ok) {
-      setIsBlogModalOpen(false);
-      showToast(editingBlog ? 'Blog post updated & synced live!' : 'Blog post published & synced live!');
+
+    try {
+      showToast('Saving & syncing blog post...');
+      const blogId = editingBlog ? editingBlog.id : `blog-${Date.now()}`;
+      let finalImg = blogForm.image || '';
+      if (finalImg && finalImg.startsWith('data:image')) {
+        finalImg = await uploadOrCompressImage(finalImg, 'blogs', blogId);
+      }
+
+      const payload = {
+        ...blogForm,
+        id: blogId,
+        image: finalImg
+      };
+
+      const ok = await saveBlog(payload);
+      if (ok) {
+        setIsBlogModalOpen(false);
+        showToast(editingBlog ? 'Blog post updated & synced live!' : 'Blog post published & synced live!');
+      }
+    } catch (blogErr) {
+      console.error('handleSaveBlog error:', blogErr);
     }
   };
 
@@ -434,34 +464,46 @@ export default function AdminPage({ onNavigate }) {
     }));
   };
 
-  const handleSaveCategory = (e) => {
+  const handleSaveCategory = async (e) => {
     e.preventDefault();
     if (!categoryForm.name.trim()) {
       alert('Please enter category title/name.');
       return;
     }
-    const catId = editingCategory 
-      ? editingCategory.id 
-      : (categoryForm.id || categoryForm.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''));
-    
-    // Add pending subcategory tag if user typed but didn't click add
-    let currentSubcats = [...categoryForm.subcategories];
-    if (tempSubcatInput.trim() && !currentSubcats.includes(tempSubcatInput.trim())) {
-      currentSubcats.push(tempSubcatInput.trim());
-    }
 
-    const payload = {
-      ...categoryForm,
-      id: catId,
-      name: categoryForm.name.trim(),
-      title: categoryForm.name.trim(),
-      subcategories: currentSubcats
-    };
+    try {
+      showToast('Saving & syncing category...');
+      const catId = editingCategory 
+        ? editingCategory.id 
+        : (categoryForm.id || categoryForm.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''));
+      
+      let finalBg = categoryForm.bgImg || '';
+      if (finalBg && finalBg.startsWith('data:image')) {
+        finalBg = await uploadOrCompressImage(finalBg, 'categories', catId);
+      }
 
-    const ok = saveCategory(payload);
-    if (ok) {
-      setIsCategoryModalOpen(false);
-      showToast(editingCategory ? 'Category updated & synced live!' : 'New category created & synced live!');
+      // Add pending subcategory tag if user typed but didn't click add
+      let currentSubcats = [...categoryForm.subcategories];
+      if (tempSubcatInput.trim() && !currentSubcats.includes(tempSubcatInput.trim())) {
+        currentSubcats.push(tempSubcatInput.trim());
+      }
+
+      const payload = {
+        ...categoryForm,
+        id: catId,
+        name: categoryForm.name.trim(),
+        title: categoryForm.name.trim(),
+        bgImg: finalBg,
+        subcategories: currentSubcats
+      };
+
+      const ok = await saveCategory(payload);
+      if (ok) {
+        setIsCategoryModalOpen(false);
+        showToast(editingCategory ? 'Category updated & synced live!' : 'New category created & synced live!');
+      }
+    } catch (catErr) {
+      console.error('handleSaveCategory error:', catErr);
     }
   };
 
