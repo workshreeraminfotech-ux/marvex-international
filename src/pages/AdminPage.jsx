@@ -9,10 +9,10 @@ import {
   Cloud, Wifi, Check, Copy, Layers, Tag, Award, Truck, Box, Cpu, Sun, Factory, Ship, FolderPlus, Compass
 } from 'lucide-react';
 import { 
-  getProducts, saveProduct, deleteProduct, deleteAllProducts, resetProductsToDefault,
+  getProducts, saveProduct, deleteProduct, deleteAllProducts,
   getEnquiries, updateEnquiryStatus, deleteEnquiry,
-  getBlogs, saveBlog, deleteBlog, deleteAllBlogs, resetBlogsToDefault,
-  getCategories, saveCategory, deleteCategory, addSubcategory, editSubcategory, deleteSubcategory, resetCategoriesToDefault,
+  getBlogs, saveBlog, deleteBlog, deleteAllBlogs,
+  getCategories, saveCategory, deleteCategory, addSubcategory, editSubcategory, deleteSubcategory,
   checkAdminAuth, adminLogin, adminLogout
 } from '../utils/adminStore';
 import { 
@@ -284,27 +284,11 @@ export default function AdminPage({ onNavigate }) {
     showToast('Inquiries exported to CSV successfully!');
   };
 
-  // Reset to Factory Default
-  const handleResetToDefault = () => {
-    if (window.confirm('⚠️ Reset all products to default catalog? Any custom products added will be removed.')) {
-      resetProductsToDefault();
-      showToast('Catalog reset to default specifications.');
-    }
-  };
-
   // Delete All Blogs
   const handleDeleteAllBlogs = () => {
     if (window.confirm('⚠️ Are you sure you want to delete ALL blog posts?')) {
       deleteAllBlogs();
       showToast('All blogs deleted successfully.');
-    }
-  };
-
-  // Reset Blogs to Default
-  const handleResetBlogs = () => {
-    if (window.confirm('Reset blogs to default articles?')) {
-      resetBlogsToDefault();
-      showToast('Blogs reset to default articles.');
     }
   };
 
@@ -506,13 +490,6 @@ export default function AdminPage({ onNavigate }) {
     if (window.confirm(`Are you sure you want to delete subcategory "${subcatName}"?`)) {
       deleteSubcategory(categoryId, subcatName);
       showToast(`Subcategory "${subcatName}" deleted.`);
-    }
-  };
-
-  const handleResetCategories = () => {
-    if (window.confirm('Reset all categories & subcategories to factory defaults?')) {
-      resetCategoriesToDefault();
-      showToast('Categories reset to factory defaults.');
     }
   };
 
@@ -1098,26 +1075,6 @@ export default function AdminPage({ onNavigate }) {
                     <Plus size={16} />
                     <span>Add New Category</span>
                   </button>
-
-                  <button
-                    onClick={handleResetCategories}
-                    style={{
-                      padding: '10px 16px',
-                      background: '#FFFFFF',
-                      color: '#64748B',
-                      borderRadius: '10px',
-                      border: '1.5px solid #CBD5E1',
-                      fontSize: '13px',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '6px'
-                    }}
-                  >
-                    <RefreshCw size={14} />
-                    <span>Reset Defaults</span>
-                  </button>
                 </div>
               </div>
 
@@ -1516,27 +1473,6 @@ export default function AdminPage({ onNavigate }) {
                       <span>Delete All</span>
                     </button>
                   )}
-
-                  <button
-                    onClick={handleResetToDefault}
-                    title="Reset to original default catalog"
-                    style={{
-                      padding: '12px 16px',
-                      background: '#FFFFFF',
-                      color: '#64748B',
-                      borderRadius: '10px',
-                      border: '1.5px solid #CBD5E1',
-                      fontSize: '13px',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '6px'
-                    }}
-                  >
-                    <RefreshCw size={14} />
-                    <span>Reset Defaults</span>
-                  </button>
                 </div>
               </div>
 
@@ -1606,7 +1542,7 @@ export default function AdminPage({ onNavigate }) {
                             </div>
                             <p style={{ fontSize: '13px', color: '#64748B', margin: 0, lineHeight: 1.4 }}>
                               {products.length === 0 
-                                ? 'You have deleted all products or none have been added yet.' 
+                                ? 'No products have been added yet.' 
                                 : 'Try changing your search query or category filter.'}
                             </p>
                             <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
@@ -1616,14 +1552,6 @@ export default function AdminPage({ onNavigate }) {
                               >
                                 <Plus size={14} /> Add Product
                               </button>
-                              {products.length === 0 && (
-                                <button
-                                  onClick={handleResetToDefault}
-                                  style={{ padding: '8px 16px', background: '#FFFFFF', color: '#64748B', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '12.5px', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-                                >
-                                  <RefreshCw size={14} /> Restore Defaults
-                                </button>
-                              )}
                             </div>
                           </div>
                         </td>
@@ -1931,26 +1859,6 @@ export default function AdminPage({ onNavigate }) {
                       <span>Delete All</span>
                     </button>
                   )}
-
-                  <button
-                    onClick={handleResetBlogs}
-                    style={{
-                      padding: '10px 16px',
-                      background: '#FFFFFF',
-                      color: '#64748B',
-                      borderRadius: '10px',
-                      border: '1.5px solid #CBD5E1',
-                      fontSize: '13px',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '6px'
-                    }}
-                  >
-                    <RefreshCw size={14} />
-                    <span>Reset Defaults</span>
-                  </button>
                 </div>
               </div>
 
@@ -1962,7 +1870,7 @@ export default function AdminPage({ onNavigate }) {
                     </div>
                     <div style={{ fontWeight: 800, color: '#011B47', fontSize: '16px' }}>No Blog Articles</div>
                     <p style={{ fontSize: '13px', color: '#64748B', margin: 0 }}>
-                      Add a new blog post or restore the default articles.
+                      Add a new blog post to get started.
                     </p>
                     <div style={{ display: 'flex', gap: '10px', marginTop: '6px' }}>
                       <button
@@ -1970,12 +1878,6 @@ export default function AdminPage({ onNavigate }) {
                         style={{ padding: '8px 16px', background: '#011B47', color: '#FFFFFF', borderRadius: '8px', border: 'none', fontSize: '12.5px', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                       >
                         <Plus size={14} /> Add Blog Post
-                      </button>
-                      <button
-                        onClick={handleResetBlogs}
-                        style={{ padding: '8px 16px', background: '#FFFFFF', color: '#64748B', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '12.5px', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-                      >
-                        <RefreshCw size={14} /> Restore Defaults
                       </button>
                     </div>
                   </div>
