@@ -11,9 +11,7 @@ import {
 import { db, isFirebaseConfigured } from './config';
 import { 
   normalizeProduct, 
-  notifyStoreUpdate, 
-  getProducts as getLocalProducts,
-  getBlogs as getLocalBlogs 
+  notifyStoreUpdate 
 } from '../utils/adminStore';
 
 import { PRODUCTS as INITIAL_PRODUCTS } from '../data/products';
@@ -82,18 +80,11 @@ export function initFirestoreRealtimeSync() {
         });
         const normalized = remoteProducts.map(normalizeProduct).filter(Boolean);
         localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(normalized));
-        notifyStoreUpdate();
       } else {
-        // If Firestore is empty, check if we currently have local products
-        const local = getLocalProducts();
-        if (local && local.length > 0) {
-          // Push existing local products to Firestore instead of wiping them out
-          local.forEach(p => saveProductToCloud(p));
-        } else {
-          localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify([]));
-          notifyStoreUpdate();
-        }
+        // Firestore is empty — respect the empty state, do NOT push local products back
+        localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify([]));
       }
+      notifyStoreUpdate();
     }, (error) => {
       console.warn('Firestore Products sync notice:', error.message);
     });
@@ -124,16 +115,11 @@ export function initFirestoreRealtimeSync() {
           remoteBlogs.push({ id: docSnap.id, ...docSnap.data() });
         });
         localStorage.setItem(STORAGE_KEYS.BLOGS, JSON.stringify(remoteBlogs));
-        notifyStoreUpdate();
       } else {
-        const localBlogs = getLocalBlogs();
-        if (localBlogs && localBlogs.length > 0) {
-          localBlogs.forEach(b => saveBlogToCloud(b));
-        } else {
-          localStorage.setItem(STORAGE_KEYS.BLOGS, JSON.stringify([]));
-          notifyStoreUpdate();
-        }
+        // Firestore is empty — respect the empty state, do NOT push local blogs back
+        localStorage.setItem(STORAGE_KEYS.BLOGS, JSON.stringify([]));
       }
+      notifyStoreUpdate();
     }, (error) => {
       console.warn('Firestore Blogs sync notice:', error.message);
     });

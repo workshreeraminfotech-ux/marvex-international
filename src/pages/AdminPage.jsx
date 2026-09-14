@@ -287,6 +287,73 @@ export default function AdminPage({ onNavigate }) {
     }
   };
 
+  // Blog editing state
+  const [editingBlog, setEditingBlog] = useState(null);
+
+  // Open Add Blog Modal
+  const handleOpenAddBlog = () => {
+    setEditingBlog(null);
+    setBlogForm({
+      id: '',
+      title: '',
+      category: 'Global Trade',
+      author: 'Marvex Export Desk',
+      readTime: '4 min read',
+      image: '',
+      excerpt: '',
+      content: ''
+    });
+    setIsBlogModalOpen(true);
+  };
+
+  // Open Edit Blog Modal
+  const handleOpenEditBlog = (blog) => {
+    setEditingBlog(blog);
+    setBlogForm({
+      id: blog.id,
+      title: blog.title || '',
+      category: blog.category || 'Global Trade',
+      author: blog.author || 'Marvex Export Desk',
+      readTime: blog.readTime || '4 min read',
+      image: blog.image || '',
+      excerpt: blog.excerpt || '',
+      content: blog.content || ''
+    });
+    setIsBlogModalOpen(true);
+  };
+
+  // Save Blog handler
+  const handleSaveBlog = (e) => {
+    e.preventDefault();
+    if (!blogForm.title.trim()) return;
+    const payload = {
+      ...blogForm,
+      id: editingBlog ? editingBlog.id : `blog-${Date.now()}`
+    };
+    const ok = saveBlog(payload);
+    if (ok) {
+      setIsBlogModalOpen(false);
+      showToast(editingBlog ? 'Blog post updated & synced live!' : 'Blog post published & synced live!');
+    }
+  };
+
+  // Blog image upload handler
+  const handleBlogImageUpload = (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Please select an image smaller than 5MB.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (uploadEvent) => {
+      setBlogForm(prev => ({ ...prev, image: uploadEvent.target.result }));
+    };
+    reader.readAsDataURL(file);
+  };
+
+
+
   // =========================================================================
   // 1. LOGIN SCREEN (If not authenticated)
   // =========================================================================
@@ -1260,6 +1327,26 @@ export default function AdminPage({ onNavigate }) {
                 </div>
 
                 <div style={{ display: 'flex', gap: '10px' }}>
+                  <button
+                    onClick={handleOpenAddBlog}
+                    style={{
+                      padding: '12px 22px',
+                      background: '#011B47',
+                      color: '#FFFFFF',
+                      borderRadius: '10px',
+                      border: 'none',
+                      fontSize: '14px',
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '8px'
+                    }}
+                  >
+                    <Plus size={16} />
+                    <span>Add Blog Post</span>
+                  </button>
+
                   {blogs.length > 0 && (
                     <button
                       onClick={handleDeleteAllBlogs}
@@ -1312,21 +1399,29 @@ export default function AdminPage({ onNavigate }) {
                     </div>
                     <div style={{ fontWeight: 800, color: '#011B47', fontSize: '16px' }}>No Blog Articles</div>
                     <p style={{ fontSize: '13px', color: '#64748B', margin: 0 }}>
-                      You have deleted all blog articles.
+                      Add a new blog post or restore the default articles.
                     </p>
-                    <button
-                      onClick={handleResetBlogs}
-                      style={{ padding: '8px 16px', background: '#011B47', color: '#FFFFFF', borderRadius: '8px', border: 'none', fontSize: '12.5px', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px', marginTop: '6px' }}
-                    >
-                      <RefreshCw size={14} /> Restore Default Articles
-                    </button>
+                    <div style={{ display: 'flex', gap: '10px', marginTop: '6px' }}>
+                      <button
+                        onClick={handleOpenAddBlog}
+                        style={{ padding: '8px 16px', background: '#011B47', color: '#FFFFFF', borderRadius: '8px', border: 'none', fontSize: '12.5px', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                      >
+                        <Plus size={14} /> Add Blog Post
+                      </button>
+                      <button
+                        onClick={handleResetBlogs}
+                        style={{ padding: '8px 16px', background: '#FFFFFF', color: '#64748B', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '12.5px', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                      >
+                        <RefreshCw size={14} /> Restore Defaults
+                      </button>
+                    </div>
                   </div>
                 </div>
               ) : (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
                   {blogs.map(blog => (
-                    <div key={blog.id} style={{ background: '#FFFFFF', borderRadius: '16px', overflow: 'hidden', border: '1px solid #E2E8F0' }}>
-                      <img src={blog.image} alt={blog.title} style={{ width: '100%', height: '160px', objectFit: 'cover' }} />
+                    <div key={blog.id} style={{ background: '#FFFFFF', borderRadius: '16px', overflow: 'hidden', border: '1px solid #E2E8F0', boxShadow: '0 4px 16px rgba(0,0,0,0.03)' }}>
+                      <img src={blog.image || 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&w=800&q=80'} alt={blog.title} style={{ width: '100%', height: '160px', objectFit: 'cover' }} />
                       <div style={{ padding: '18px' }}>
                         <span style={{ fontSize: '11px', fontWeight: 800, background: '#F1F5F9', color: '#011B47', padding: '3px 8px', borderRadius: '4px' }}>
                           {blog.category}
@@ -1338,13 +1433,22 @@ export default function AdminPage({ onNavigate }) {
                           {blog.excerpt}
                         </p>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #F1F5F9', paddingTop: '12px' }}>
-                          <span style={{ fontSize: '12px', color: '#94A3B8' }}>{blog.date}</span>
-                          <button
-                            onClick={() => deleteBlog(blog.id)}
-                            style={{ background: '#FEE2E2', color: '#DC2626', border: 'none', padding: '4px 8px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer' }}
-                          >
-                            Delete
-                          </button>
+                          <span style={{ fontSize: '12px', color: '#94A3B8' }}>{blog.date || 'Draft'}</span>
+                          <div style={{ display: 'inline-flex', gap: '8px' }}>
+                            <button
+                              onClick={() => handleOpenEditBlog(blog)}
+                              style={{ background: '#F1F5F9', color: '#011B47', border: 'none', padding: '5px 10px', borderRadius: '6px', fontSize: '12px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                            >
+                              <Edit3 size={12} /> Edit
+                            </button>
+                            <button
+                              onClick={() => { if(window.confirm(`Delete "${blog.title}"?`)) { deleteBlog(blog.id); showToast('Blog deleted.'); } }}
+                              style={{ background: '#FEE2E2', color: '#DC2626', border: 'none', padding: '5px 8px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer' }}
+                              title="Delete Blog"
+                            >
+                              <Trash2 size={13} />
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -1358,6 +1462,179 @@ export default function AdminPage({ onNavigate }) {
 
         </main>
       </div>
+
+      {/* ===================================================================== */}
+      {/* 5. ADD / EDIT BLOG MODAL */}
+      {/* ===================================================================== */}
+      {isBlogModalOpen && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0,0,0,0.6)',
+          zIndex: 9999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '20px',
+          backdropFilter: 'blur(4px)'
+        }}>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            style={{
+              width: '100%',
+              maxWidth: '700px',
+              maxHeight: '92vh',
+              background: '#FFFFFF',
+              borderRadius: '24px',
+              padding: '32px',
+              boxShadow: '0 25px 60px rgba(0,0,0,0.3)',
+              overflowY: 'auto',
+              border: '1.5px solid #E2E8F0'
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid #E2E8F0', paddingBottom: '14px' }}>
+              <h3 style={{ fontSize: '20px', fontWeight: 900, color: '#011B47', margin: 0 }}>
+                {editingBlog ? 'Edit Blog Post' : 'Publish New Blog Post'}
+              </h3>
+              <button
+                onClick={() => setIsBlogModalOpen(false)}
+                style={{ background: 'none', border: 'none', color: '#64748B', cursor: 'pointer' }}
+              >
+                <X size={22} />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveBlog} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+
+              {/* Blog Title */}
+              <div>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 800, color: '#1E293B', marginBottom: '6px' }}>Blog Title *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Top 5 Spice Export Markets in 2025"
+                  value={blogForm.title}
+                  onChange={(e) => setBlogForm({ ...blogForm, title: e.target.value })}
+                  style={{ width: '100%', padding: '12px 14px', borderRadius: '8px', border: '1.5px solid #CBD5E1', fontSize: '14px', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              {/* Category & Author */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '13px', fontWeight: 800, color: '#1E293B', marginBottom: '6px' }}>Category</label>
+                  <select
+                    value={blogForm.category}
+                    onChange={(e) => setBlogForm({ ...blogForm, category: e.target.value })}
+                    style={{ width: '100%', padding: '12px 14px', borderRadius: '8px', border: '1.5px solid #CBD5E1', fontSize: '14px', boxSizing: 'border-box' }}
+                  >
+                    {['Global Trade', 'Spice Export', 'Earthing Standards', 'Product Spotlight', 'Market Insights', 'Compliance & Certifications'].map(c => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '13px', fontWeight: 800, color: '#1E293B', marginBottom: '6px' }}>Author</label>
+                  <input
+                    type="text"
+                    value={blogForm.author}
+                    onChange={(e) => setBlogForm({ ...blogForm, author: e.target.value })}
+                    style={{ width: '100%', padding: '12px 14px', borderRadius: '8px', border: '1.5px solid #CBD5E1', fontSize: '14px', boxSizing: 'border-box' }}
+                  />
+                </div>
+              </div>
+
+              {/* Read Time */}
+              <div>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 800, color: '#1E293B', marginBottom: '6px' }}>Read Time</label>
+                <input
+                  type="text"
+                  placeholder="e.g. 4 min read"
+                  value={blogForm.readTime}
+                  onChange={(e) => setBlogForm({ ...blogForm, readTime: e.target.value })}
+                  style={{ width: '100%', padding: '12px 14px', borderRadius: '8px', border: '1.5px solid #CBD5E1', fontSize: '14px', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              {/* Blog Cover Image */}
+              <div>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 800, color: '#1E293B', marginBottom: '6px' }}>Cover Photo (Upload or Paste URL)</label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <label style={{ padding: '10px 16px', background: '#011B47', color: '#FFFFFF', borderRadius: '8px', fontSize: '13px', fontWeight: 800, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                      <Upload size={15} />
+                      <span>Upload Photo</span>
+                      <input type="file" accept="image/*" onChange={handleBlogImageUpload} style={{ display: 'none' }} />
+                    </label>
+                    <span style={{ fontSize: '12px', color: '#64748B' }}>PNG, JPG, WEBP</span>
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Or paste direct image URL (https://...)"
+                    value={blogForm.image}
+                    onChange={(e) => setBlogForm({ ...blogForm, image: e.target.value })}
+                    style={{ width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1.5px solid #CBD5E1', fontSize: '13.5px', boxSizing: 'border-box' }}
+                  />
+                  {blogForm.image && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: '#F8FAFC', padding: '10px 14px', borderRadius: '10px', border: '1.5px solid #E2E8F0' }}>
+                      <img src={blogForm.image} alt="Preview" style={{ width: '56px', height: '40px', borderRadius: '6px', objectFit: 'cover', border: '1px solid #CBD5E1' }} />
+                      <div style={{ flex: 1, fontSize: '12.5px', fontWeight: 700, color: '#10B981', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <CheckCircle2 size={14} /> Cover Photo Ready
+                      </div>
+                      <button type="button" onClick={() => setBlogForm({ ...blogForm, image: '' })} style={{ background: '#FEE2E2', border: 'none', color: '#DC2626', padding: '5px 10px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', fontWeight: 700 }}>Remove</button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Excerpt */}
+              <div>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 800, color: '#1E293B', marginBottom: '6px' }}>Excerpt / Short Summary</label>
+                <textarea
+                  rows={2}
+                  placeholder="A brief 1-2 sentence summary of the article..."
+                  value={blogForm.excerpt}
+                  onChange={(e) => setBlogForm({ ...blogForm, excerpt: e.target.value })}
+                  style={{ width: '100%', padding: '12px 14px', borderRadius: '8px', border: '1.5px solid #CBD5E1', fontSize: '14px', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              {/* Full Content */}
+              <div>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 800, color: '#1E293B', marginBottom: '6px' }}>Full Article Content</label>
+                <textarea
+                  rows={6}
+                  placeholder="Write the full blog article content here..."
+                  value={blogForm.content}
+                  onChange={(e) => setBlogForm({ ...blogForm, content: e.target.value })}
+                  style={{ width: '100%', padding: '12px 14px', borderRadius: '8px', border: '1.5px solid #CBD5E1', fontSize: '14px', boxSizing: 'border-box', lineHeight: 1.6 }}
+                />
+              </div>
+
+              {/* Modal Buttons */}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '8px', borderTop: '1px solid #E2E8F0', paddingTop: '16px' }}>
+                <button
+                  type="button"
+                  onClick={() => setIsBlogModalOpen(false)}
+                  style={{ padding: '12px 20px', background: '#F1F5F9', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: 700, cursor: 'pointer', color: '#475569' }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  style={{ padding: '12px 26px', background: '#011B47', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: 800, cursor: 'pointer', color: '#FFFFFF' }}
+                >
+                  {editingBlog ? 'Update Blog Post' : 'Publish Blog Post'}
+                </button>
+              </div>
+
+            </form>
+          </motion.div>
+        </div>
+      )}
+
+
 
       {/* ===================================================================== */}
       {/* 3. ADD / EDIT PRODUCT MODAL */}
