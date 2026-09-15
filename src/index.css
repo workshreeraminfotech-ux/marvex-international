@@ -3033,10 +3033,10 @@ img, video, iframe, canvas, svg {
   }
 
   .jrp-hero-section {
-    min-height: 800px !important;
+    min-height: 1000px !important;
     display: flex !important;
     align-items: center !important;
-    padding: 130px 0 130px !important;
+    padding: 160px 0 160px !important;
   }
 
   .jrp-hero-section h1 {
