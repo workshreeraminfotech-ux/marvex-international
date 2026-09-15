@@ -23,6 +23,17 @@ export default function Navbar({ activePage, onNavigate }) {
   const [mobileCategoriesOpen, setMobileCategoriesOpen] = useState(true);
   const dropdownTimeoutRef = useRef(null);
 
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileOpen]);
+
   const categories = useStoreCategories();
 
   const categoriesMenu = useMemo(() => {
@@ -304,35 +315,33 @@ export default function Navbar({ activePage, onNavigate }) {
       {/* Mobile Drawer Navigation Menu */}
       {mobileOpen && (
         <div 
-          style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(0,0,0,0.5)',
-            zIndex: 9998,
-            display: 'flex',
-            justifyContent: 'flex-end'
-          }}
+          className="jrp-offcanvas-overlay"
           onClick={() => setMobileOpen(false)}
         >
           <div 
-            style={{
-              width: '85%',
-              maxWidth: '360px',
-              backgroundColor: '#FFFFFF',
-              height: '100%',
-              padding: '24px',
-              boxSizing: 'border-box',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '16px',
-              overflowY: 'auto'
-            }}
+            className="jrp-offcanvas"
             onClick={(e) => e.stopPropagation()}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #E2E8F0', paddingBottom: '14px' }}>
-              <img src={logoImg} alt="Logo" style={{ height: '48px', objectFit: 'contain' }} />
-              <button onClick={() => setMobileOpen(false)} style={{ background: 'none', border: 'none', color: '#64748B', cursor: 'pointer' }}>
-                <X size={24} />
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #E2E8F0', paddingBottom: '16px', marginBottom: '8px' }}>
+              <img src={logoImg} alt="Marvex International" style={{ height: '42px', objectFit: 'contain' }} />
+              <button 
+                onClick={() => setMobileOpen(false)} 
+                style={{ 
+                  background: '#F1F5F9', 
+                  border: 'none', 
+                  color: '#1E293B', 
+                  cursor: 'pointer',
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '10px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'background 0.2s'
+                }}
+                aria-label="Close Navigation"
+              >
+                <X size={22} />
               </button>
             </div>
 
@@ -345,7 +354,7 @@ export default function Navbar({ activePage, onNavigate }) {
                   fontWeight: 700,
                   color: activePage === 'home' ? 'var(--gold-deep)' : 'var(--navy)',
                   textDecoration: 'none',
-                  padding: '10px 12px',
+                  padding: '12px 14px',
                   borderRadius: '10px',
                   backgroundColor: activePage === 'home' ? '#FFFBEB' : 'transparent'
                 }}
@@ -361,7 +370,7 @@ export default function Navbar({ activePage, onNavigate }) {
                   fontWeight: 700,
                   color: activePage === 'about' ? 'var(--gold-deep)' : 'var(--navy)',
                   textDecoration: 'none',
-                  padding: '10px 12px',
+                  padding: '12px 14px',
                   borderRadius: '10px',
                   backgroundColor: activePage === 'about' ? '#FFFBEB' : 'transparent'
                 }}
@@ -370,7 +379,7 @@ export default function Navbar({ activePage, onNavigate }) {
               </a>
 
               {/* Mobile Categories Accordion */}
-              <div style={{ border: '1px solid #E2E8F0', borderRadius: '14px', overflow: 'hidden' }}>
+              <div style={{ border: '1px solid #E2E8F0', borderRadius: '12px', overflow: 'hidden' }}>
                 <div 
                   onClick={() => setMobileCategoriesOpen(!mobileCategoriesOpen)} 
                   style={{ 
@@ -430,7 +439,7 @@ export default function Navbar({ activePage, onNavigate }) {
                   fontWeight: 700,
                   color: activePage === 'blog' ? 'var(--gold-deep)' : 'var(--navy)',
                   textDecoration: 'none',
-                  padding: '10px 12px',
+                  padding: '12px 14px',
                   borderRadius: '10px',
                   backgroundColor: activePage === 'blog' ? '#FFFBEB' : 'transparent'
                 }}
@@ -446,7 +455,7 @@ export default function Navbar({ activePage, onNavigate }) {
                   fontWeight: 700,
                   color: activePage === 'contact' ? 'var(--gold-deep)' : 'var(--navy)',
                   textDecoration: 'none',
-                  padding: '10px 12px',
+                  padding: '12px 14px',
                   borderRadius: '10px',
                   backgroundColor: activePage === 'contact' ? '#FFFBEB' : 'transparent'
                 }}
