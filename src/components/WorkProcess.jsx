@@ -31,7 +31,7 @@ export default function WorkProcess() {
   ];
 
   return (
-    <section style={{ padding: '54px 0', background: 'var(--cream)', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }} id="process">
+    <section style={{ padding: '64px 0', background: '#FFFFFF', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }} id="process">
       <div className="container">
         
         {/* Header */}
@@ -58,15 +58,17 @@ export default function WorkProcess() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: idx * 0.12 }}
+                whileHover={{ y: -6, boxShadow: '0 16px 36px rgba(1, 27, 71, 0.12)' }}
                 style={{
-                  background: '#FFFFFF',
+                  background: '#F8FAFC',
                   borderRadius: '20px',
                   padding: '32px 24px',
                   border: '1.5px solid var(--border)',
-                  boxShadow: '0 8px 24px rgba(27, 75, 122, 0.07)',
+                  boxShadow: '0 6px 20px rgba(1, 27, 71, 0.05)',
                   position: 'relative',
                   display: 'flex',
-                  flexDirection: 'column'
+                  flexDirection: 'column',
+                  transition: 'all 0.3s ease'
                 }}
               >
                 {/* Step Badge */}
