@@ -166,24 +166,69 @@ export function normalizeProduct(p) {
   };
 }
 
+/// In-Memory Caches for Unlimited Scale & Zero Storage Quota Freezes
+let memoryProductsCache = null;
+let memoryCategoriesCache = null;
+let memoryBlogsCache = null;
+let memoryInquiriesCache = null;
+
+export function updateInMemoryProducts(list) {
+  if (Array.isArray(list)) {
+    memoryProductsCache = list;
+  }
+}
+
+export function safeSetLocalStorage(key, items) {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(key, JSON.stringify(items));
+  } catch (quotaErr) {
+    console.warn(`LocalStorage quota reached for key ${key}, saving lightweight version...`, quotaErr);
+    try {
+      if (Array.isArray(items)) {
+        const lightweight = items.map(item => {
+          if (!item) return item;
+          if (item.image && typeof item.image === 'string' && item.image.startsWith('data:image') && item.image.length > 5000) {
+            return { ...item, image: '' };
+          }
+          if (item.bgImg && typeof item.bgImg === 'string' && item.bgImg.startsWith('data:image') && item.bgImg.length > 5000) {
+            return { ...item, bgImg: '' };
+          }
+          return item;
+        });
+        localStorage.setItem(key, JSON.stringify(lightweight));
+      }
+    } catch (fallbackErr) {
+      console.warn('LocalStorage secondary fallback notice:', fallbackErr);
+    }
+  }
+}
+
 // ==========================================
 // --- PRODUCTS STORE ---
 // ==========================================
 export function getProducts() {
+  if (memoryProductsCache !== null && Array.isArray(memoryProductsCache) && memoryProductsCache.length > 0) {
+    return memoryProductsCache;
+  }
   try {
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem(STORAGE_KEYS.PRODUCTS);
       if (stored !== null) {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed.map(normalizeProduct).filter(Boolean);
+          const list = parsed.map(normalizeProduct).filter(Boolean);
+          memoryProductsCache = list;
+          return list;
         }
       }
     }
   } catch (e) {
     console.error('Error loading products from storage:', e);
   }
-  return (INITIAL_PRODUCTS || []).map(normalizeProduct).filter(Boolean);
+  const defaults = (INITIAL_PRODUCTS || []).map(normalizeProduct).filter(Boolean);
+  memoryProductsCache = defaults;
+  return defaults;
 }
 
 export async function saveProduct(productData) {
@@ -205,17 +250,12 @@ export async function saveProduct(productData) {
       updated = [normalized, ...list];
     }
 
-    if (typeof window !== 'undefined') {
-      try {
-        localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(updated));
-      } catch (storageErr) {
-        console.warn('localStorage quota warning:', storageErr);
-      }
-    }
+    memoryProductsCache = updated;
+    safeSetLocalStorage(STORAGE_KEYS.PRODUCTS, updated);
     notifyStoreUpdate();
 
     // Async push to Firebase Firestore for cross-browser live sync
-    const cloudResult = await saveProductToCloud(normalized);
+    await saveProductToCloud(normalized);
     setTimeout(() => setLocalSavingState(false), 800);
 
     return true;
@@ -231,9 +271,8 @@ export async function deleteProduct(productId) {
     setLocalSavingState(true);
     const list = getProducts();
     const updated = list.filter(p => p.id !== productId);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(updated));
-    }
+    memoryProductsCache = updated;
+    safeSetLocalStorage(STORAGE_KEYS.PRODUCTS, updated);
     notifyStoreUpdate();
 
     // Async delete from Firebase Firestore
@@ -251,9 +290,8 @@ export async function deleteProduct(productId) {
 export function deleteAllProducts() {
   try {
     setLocalSavingState(true);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify([]));
-    }
+    memoryProductsCache = [];
+    safeSetLocalStorage(STORAGE_KEYS.PRODUCTS, []);
     notifyStoreUpdate();
 
     // Async clear all from Firebase Firestore
@@ -264,7 +302,7 @@ export function deleteAllProducts() {
     return true;
   } catch (e) {
     setLocalSavingState(false);
-    console.error('Error deleting all products:', e);
+    console.error('Error clearing products:', e);
     return false;
   }
 }

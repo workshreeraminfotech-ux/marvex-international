@@ -12,7 +12,9 @@ import { db, isFirebaseConfigured } from './config';
 import { 
   normalizeProduct, 
   normalizeCategory,
-  notifyStoreUpdate 
+  notifyStoreUpdate,
+  updateInMemoryProducts,
+  safeSetLocalStorage
 } from '../utils/adminStore';
 import { compressImage } from '../utils/imageCompressor';
 import { uploadOrCompressImage } from './imageUpload';
@@ -86,7 +88,8 @@ export function initFirestoreRealtimeSync() {
           remoteProducts.push({ id: docSnap.id, ...docSnap.data() });
         });
         const normalized = remoteProducts.map(normalizeProduct).filter(Boolean);
-        localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(normalized));
+        updateInMemoryProducts(normalized);
+        safeSetLocalStorage(STORAGE_KEYS.PRODUCTS, normalized);
         notifyStoreUpdate();
       }
     }, (error) => {
@@ -102,7 +105,7 @@ export function initFirestoreRealtimeSync() {
       });
       // Sort newest first
       remoteInquiries.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
-      localStorage.setItem(STORAGE_KEYS.INQUIRIES, JSON.stringify(remoteInquiries));
+      safeSetLocalStorage(STORAGE_KEYS.INQUIRIES, remoteInquiries);
       notifyStoreUpdate();
     }, (error) => {
       console.warn('Firestore Inquiries sync notice:', error.message);
@@ -118,9 +121,9 @@ export function initFirestoreRealtimeSync() {
         snapshot.forEach((docSnap) => {
           remoteBlogs.push({ id: docSnap.id, ...docSnap.data() });
         });
-        localStorage.setItem(STORAGE_KEYS.BLOGS, JSON.stringify(remoteBlogs));
+        safeSetLocalStorage(STORAGE_KEYS.BLOGS, remoteBlogs);
       } else {
-        localStorage.setItem(STORAGE_KEYS.BLOGS, JSON.stringify([]));
+        safeSetLocalStorage(STORAGE_KEYS.BLOGS, []);
       }
       notifyStoreUpdate();
     }, (error) => {
@@ -138,9 +141,7 @@ export function initFirestoreRealtimeSync() {
           remoteCategories.push({ id: docSnap.id, ...docSnap.data() });
         });
         const normalized = remoteCategories.map(normalizeCategory).filter(Boolean);
-        localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(normalized));
-      } else {
-        // If empty in Firestore, don't clear completely if first run, or keep initialized
+        safeSetLocalStorage(STORAGE_KEYS.CATEGORIES, normalized);
       }
       notifyStoreUpdate();
     }, (error) => {
