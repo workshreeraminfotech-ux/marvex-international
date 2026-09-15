@@ -18,32 +18,6 @@ export default function AboutUs({ onNavigate }) {
             transition={{ duration: 0.6 }}
             style={{ position: 'relative', width: '100%' }}
           >
-            {/* Floating Experience Badge */}
-            <div style={{
-              position: 'absolute',
-              top: '-18px',
-              left: '18px',
-              background: '#011B47',
-              color: '#FFFFFF',
-              padding: '14px 22px',
-              borderRadius: '18px',
-              boxShadow: '0 16px 36px rgba(1, 27, 71, 0.4)',
-              border: '2px solid #FFFFFF',
-              zIndex: 10,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              backdropFilter: 'blur(8px)',
-              maxWidth: 'calc(100% - 36px)'
-            }}>
-              <span style={{ fontSize: '28px', fontWeight: 900, fontFamily: 'var(--font-h, Outfit, sans-serif)', color: '#FFFFFF', lineHeight: 1 }}>
-                Global
-              </span>
-              <span style={{ fontSize: '12px', fontWeight: 800, lineHeight: 1.3, color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                Excellence in<br />Commodity Exports
-              </span>
-            </div>
-
             {/* Main About Us Photo Frame */}
             <div style={{
               position: 'relative',
@@ -52,7 +26,7 @@ export default function AboutUs({ onNavigate }) {
               border: '2px solid var(--border)',
               boxShadow: '0 18px 40px rgba(1, 27, 71, 0.12)',
               backgroundColor: '#FFFFFF',
-              marginTop: '16px',
+              marginTop: '0',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
