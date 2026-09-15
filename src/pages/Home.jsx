@@ -3,9 +3,7 @@ import HeroBannerSlider from '../components/HeroBannerSlider';
 import AboutUs from '../components/AboutUs';
 import CounterSection from '../components/CounterSection';
 import MainSeedsShowcase from '../components/MainSeedsShowcase';
-import WhyChooseUs from '../components/WhyChooseUs';
 import WorkProcess from '../components/WorkProcess';
-import ExportCapabilitiesSection from '../components/ExportCapabilitiesSection';
 import CertificationsSection from '../components/CertificationsSection';
 import TestimonialsSection from '../components/TestimonialsSection';
 import FAQ from '../components/FAQ';
@@ -18,9 +16,7 @@ export default function Home({ onSelectProduct, onNavigate, onOpenQuote }) {
       <AboutUs onNavigate={onNavigate} />
       <CounterSection />
       <MainSeedsShowcase onSelectProduct={onSelectProduct} onOpenQuote={(product) => onOpenQuote(product)} onNavigate={onNavigate} />
-      <WhyChooseUs onNavigate={onNavigate} />
       <WorkProcess />
-      <ExportCapabilitiesSection onNavigate={onNavigate} onOpenQuote={(item) => onOpenQuote(item)} />
       <CertificationsSection />
       <TestimonialsSection />
       <FAQ />
@@ -28,3 +24,4 @@ export default function Home({ onSelectProduct, onNavigate, onOpenQuote }) {
     </div>
   );
 }
+
