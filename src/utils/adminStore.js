@@ -147,6 +147,8 @@ export function normalizeProduct(p) {
   
   const businessType = p.businessType || (category === 'Spices & Agro Commodities' ? 'Merchant Exporter' : 'Manufacturer & Exporter');
 
+  const createdAt = p.createdAt || p.timestamp || (p.id && String(p.id).startsWith('prod-') ? Number(String(p.id).split('-')[1]) || Date.now() : Date.now());
+
   return {
     ...p,
     id: p.id || `prod-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
@@ -162,7 +164,9 @@ export function normalizeProduct(p) {
     desc: p.desc || p.description || '',
     hsCode: p.hsCode || '',
     image: p.image || 'https://images.unsplash.com/photo-1544724569-5f546fd6f2b5?auto=format&fit=crop&w=800&q=80',
-    isFeatured: Boolean(p.isFeatured)
+    isFeatured: Boolean(p.isFeatured),
+    createdAt,
+    order: typeof p.order === 'number' ? p.order : (createdAt || Date.now())
   };
 }
 
@@ -247,7 +251,8 @@ export async function saveProduct(productData) {
       updated = [...list];
       updated[existingIdx] = normalized;
     } else {
-      updated = [normalized, ...list];
+      // Append to the end to maintain chronological sequence (first added stays first)
+      updated = [...list, normalized];
     }
 
     memoryProductsCache = updated;

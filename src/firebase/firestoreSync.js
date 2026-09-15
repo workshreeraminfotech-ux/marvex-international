@@ -88,6 +88,12 @@ export function initFirestoreRealtimeSync() {
           remoteProducts.push({ id: docSnap.id, ...docSnap.data() });
         });
         const normalized = remoteProducts.map(normalizeProduct).filter(Boolean);
+        // Sort chronologically ascending (first added -> first shown, last added -> last shown)
+        normalized.sort((a, b) => {
+          const timeA = a.order || a.createdAt || (a.id && String(a.id).startsWith('prod-') ? Number(String(a.id).split('-')[1]) || 0 : 0);
+          const timeB = b.order || b.createdAt || (b.id && String(b.id).startsWith('prod-') ? Number(String(b.id).split('-')[1]) || 0 : 0);
+          return timeA - timeB;
+        });
         updateInMemoryProducts(normalized);
         safeSetLocalStorage(STORAGE_KEYS.PRODUCTS, normalized);
         notifyStoreUpdate();
