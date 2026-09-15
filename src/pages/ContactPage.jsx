@@ -132,7 +132,7 @@ export default function ContactPage() {
       {/* Contact Info Cards */}
       <section style={{ background: '#F0F9FF', padding: '48px 0', borderBottom: '1px solid var(--border)' }}>
         <div className="container">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 20 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 20 }}>
             {contactCards.map((c, i) => (
               <motion.div
                 key={i}
@@ -143,36 +143,61 @@ export default function ContactPage() {
                 style={{
                   background: '#FFFFFF',
                   borderRadius: 18,
-                  padding: '24px 20px',
+                  padding: '22px 18px',
                   border: '1.5px solid var(--border)',
                   boxShadow: '0 4px 20px rgba(27, 75, 122, 0.06)',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 16,
-                  transition: 'all 0.25s'
+                  gap: 14,
+                  transition: 'all 0.25s',
+                  minWidth: 0,
+                  overflow: 'hidden'
                 }}
               >
                 <div style={{
-                  width: 48,
-                  height: 48,
+                  width: 46,
+                  height: 46,
                   borderRadius: 14,
                   background: 'linear-gradient(135deg, #000E26 0%, #011B47 100%)',
-                  color: '#6E737D',
+                  color: '#FFFFFF',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   flexShrink: 0
                 }}>
-                  <c.icon size={22} />
+                  <c.icon size={20} />
                 </div>
-                <div>
-                  <div style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', color: 'var(--gray)', letterSpacing: 0.5, marginBottom: 2 }}>{c.label}</div>
+                <div style={{ minWidth: 0, flex: 1, overflow: 'hidden' }}>
+                  <div style={{ fontSize: 11.5, fontWeight: 700, textTransform: 'uppercase', color: 'var(--gray)', letterSpacing: 0.5, marginBottom: 2 }}>{c.label}</div>
                   {c.href ? (
-                    <a href={c.href} style={{ fontSize: 14.5, fontWeight: 800, color: 'var(--navy)', textDecoration: 'none' }}>{c.value}</a>
+                    <a 
+                      href={c.href} 
+                      style={{ 
+                        fontSize: 13.5, 
+                        fontWeight: 800, 
+                        color: 'var(--navy)', 
+                        textDecoration: 'none',
+                        display: 'block',
+                        wordBreak: 'break-word',
+                        overflowWrap: 'anywhere',
+                        lineHeight: 1.3
+                      }}
+                    >
+                      {c.value}
+                    </a>
                   ) : (
-                    <div style={{ fontSize: 14.5, fontWeight: 800, color: 'var(--navy)' }}>{c.value}</div>
+                    <div style={{ 
+                      fontSize: 13.5, 
+                      fontWeight: 800, 
+                      color: 'var(--navy)',
+                      wordBreak: 'break-word',
+                      overflowWrap: 'anywhere',
+                      lineHeight: 1.3
+                    }}>
+                      {c.value}
+                    </div>
                   )}
-                  <div style={{ fontSize: 12, color: 'var(--gray)', marginTop: 2 }}>{c.sub}</div>
+                  <div style={{ fontSize: 11.5, color: 'var(--gray)', marginTop: 2, lineHeight: 1.3 }}>{c.sub}</div>
                 </div>
               </motion.div>
             ))}

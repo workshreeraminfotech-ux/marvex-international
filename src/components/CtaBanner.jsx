@@ -32,20 +32,9 @@ export default function CtaBanner({ onOpenQuote, onNavigate }) {
                 Connect With Us Today for <span style={{ color: '#FACC15', display: 'inline', fontWeight: 900, textShadow: '0 2px 12px rgba(0,0,0,0.5)' }}>Bulk Maritime Vessel Exports</span>
               </h2>
 
-              <p className="cta-banner-desc" style={{ fontSize: '15.5px', color: 'rgba(255, 255, 255, 0.95)', lineHeight: 1.65, marginBottom: '24px' }}>
+              <p className="cta-banner-desc" style={{ fontSize: '15.5px', color: 'rgba(255, 255, 255, 0.95)', lineHeight: 1.65, marginBottom: '28px' }}>
                 Partner with Marvex International for precision earthing parts, hardware & sanitary items, and 100% sortex-cleaned Indian spices delivered to your destination port with guaranteed quality and complete export documentation.
               </p>
-
-              <div className="cta-features-pill-row">
-                <span className="cta-pill-item">
-                  <ShieldCheck size={14} color="#FFFFFF" />
-                  <span>ISO & APEDA Certified</span>
-                </span>
-                <span className="cta-pill-item">
-                  <ShieldCheck size={14} color="#FFFFFF" />
-                  <span>Worldwide Port Dispatch</span>
-                </span>
-              </div>
 
               <div className="cta-actions-row" style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', alignItems: 'center' }}>
                 <button 
