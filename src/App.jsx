@@ -1,20 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense, lazy } from 'react';
 
 import HeaderTop from './components/HeaderTop';
 import Navbar from './components/Navbar';
 import FooterSection from './components/FooterSection';
-import QuickViewModal from './components/QuickViewModal';
-import QuoteModal from './components/QuoteModal';
 import WhatsAppFloat from './components/WhatsAppFloat';
 import Preloader from './components/Preloader';
 
-// Pages
+// Main Home Page Loaded Directly for instant render
 import Home from './pages/Home';
-import AboutPage from './pages/AboutPage';
-import ProductsPage from './pages/ProductsPage';
-import BlogPage from './pages/BlogPage';
-import ContactPage from './pages/ContactPage';
-import AdminPage from './pages/AdminPage';
+
+// Lazy Loaded Pages & Modals for lightning-fast initial load
+const AboutPage = lazy(() => import('./pages/AboutPage'));
+const ProductsPage = lazy(() => import('./pages/ProductsPage'));
+const BlogPage = lazy(() => import('./pages/BlogPage'));
+const ContactPage = lazy(() => import('./pages/ContactPage'));
+const AdminPage = lazy(() => import('./pages/AdminPage'));
+const QuickViewModal = lazy(() => import('./components/QuickViewModal'));
+const QuoteModal = lazy(() => import('./components/QuoteModal'));
 
 export default function App() {
   const [activePage, setActivePage] = useState('home');
@@ -57,10 +59,10 @@ export default function App() {
   // Dedicated Admin Screen
   if (activePage === 'admin') {
     return (
-      <div>
+      <Suspense fallback={<div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading Admin...</div>}>
         <AdminPage onNavigate={handleNavigate} />
         <Preloader />
-      </div>
+      </Suspense>
     );
   }
 
@@ -81,40 +83,46 @@ export default function App() {
             onOpenQuote={(prod) => handleOpenQuote(prod)} 
           />
         )}
-        {activePage === 'about' && (
-          <AboutPage 
-            onNavigate={handleNavigate} 
-            onOpenQuote={() => handleOpenQuote()} 
-          />
-        )}
-        {activePage === 'products' && (
-          <ProductsPage 
-            initialCategory={selectedCategory}
-            onSelectProduct={setSelectedProduct} 
-            onOpenQuote={(prod) => handleOpenQuote(prod)} 
-          />
-        )}
-        {activePage === 'blog' && (
-          <BlogPage />
-        )}
-        {activePage === 'contact' && (
-          <ContactPage 
-            onOpenQuote={() => handleOpenQuote()} 
-          />
-        )}
+        <Suspense fallback={<div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="loading-spinner"></div></div>}>
+          {activePage === 'about' && (
+            <AboutPage 
+              onNavigate={handleNavigate} 
+              onOpenQuote={() => handleOpenQuote()} 
+            />
+          )}
+          {activePage === 'products' && (
+            <ProductsPage 
+              initialCategory={selectedCategory}
+              onSelectProduct={setSelectedProduct} 
+              onOpenQuote={(prod) => handleOpenQuote(prod)} 
+            />
+          )}
+          {activePage === 'blog' && (
+            <BlogPage />
+          )}
+          {activePage === 'contact' && (
+            <ContactPage 
+              onOpenQuote={() => handleOpenQuote()} 
+            />
+          )}
+        </Suspense>
       </main>
 
       <FooterSection onNavigate={handleNavigate} />
 
-      {selectedProduct && (
-        <QuickViewModal product={selectedProduct} onClose={() => setSelectedProduct(null)} onOpenQuote={(prod) => handleOpenQuote(prod)} />
-      )}
+      <Suspense fallback={null}>
+        {selectedProduct && (
+          <QuickViewModal product={selectedProduct} onClose={() => setSelectedProduct(null)} onOpenQuote={(prod) => handleOpenQuote(prod)} />
+        )}
 
-      <QuoteModal 
-        isOpen={isQuoteOpen} 
-        initialProduct={quoteProduct} 
-        onClose={() => setIsQuoteOpen(false)} 
-      />
+        {isQuoteOpen && (
+          <QuoteModal 
+            isOpen={isQuoteOpen} 
+            initialProduct={quoteProduct} 
+            onClose={() => setIsQuoteOpen(false)} 
+          />
+        )}
+      </Suspense>
 
       <WhatsAppFloat />
       <Preloader />

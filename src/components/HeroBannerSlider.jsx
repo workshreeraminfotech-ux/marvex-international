@@ -27,7 +27,7 @@ export default function HeroBannerSlider({ onOpenQuote, onNavigate }) {
         loop 
         muted 
         playsInline
-        preload="auto"
+        preload="metadata"
         poster={heroPoster}
         style={{ 
           position: 'absolute', 
