@@ -180,7 +180,7 @@ export default function AdminPage({ onNavigate }) {
     if (!file) return;
     try {
       showToast('Optimizing photo for cloud sync...');
-      const compressed = await compressImage(file, 1000, 1000, 0.75);
+      const compressed = await compressImage(file, 480, 480, 0.62);
       if (compressed) {
         setProductForm(prev => ({ ...prev, image: compressed }));
         showToast('Photo optimized & ready!');
@@ -233,21 +233,24 @@ export default function AdminPage({ onNavigate }) {
   // Save Product with Auto-Upload & Compression
   const handleSaveProduct = async (e) => {
     e.preventDefault();
-    if (!productForm.title.trim()) return;
+    if (!productForm.title.trim()) {
+      alert('Please enter product title');
+      return;
+    }
 
     try {
       showToast('Saving & syncing product to Firebase...');
       const prodId = editingProduct ? editingProduct.id : `prod-${Date.now()}`;
       
       let finalImg = productForm.image || '';
-      if (finalImg && finalImg.startsWith('data:image')) {
+      if (finalImg && (finalImg.startsWith('data:image') || finalImg.length > 50000)) {
         finalImg = await uploadOrCompressImage(finalImg, 'products', prodId);
       }
 
       const payload = {
         ...productForm,
         id: prodId,
-        image: finalImg
+        image: finalImg || 'https://images.unsplash.com/photo-1544724569-5f546fd6f2b5?auto=format&fit=crop&w=800&q=80'
       };
 
       const ok = await saveProduct(payload);
