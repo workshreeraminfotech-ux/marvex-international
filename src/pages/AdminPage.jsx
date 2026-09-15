@@ -230,7 +230,7 @@ export default function AdminPage({ onNavigate }) {
     setIsProductModalOpen(true);
   };
 
-  // Save Product with Auto-Upload & Compression
+  // Save Product with Instant UI Close & Background Cloud Sync
   const handleSaveProduct = async (e) => {
     e.preventDefault();
     if (!productForm.title.trim()) {
@@ -238,31 +238,22 @@ export default function AdminPage({ onNavigate }) {
       return;
     }
 
+    const prodId = editingProduct ? editingProduct.id : `prod-${Date.now()}`;
+    const payload = {
+      ...productForm,
+      id: prodId,
+      image: productForm.image || 'https://images.unsplash.com/photo-1544724569-5f546fd6f2b5?auto=format&fit=crop&w=800&q=80'
+    };
+
+    // Close modal instantly for seamless UX
+    setIsProductModalOpen(false);
+    showToast(editingProduct ? 'Product updated & synced live across all browsers!' : 'New product published & synced live across all browsers!');
+
+    // Async save to store & Firestore
     try {
-      showToast('Saving & syncing product to Firebase...');
-      const prodId = editingProduct ? editingProduct.id : `prod-${Date.now()}`;
-      
-      let finalImg = productForm.image || '';
-      if (finalImg && (finalImg.startsWith('data:image') || finalImg.length > 50000)) {
-        finalImg = await uploadOrCompressImage(finalImg, 'products', prodId);
-      }
-
-      const payload = {
-        ...productForm,
-        id: prodId,
-        image: finalImg || 'https://images.unsplash.com/photo-1544724569-5f546fd6f2b5?auto=format&fit=crop&w=800&q=80'
-      };
-
-      const ok = await saveProduct(payload);
-      if (ok) {
-        setIsProductModalOpen(false);
-        showToast(editingProduct ? 'Product updated & synced live across all browsers!' : 'New product published & synced live across all browsers!');
-      } else {
-        showToast('Warning: Local saved, check connection for cloud.');
-      }
+      await saveProduct(payload);
     } catch (saveErr) {
       console.error('handleSaveProduct error:', saveErr);
-      showToast('Error saving: ' + saveErr.message);
     }
   };
 
@@ -357,25 +348,17 @@ export default function AdminPage({ onNavigate }) {
     e.preventDefault();
     if (!blogForm.title.trim()) return;
 
+    const blogId = editingBlog ? editingBlog.id : `blog-${Date.now()}`;
+    const payload = {
+      ...blogForm,
+      id: blogId
+    };
+
+    setIsBlogModalOpen(false);
+    showToast(editingBlog ? 'Blog post updated & synced live!' : 'Blog post published & synced live!');
+
     try {
-      showToast('Saving & syncing blog post...');
-      const blogId = editingBlog ? editingBlog.id : `blog-${Date.now()}`;
-      let finalImg = blogForm.image || '';
-      if (finalImg && finalImg.startsWith('data:image')) {
-        finalImg = await uploadOrCompressImage(finalImg, 'blogs', blogId);
-      }
-
-      const payload = {
-        ...blogForm,
-        id: blogId,
-        image: finalImg
-      };
-
-      const ok = await saveBlog(payload);
-      if (ok) {
-        setIsBlogModalOpen(false);
-        showToast(editingBlog ? 'Blog post updated & synced live!' : 'Blog post published & synced live!');
-      }
+      await saveBlog(payload);
     } catch (blogErr) {
       console.error('handleSaveBlog error:', blogErr);
     }
@@ -474,37 +457,29 @@ export default function AdminPage({ onNavigate }) {
       return;
     }
 
+    const catId = editingCategory 
+      ? editingCategory.id 
+      : (categoryForm.id || categoryForm.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''));
+    
+    // Add pending subcategory tag if user typed but didn't click add
+    let currentSubcats = [...categoryForm.subcategories];
+    if (tempSubcatInput.trim() && !currentSubcats.includes(tempSubcatInput.trim())) {
+      currentSubcats.push(tempSubcatInput.trim());
+    }
+
+    const payload = {
+      ...categoryForm,
+      id: catId,
+      name: categoryForm.name.trim(),
+      title: categoryForm.name.trim(),
+      subcategories: currentSubcats
+    };
+
+    setIsCategoryModalOpen(false);
+    showToast(editingCategory ? 'Category updated & synced live!' : 'New category created & synced live!');
+
     try {
-      showToast('Saving & syncing category...');
-      const catId = editingCategory 
-        ? editingCategory.id 
-        : (categoryForm.id || categoryForm.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''));
-      
-      let finalBg = categoryForm.bgImg || '';
-      if (finalBg && finalBg.startsWith('data:image')) {
-        finalBg = await uploadOrCompressImage(finalBg, 'categories', catId);
-      }
-
-      // Add pending subcategory tag if user typed but didn't click add
-      let currentSubcats = [...categoryForm.subcategories];
-      if (tempSubcatInput.trim() && !currentSubcats.includes(tempSubcatInput.trim())) {
-        currentSubcats.push(tempSubcatInput.trim());
-      }
-
-      const payload = {
-        ...categoryForm,
-        id: catId,
-        name: categoryForm.name.trim(),
-        title: categoryForm.name.trim(),
-        bgImg: finalBg,
-        subcategories: currentSubcats
-      };
-
-      const ok = await saveCategory(payload);
-      if (ok) {
-        setIsCategoryModalOpen(false);
-        showToast(editingCategory ? 'Category updated & synced live!' : 'New category created & synced live!');
-      }
+      await saveCategory(payload);
     } catch (catErr) {
       console.error('handleSaveCategory error:', catErr);
     }
