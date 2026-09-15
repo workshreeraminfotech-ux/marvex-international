@@ -3190,21 +3190,7 @@ img, video, iframe, canvas, svg {
     justify-content: center !important;
   }
 
-  /* Mobile Hero Section Height & Padding Reduction */
-  .jrp-hero-section {
-    min-height: auto !important;
-    padding: 44px 0 48px !important;
-  }
-  .jrp-hero-section h1 {
-    font-size: 30px !important;
-    line-height: 1.2 !important;
-    margin-bottom: 14px !important;
-  }
-  .jrp-hero-section p {
-    font-size: 14.5px !important;
-    line-height: 1.55 !important;
-    margin-bottom: 24px !important;
-  }
+
 
   .footer-top-grid {
     grid-template-columns: 1fr !important;
