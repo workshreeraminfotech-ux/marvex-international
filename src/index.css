@@ -702,6 +702,18 @@ button, input, select, textarea { font: inherit; }
   padding: 36px;
   box-shadow: var(--shadow-lg);
 }
+.contact-main-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+.contact-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .form-group { margin-bottom: 18px; }
 .form-group label { display: block; font-size: 13px; font-weight: 700; color: var(--black); margin-bottom: 6px; }
@@ -3200,6 +3212,32 @@ img, video, iframe, canvas, svg {
   }
 
 
+
+  /* Contact Page Mobile Layout */
+  .contact-main-grid {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+  .contact-form-card {
+    padding: 24px 18px !important;
+    border-radius: 20px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .contact-form-row {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+    margin-bottom: 14px !important;
+  }
+  .map-card {
+    min-height: 280px !important;
+    height: 300px !important;
+    border-radius: 20px !important;
+  }
+  .map-card iframe {
+    min-height: 280px !important;
+    height: 300px !important;
+  }
 
   .footer-top-grid {
     grid-template-columns: 1fr !important;

@@ -206,9 +206,9 @@ export default function ContactPage() {
       </section>
 
       {/* Main Contact Section */}
-      <section className="py-80 bg-light" id="map">
+      <section className="py-80 bg-light" id="map" style={{ padding: '60px 0' }}>
         <div className="container">
-          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 40, alignItems: 'start' }}>
+          <div className="contact-main-grid">
             {/* Form */}
             <motion.div
               className="contact-form-card"
@@ -235,7 +235,7 @@ export default function ContactPage() {
               )}
 
               <form onSubmit={handleSubmit}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
+                <div className="contact-form-row">
                   <div className="form-group">
                     <label>Full Name *</label>
                     <input name="name" placeholder="e.g. John Smith" value={form.name} onChange={handleChange} required />
@@ -246,7 +246,7 @@ export default function ContactPage() {
                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
+                <div className="contact-form-row">
                   <div className="form-group">
                     <label>Business Email *</label>
                     <input name="email" type="email" placeholder="john@company.com" value={form.email} onChange={handleChange} required />
@@ -262,16 +262,15 @@ export default function ContactPage() {
                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
+                <div className="contact-form-row">
                   <div className="form-group">
                     <label>Product Interest</label>
                     <select name="product" value={form.product} onChange={handleChange}>
                       <option value="">Select product category</option>
-                      <option>1. Indian Spices (Ground, Whole, Seed, Blended)</option>
-                      <option>2. Agro Commodities (Basmati Rice, Wheat, Pulses, Soybeans)</option>
-                      <option>3. Machinery (Color Sorters, Pulverizers, Packaging Units)</option>
-                      <option>4. Pipes & Tubes (SS304/SS316, Carbon Steel, HDPE, PVC)</option>
-                      <option>Custom Bulk Vessel / Multi-Product Order</option>
+                      <option>1. Earthing Parts (Copper Earth Rods, Clamps, Grounding Systems)</option>
+                      <option>2. Spices & Agro Commodities (Whole, Ground, Oilseeds, Grains)</option>
+                      <option>3. Hardware & Sanitary Items (Sinks, Basins, Taps, Showers)</option>
+                      <option>Custom Bulk Order / Multi-Product Container</option>
                     </select>
                   </div>
                   <div className="form-group">
