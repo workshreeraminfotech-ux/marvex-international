@@ -102,6 +102,22 @@ export const PRODUCTS = [
     isFeatured: true
   },
   {
+    id: 'hot-line-clamp-electrical',
+    title: 'Hot Line Clamp (Hotline Tap Clamps for Overhead Distribution)',
+    category: 'Earthing Parts',
+    cat: 'Earthing Parts',
+    businessType: 'Manufacturer & Exporter',
+    subcategory: 'Earth Clamps & Couplers',
+    hsCode: 'HS 85359090',
+    image: 'https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=800&q=80',
+    origin: 'Gujarat, India (In-House Manufactured)',
+    packaging: 'Heavy Export Wooden Crates / Sea-Worthy Cartons',
+    specs: 'Material: High Conductivity Cast Bronze Alloy / Aluminum Alloy | Eye-Screw: Stainless Steel / Forged Bronze | Current Rating: Up to 400A',
+    description: 'Heavy-duty Hot Line Clamps (Hotline Clamps / Transformer Tap Clamps) engineered for live-line distribution tap connections, transformer take-offs, and overhead powerline grounding. Corrosion-resistant with high torque tightening screws for maximum mechanical and electrical reliability.',
+    desc: 'Precision engineered Hot Line Clamps for live-line overhead distribution and transformer tap connections.',
+    isFeatured: true
+  },
+  {
     id: 'chemical-earthing-electrodes',
     title: 'Maintenance-Free Chemical Earthing Electrode & Backfill Compound',
     category: 'Earthing Parts',

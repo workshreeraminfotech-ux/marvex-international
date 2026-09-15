@@ -106,7 +106,7 @@ export default function HeroBannerSlider({ onOpenQuote, onNavigate }) {
             }}
           >
             <span className="hero-h1-desktop">
-              Manufacturer of Earthing & Sanitary Hardware • Merchant Exporter of Agro Spices
+              Earthing Parts Exporter & Hot Line Clamps • Premier Indian Spices Exporter
             </span>
             <span className="hero-h1-mobile">
               Manufacturer & Global Merchant Exporter
@@ -128,7 +128,7 @@ export default function HeroBannerSlider({ onOpenQuote, onNavigate }) {
             }}
           >
             <span className="hero-desc-desktop">
-              Marvex International is a trusted Indian manufacturer & exporter of precision electrical earthing parts and premium hardware & sanitary items, alongside being a premier merchant exporter of 100% sortex-cleaned Indian spices and agricultural commodities worldwide.
+              Marvex International is India's premier earthing parts exporter, hot line clamp manufacturer, and leading Indian spices exporter delivering UL-tested grounding rods, hotline tap clamps, sanitary hardware, and 100% Sortex-cleaned whole & ground spices worldwide.
             </span>
             <span className="hero-desc-mobile">
               Precision Manufacturer of Earthing & Sanitary Hardware and Premier Merchant Exporter of 100% Sortex-Cleaned Indian Spices Worldwide.

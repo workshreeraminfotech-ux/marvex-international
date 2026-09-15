@@ -116,5 +116,61 @@ Saffron Testing Standard (ISO 3632):
 
 Handling & Protection:
 Due to high value, Kashmiri saffron is packed in sealed acrylic containers or metallic tins to prevent moisture absorption and light degradation.`
+  },
+  {
+    id: 7,
+    cat: 'Electrical & Earthing',
+    date: 'Sep 05, 2026',
+    read: '7 min read',
+    title: 'Earthing Parts Exporter from India: UL 467 Grounding Rods & Clamps Guide',
+    excerpt: 'Why international power utilities and electrical contractors source precision earthing parts, copper bonded ground rods, and heavy-duty clamps from Marvex International India.',
+    image: 'https://images.unsplash.com/photo-1544724569-5f546fd6f2b5?auto=format&fit=crop&w=800&q=80',
+    body: `As a premier Earthing Parts Exporter and manufacturer based in Gujarat, India, Marvex International supplies high-conductivity earthing systems engineered according to UL 467, IEEE 80, and IEC 62305 international standards.
+
+Essential Earthing Products for Global Projects:
+1. Copper Bonded Earth Rods: 254-micron molecularly bonded copper layer on low-carbon high-tensile steel core for 30+ year service life.
+2. Solid Pure Copper Earth Rods: 99.9% electrolytic grade copper for extreme coastal and petrochemical corrosive environments.
+3. Brass Ground Clamps & Rod Couplers: High-strength naval brass and bronze clamps providing low contact resistance connections.
+4. Chemical Earthing Electrodes: Maintenance-free dual-pipe grounding electrodes packed with crystalline conductive soil enhancers.
+
+Why Global Importers Choose Marvex International:
+In-house manufacturing precision, strict dimensional tolerance testing, routine mill test certificates (MTC), and full container export dispatch to Middle East, Africa, Europe, and Southeast Asia.`
+  },
+  {
+    id: 8,
+    cat: 'Overhead Hardware',
+    date: 'Sep 01, 2026',
+    read: '6 min read',
+    title: 'Hot Line Clamp (Hotline Clamps) for Overhead Power Lines: Technical Guide',
+    excerpt: 'Detailed engineering specifications of Hot Line Clamps (Hotline Tap Clamps) used for live-line distribution tap connections, transformer take-offs, and overhead grounding.',
+    image: 'https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=800&q=80',
+    body: `Hot Line Clamps (also known as Hotline Tap Clamps or Transformer Tap Clamps) are vital live-line electrical hardware components designed for connecting tap conductors to primary energized overhead distribution cables without power interruption.
+
+Key Engineering Features of Marvex Hot Line Clamps:
+• Cast Bronze / Aluminum Body: High electrical conductivity alloy offering high tensile clamping strength.
+• Stainless Steel / Bronze Eye-Screw: Precision threaded eye-bolt enables secure tightening using insulated hot sticks.
+• Wide Conductor Range: Compatible with AAC, AAAC, ACSR, and copper conductors ranging from 8 AWG up to 400 MCM.
+• High Current Capacity: Rated up to 400 Amperes for steady load without thermal hotspots.
+
+Export Quality Assurance:
+Every batch of Hot Line Clamps manufactured by Marvex International undergoes torque pull-out tests, electrical conductivity analysis, and salt-spray corrosion chamber testing prior to international export packing.`
+  },
+  {
+    id: 9,
+    cat: 'Agro & Spice Exports',
+    date: 'Aug 24, 2026',
+    read: '8 min read',
+    title: 'Top Indian Spices Exporter: Sourcing 100% Sortex-Cleaned Spices Worldwide',
+    excerpt: 'A comprehensive buyer guide for international food importers sourcing premium whole bold spices, ultra-fine spice powders, and oilseeds from premier spices exporter Marvex International.',
+    image: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=800&q=80',
+    body: `India produces the most aromatic, flavorful, and potent spices in the global market. As a certified Indian Spices Exporter, Marvex International delivers direct-mandi procured, 100% Sortex color-sorted spices to food processors, supermarket brands, and spice distributors globally.
+
+Flagship Spices for International Export:
+• Whole Bold Spices: Gujarat Cumin Seeds (Jeera 99.5% / Europe grade), Guntur Red Chillies (S17 / Teja), Tellicherry Black Pepper, Green Cardamom, and Fennel Seeds.
+• Premium Ground Powders: High-Curcumin Turmeric Powder, Ultra-Red Kashmiri Chilli Powder, Coriander Powder, and Garam Masala Blends.
+• Quality Certifications: APEDA, Spices Board of India, FSSAI, and laboratory Certificate of Analysis (COA) for ASTA color, moisture, and purity.
+
+Containerized Dispatch:
+Export shipments are handled with food-grade multi-wall paper bags, vacuum poly packs, or bulk jumbo PP bags with maritime moisture desiccants to preserve freshness across global sea routes.`
   }
 ];
