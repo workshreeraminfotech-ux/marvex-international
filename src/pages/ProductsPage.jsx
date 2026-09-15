@@ -162,7 +162,7 @@ export default function ProductsPage({ initialCategory = 'Earthing Parts', onSel
         <div style={{
           position: 'absolute',
           inset: 0,
-          background: 'linear-gradient(180deg, rgba(10, 34, 64, 0.58) 0%, rgba(7, 23, 44, 0.78) 100%)',
+          background: 'linear-gradient(180deg, rgba(1, 27, 71, 0.75) 0%, rgba(0, 14, 38, 0.88) 100%)',
           zIndex: 1
         }} />
 
@@ -174,39 +174,52 @@ export default function ProductsPage({ initialCategory = 'Earthing Parts', onSel
             transition={{ duration: 0.5 }}
             style={{ maxWidth: '880px', margin: '0 auto', textAlign: 'center' }}
           >
-            <span style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-              backgroundColor: 'rgba(255, 255, 255, 0.12)',
-              border: `1.5px solid ${currentMeta.color || '#1D4ED8'}`,
-              color: '#FFFFFF',
-              fontSize: '12.5px',
-              fontWeight: 800,
-              textTransform: 'uppercase',
-              letterSpacing: '2px',
-              padding: '7px 22px',
-              borderRadius: '100px',
-              marginBottom: '20px',
-              backdropFilter: 'blur(8px)'
-            }}>
-              <HeaderIcon size={16} style={{ color: currentMeta.color || '#60A5FA' }} />
-              {currentMeta.eyebrow}
-            </span>
+            {currentMeta.eyebrow && (
+              <span style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                backgroundColor: 'rgba(1, 27, 71, 0.65)',
+                border: '1.5px solid rgba(255, 255, 255, 0.3)',
+                color: '#FFFFFF',
+                fontSize: '12.5px',
+                fontWeight: 800,
+                textTransform: 'uppercase',
+                letterSpacing: '1.5px',
+                padding: '8px 24px',
+                borderRadius: '100px',
+                marginBottom: '20px',
+                backdropFilter: 'blur(8px)',
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.25)'
+              }}>
+                <HeaderIcon size={16} style={{ color: '#FFFFFF' }} />
+                {currentMeta.eyebrow}
+              </span>
+            )}
 
             <h1 style={{
               fontFamily: 'var(--font-h, Outfit, sans-serif)',
               fontSize: 'clamp(32px, 5vw, 52px)',
               fontWeight: 900,
-              lineHeight: 1.18,
+              lineHeight: 1.2,
               marginBottom: '18px',
               letterSpacing: '-0.5px',
               color: '#FFFFFF'
             }}>
-              {currentMeta.title} <br />
-              <span style={{ color: currentMeta.color || '#60A5FA' }}>
-                {activeTab === 'All' ? 'Catalog & Global Supply' : currentMeta.highlight}
-              </span>
+              {currentMeta.name || currentMeta.title}
+              {currentMeta.businessRole && (
+                <span style={{
+                  display: 'block',
+                  fontSize: 'clamp(18px, 2.5vw, 24px)',
+                  fontWeight: 700,
+                  marginTop: '8px',
+                  color: '#FFFFFF',
+                  opacity: 0.95,
+                  letterSpacing: '0.2px'
+                }}>
+                  ({currentMeta.businessRole})
+                </span>
+              )}
             </h1>
 
             <p style={{
@@ -214,38 +227,11 @@ export default function ProductsPage({ initialCategory = 'Earthing Parts', onSel
               color: 'rgba(255, 255, 255, 0.92)',
               lineHeight: 1.65,
               maxWidth: '740px',
-              margin: '0 auto 34px',
+              margin: '0 auto 10px',
               fontWeight: 500
             }}>
               {currentMeta.desc}
             </p>
-
-            {/* Quick Stats Bar */}
-            <div style={{
-              display: 'flex',
-              justifyContent: 'center',
-              gap: '18px',
-              flexWrap: 'wrap',
-              fontSize: '13.5px',
-              color: '#FFFFFF',
-              fontWeight: 700
-            }}>
-              {currentMeta.badges.map((badge, idx) => (
-                <div key={idx} style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '8px', 
-                  background: 'rgba(255, 255, 255, 0.1)', 
-                  padding: '8px 18px', 
-                  borderRadius: '100px', 
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  backdropFilter: 'blur(6px)'
-                }}>
-                  <CheckCircle2 size={15} style={{ color: '#F5C542' }} />
-                  <span>{badge}</span>
-                </div>
-              ))}
-            </div>
           </motion.div>
         </div>
       </section>
@@ -272,12 +258,12 @@ export default function ProductsPage({ initialCategory = 'Earthing Parts', onSel
               display: 'flex',
               alignItems: 'center',
               gap: '12px',
-              backgroundColor: '#FFFDF7',
+              backgroundColor: '#F8FAFC',
               border: '1.5px solid var(--border)',
               borderRadius: '16px',
               padding: '12px 20px'
             }}>
-              <Search size={20} style={{ color: 'var(--gold)', flexShrink: 0 }} />
+              <Search size={20} style={{ color: 'var(--navy)', flexShrink: 0 }} />
               <input
                 type="text"
                 placeholder={`Search in ${activeTab} or all products (e.g. Turmeric, Black Pepper, Cumin, Garam Masala, Saffron...)`}
@@ -299,7 +285,7 @@ export default function ProductsPage({ initialCategory = 'Earthing Parts', onSel
                   style={{
                     border: 'none',
                     background: 'var(--gold-pale)',
-                    color: 'var(--gold-deep)',
+                    color: 'var(--navy)',
                     borderRadius: '50%',
                     width: '24px',
                     height: '24px',
@@ -319,7 +305,7 @@ export default function ProductsPage({ initialCategory = 'Earthing Parts', onSel
             {/* Master Category Tabs (Indian Spices Verticals & Commodities) */}
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                <Filter size={15} style={{ color: 'var(--gold)' }} />
+                <Filter size={15} style={{ color: 'var(--navy)' }} />
                 <span style={{ fontSize: '13px', fontWeight: 800, color: 'var(--navy)', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
                   Select Category:
                 </span>
@@ -346,21 +332,21 @@ export default function ProductsPage({ initialCategory = 'Earthing Parts', onSel
                         fontSize: '14px',
                         fontWeight: 800,
                         cursor: 'pointer',
-                        border: isActive ? '1.5px solid var(--gold)' : '1.5px solid var(--border)',
-                        background: isActive ? 'linear-gradient(135deg, #C8940A 0%, #D4AF37 100%)' : '#FFFFFF',
-                        color: isActive ? '#1C1917' : 'var(--navy)',
+                        border: isActive ? '1.5px solid var(--navy)' : '1.5px solid var(--border)',
+                        background: isActive ? 'var(--navy)' : '#FFFFFF',
+                        color: isActive ? '#FFFFFF' : 'var(--navy)',
                         display: 'inline-flex',
                         alignItems: 'center',
                         gap: '8px',
                         transition: 'all 0.25s ease',
-                        boxShadow: isActive ? '0 6px 18px rgba(200, 148, 10, 0.3)' : 'none'
+                        boxShadow: isActive ? '0 6px 18px rgba(1, 27, 71, 0.25)' : 'none'
                       }}
                     >
                       <TabIcon size={16} />
                       <span>{cat}</span>
                       <span style={{
-                        backgroundColor: isActive ? 'rgba(28, 25, 23, 0.15)' : 'var(--gold-pale)',
-                        color: isActive ? '#1C1917' : 'var(--gold-deep)',
+                        backgroundColor: isActive ? 'rgba(255, 255, 255, 0.2)' : 'var(--gold-pale)',
+                        color: isActive ? '#FFFFFF' : 'var(--navy)',
                         fontSize: '11px',
                         padding: '2px 8px',
                         borderRadius: '100px',

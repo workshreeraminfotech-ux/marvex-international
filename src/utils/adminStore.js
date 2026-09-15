@@ -128,13 +128,13 @@ export function normalizeCategory(c) {
     name,
     title: name,
     businessRole: c.businessRole || 'Manufacturer & Exporter',
-    highlight: c.highlight || `${name} (${c.businessRole || 'Manufacturer & Exporter'})`,
+    highlight: c.businessRole ? `(${c.businessRole})` : '',
     eyebrow: c.eyebrow || 'Export Standard Compliance • Direct Factory Dispatch',
     desc: c.desc || c.description || '',
     description: c.description || c.desc || '',
     bgImg: c.bgImg || c.image || 'https://images.unsplash.com/photo-1544724569-5f546fd6f2b5?auto=format&fit=crop&w=1920&q=80',
     icon: c.icon || 'Layers',
-    badges: Array.isArray(c.badges) && c.badges.length > 0 ? c.badges : ['Quality Guaranteed', 'Global Export Ready', 'Direct Procurement'],
+    badges: Array.isArray(c.badges) ? c.badges : [],
     subcategories
   };
 }
