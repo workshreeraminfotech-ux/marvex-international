@@ -29,7 +29,8 @@ export default function CtaBanner({ onOpenQuote, onNavigate }) {
             {/* Right Content & Actions */}
             <div className="cta-banner-content">
               <h2 className="cta-banner-title" style={{ fontSize: 'clamp(26px, 3.5vw, 36px)', fontWeight: 900, color: '#FFFFFF', lineHeight: 1.25, marginBottom: '16px' }}>
-                Connect With Us Today for <span style={{ color: '#FACC15', display: 'inline', fontWeight: 900, textShadow: '0 2px 12px rgba(0,0,0,0.5)' }}>Bulk Maritime Vessel Exports</span>
+                <span style={{ color: '#FFFFFF' }}>Connect With Us Today for </span>
+                <span className="cta-title-highlight" style={{ color: '#FFFFFF', display: 'inline', fontWeight: 900 }}>Bulk Maritime Vessel Exports</span>
               </h2>
 
               <p className="cta-banner-desc" style={{ fontSize: '15.5px', color: 'rgba(255, 255, 255, 0.95)', lineHeight: 1.65, marginBottom: '28px' }}>
@@ -39,8 +40,9 @@ export default function CtaBanner({ onOpenQuote, onNavigate }) {
               <div className="cta-actions-row" style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', alignItems: 'center' }}>
                 <button 
                   onClick={() => onOpenQuote ? onOpenQuote() : (onNavigate && onNavigate('contact'))} 
+                  className="cta-btn cta-btn-primary"
                   style={{ 
-                    padding: '14px 30px', 
+                    padding: '12px 28px', 
                     fontSize: '15px', 
                     fontWeight: 800,
                     display: 'inline-flex', 
@@ -73,8 +75,9 @@ export default function CtaBanner({ onOpenQuote, onNavigate }) {
 
                 <button
                   onClick={() => onNavigate && onNavigate('contact')}
+                  className="cta-btn cta-btn-secondary"
                   style={{ 
-                    padding: '14px 26px', 
+                    padding: '12px 24px', 
                     fontSize: '14.5px', 
                     fontWeight: 700,
                     display: 'inline-flex', 
