@@ -82,8 +82,8 @@ export default function AboutUs({ onNavigate }) {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            {/* Intro Lead Block */}
-            <div className="about-intro-lead-block">
+            {/* Header Block (Title) */}
+            <div className="about-header-block">
               <span className="eyebrow" style={{ marginBottom: '14px' }}>
                 ABOUT MARVEX INTERNATIONAL
               </span>
@@ -91,7 +91,10 @@ export default function AboutUs({ onNavigate }) {
               <h2 style={{ fontSize: 'clamp(28px, 3.8vw, 38px)', fontWeight: 900, color: 'var(--navy)', lineHeight: 1.2, margin: '12px 0 16px', fontFamily: 'var(--font-h, Outfit, sans-serif)' }}>
                 Manufacturing Precision, <span style={{ color: 'var(--navy)' }}>Exporting Worldwide Trust</span>
               </h2>
+            </div>
 
+            {/* Paragraphs Block */}
+            <div className="about-paragraphs-block">
               <p style={{ fontSize: '16px', color: '#1E293B', lineHeight: 1.65, marginBottom: '16px', fontWeight: 600 }}>
                 <strong>Marvex International</strong> is a diversified Indian enterprise operating as an in-house <strong>Manufacturer & Exporter of Electrical Earthing Parts and Hardware & Sanitary Items</strong>, alongside being a premier <strong>Merchant Exporter of 100% pure Indian Spices and Agro Commodities</strong> based in Gujarat, India.
               </p>
@@ -101,11 +104,8 @@ export default function AboutUs({ onNavigate }) {
               </p>
             </div>
 
-            {/* Mobile Injected Photo Slot (Visible only on phone) */}
-            <div className="about-mobile-photo-placement" />
-
             {/* Action CTA */}
-            <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
+            <div className="about-cta-block" style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
               <button 
                 onClick={() => onNavigate ? onNavigate('products') : null}
                 className="btn btn-primary" 

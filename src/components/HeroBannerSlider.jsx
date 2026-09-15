@@ -104,7 +104,12 @@ export default function HeroBannerSlider({ onOpenQuote, onNavigate }) {
               textShadow: '0 4px 24px rgba(0,0,0,0.6)' 
             }}
           >
-            Manufacturer of Earthing & Sanitary Hardware • Merchant Exporter of Agro Spices
+            <span className="hero-h1-desktop">
+              Manufacturer of Earthing & Sanitary Hardware • Merchant Exporter of Agro Spices
+            </span>
+            <span className="hero-h1-mobile">
+              Manufacturer & Global Merchant Exporter
+            </span>
           </motion.h1>
 
           {/* Subtitle / Paragraph */}
@@ -121,11 +126,17 @@ export default function HeroBannerSlider({ onOpenQuote, onNavigate }) {
               textShadow: '0 2px 10px rgba(0,0,0,0.45)' 
             }}
           >
-            Marvex International is a trusted Indian manufacturer & exporter of precision electrical earthing parts and premium hardware & sanitary items, alongside being a premier merchant exporter of 100% sortex-cleaned Indian spices and agricultural commodities worldwide.
+            <span className="hero-desc-desktop">
+              Marvex International is a trusted Indian manufacturer & exporter of precision electrical earthing parts and premium hardware & sanitary items, alongside being a premier merchant exporter of 100% sortex-cleaned Indian spices and agricultural commodities worldwide.
+            </span>
+            <span className="hero-desc-mobile">
+              Precision Manufacturer of Earthing & Sanitary Hardware and Premier Merchant Exporter of 100% Sortex-Cleaned Indian Spices Worldwide.
+            </span>
           </motion.p>
 
           {/* CTA Action Buttons */}
           <motion.div 
+            className="hero-cta-wrapper"
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
@@ -133,6 +144,7 @@ export default function HeroBannerSlider({ onOpenQuote, onNavigate }) {
           >
             <button 
               onClick={() => onNavigate ? onNavigate('contact') : null}
+              className="hero-cta-btn"
               style={{ 
                 padding: '15px 32px', 
                 fontSize: '15.5px', 

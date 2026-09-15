@@ -2971,6 +2971,13 @@ img, video, iframe, canvas, svg {
   height: auto;
 }
 
+.hero-h1-mobile, .hero-desc-mobile {
+  display: none;
+}
+.hero-h1-desktop, .hero-desc-desktop {
+  display: inline;
+}
+
 @media (max-width: 768px) {
   .d-none-mobile {
     display: none !important;
@@ -2987,13 +2994,13 @@ img, video, iframe, canvas, svg {
     transition: all 0.3s ease !important;
   }
 
-  /* Prominent Big Logo & Header Bar on Mobile */
+  /* Compact & Clean Logo & Header Bar on Mobile */
   .jrp-header-inner {
-    height: 92px !important;
+    height: 70px !important;
   }
   .jrp-header-logo-img {
-    height: 78px !important;
-    max-height: 78px !important;
+    height: 48px !important;
+    max-height: 50px !important;
     width: auto !important;
     filter: contrast(1.08) drop-shadow(0 2px 6px rgba(0,0,0,0.06)) !important;
   }
@@ -3017,24 +3024,45 @@ img, video, iframe, canvas, svg {
     gap: 6px 14px !important;
   }
 
-  /* Hero Section Mobile Typography & Spacing */
+  /* Hero Section Mobile Typography, Short & Sweet Content, and Compact CTA */
+  .hero-h1-desktop, .hero-desc-desktop {
+    display: none !important;
+  }
+  .hero-h1-mobile, .hero-desc-mobile {
+    display: inline !important;
+  }
+
   .jrp-hero-section {
     min-height: auto !important;
-    padding: 38px 0 !important;
+    padding: 30px 0 38px !important;
   }
 
   .jrp-hero-section h1 {
-    font-size: 36px !important;
-    line-height: 1.15 !important;
+    font-size: 26px !important;
+    line-height: 1.22 !important;
     font-weight: 900 !important;
-    margin-bottom: 16px !important;
+    margin-bottom: 12px !important;
     text-shadow: 0 4px 20px rgba(0,0,0,0.5) !important;
   }
 
   .jrp-hero-section p {
-    font-size: 16px !important;
-    line-height: 1.55 !important;
-    margin-bottom: 22px !important;
+    font-size: 14.5px !important;
+    line-height: 1.52 !important;
+    margin-bottom: 20px !important;
+    max-width: 100% !important;
+  }
+
+  .hero-cta-wrapper {
+    width: 100% !important;
+    justify-content: flex-start !important;
+  }
+
+  .hero-cta-btn {
+    width: auto !important;
+    padding: 12px 24px !important;
+    font-size: 13.5px !important;
+    border-radius: 100px !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35) !important;
   }
 
   /* BIG PROMINENT HEADINGS FOR ALL SECTIONS ON MOBILE */
@@ -3051,24 +3079,33 @@ img, video, iframe, canvas, svg {
     font-weight: 800 !important;
   }
 
-  /* About Us Flow: Only on Mobile (Text first, then Photo, then Milestone) */
+  /* About Us Flow: Only on Mobile (Header first -> Photo second -> Paragraphs third -> CTA fourth) */
   .about-grid-wrapper {
     display: flex !important;
     flex-direction: column !important;
-    gap: 20px !important;
+    gap: 16px !important;
   }
   .about-content-col {
     display: contents !important;
   }
-  .about-intro-lead-block {
+  .about-header-block {
     order: 1 !important;
   }
   .about-image-col {
     order: 2 !important;
-    margin: 10px 0 14px !important;
+    margin: 6px 0 12px !important;
+    width: 100% !important;
   }
-  .about-content-col > *:not(.about-intro-lead-block) {
+  .about-image-col img {
+    height: 270px !important;
+    max-height: 290px !important;
+    object-fit: cover !important;
+  }
+  .about-paragraphs-block {
     order: 3 !important;
+  }
+  .about-cta-block {
+    order: 4 !important;
   }
 
   .about-highlights-grid {
