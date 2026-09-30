@@ -4,24 +4,28 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const faqs = [
   {
-    q: "Are your agro products certified and quality tested?",
-    a: "Yes, all our products undergo multi-stage laboratory testing and come with necessary export certifications (FSSAI, APEDA, ISO, Phytosanitary) to guarantee compliance with international food safety standards."
+    q: "What Earthing Parts, Copper Earth Rods (Copper Roads) & Clamps do you manufacture?",
+    a: "Marvex International manufactures UL 467 compliant 254-micron copper bonded earth rods (copper roads), 99.9% solid electrolytic copper rods, heavy-duty brass ground clamps, Hot Line Clamps (transformer tap clamps), maintenance-free chemical earthing electrodes, and lightning protection air terminals."
   },
   {
-    q: "What is the typical delivery timeframe for international shipments?",
-    a: "Delivery timelines depend on the destination port and shipment size. Standard containerized ocean shipments are typically dispatched within 7–12 business days after order confirmation and customs clearance."
+    q: "Do you supply custom Precision Brass Parts and Brass Components?",
+    a: "Yes, we manufacture precision CNC turned brass parts, heavy-duty brass ground clamps, brass cable glands, brass neutral links, threaded inserts, and sanitary brass mixer valves to exact client technical drawings and tolerance requirements."
   },
   {
-    q: "Can I request product samples before placing a bulk order?",
-    a: "Absolutely! We provide product samples for bulk commercial buyers upon request so you can verify our quality, color, aroma, and grading firsthand."
+    q: "What Indian Spices & Agro Commodities do you export worldwide?",
+    a: "We are a premier merchant exporter of 100% Sortex-cleaned Indian spices including bold Cumin Seeds (Jeera), Coriander Seeds (Dhana), Turmeric Fingers & Powders, Red Chilli (Guntur & Byadgi), Black Pepper, Green Cardamom, Cloves, and 1121 Basmati Rice with APEDA, FSSAI, and Spices Board certifications."
   },
   {
-    q: "How do you ensure product freshness and aroma during long transit?",
-    a: "We utilize multi-layer food-grade eco packaging, vacuum sealing, and humidity-controlled storage to protect commodities against moisture, pests, and ambient degradation during sea voyages."
+    q: "What Copper Parts and Copper Items are available for international export?",
+    a: "We supply electrolytic copper earth rods, pure copper busbars, copper grounding flat tapes, copper terminal lugs, and custom copper electrical items engineered for power substations, switchgears, and lightning protection systems."
   },
   {
-    q: "Do you offer private labeling and custom packaging sizes?",
-    a: "Yes, we provide customized bulk packaging (10kg, 25kg, 50kg PP/Jute bags) as well as retail-ready private label packaging per buyer specifications."
+    q: "What is your typical container dispatch timeline and export packaging?",
+    a: "Standard containerized FCL / LCL shipments are dispatched within 7–12 business days from Gujarat ports (Mundra, Kandla, Pipavav, Nhava Sheva). We provide seaworthy wooden crates, corner-protected pallets, and moisture-proof vacuum sealing tailored for international maritime transit."
+  },
+  {
+    q: "Can I request product samples and laboratory test certificates before ordering?",
+    a: "Absolutely! We provide product test certificates (MTC, Curcumin purity lab reports, UL coating test reports) and dispatch sample packages worldwide for commercial bulk buyers before finalizing container contracts."
   }
 ];
 

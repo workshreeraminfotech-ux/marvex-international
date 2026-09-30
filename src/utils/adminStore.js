@@ -182,6 +182,12 @@ export function updateInMemoryProducts(list) {
   }
 }
 
+export function updateInMemoryCategories(list) {
+  if (Array.isArray(list)) {
+    memoryCategoriesCache = list;
+  }
+}
+
 export function safeSetLocalStorage(key, items) {
   if (typeof window === 'undefined') return;
   try {
@@ -538,24 +544,34 @@ export function resetBlogsToDefault() {
 // ==========================================
 // --- CATEGORIES & SUBCATEGORIES STORE ---
 // ==========================================
+// ==========================================
+// --- CATEGORIES & SUBCATEGORIES STORE ---
+// ==========================================
 export function getCategories() {
+  if (memoryCategoriesCache !== null && Array.isArray(memoryCategoriesCache) && memoryCategoriesCache.length > 0) {
+    return memoryCategoriesCache;
+  }
   try {
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem(STORAGE_KEYS.CATEGORIES);
       if (stored !== null) {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed.map(normalizeCategory).filter(Boolean);
+          const list = parsed.map(normalizeCategory).filter(Boolean);
+          memoryCategoriesCache = list;
+          return list;
         }
       }
     }
   } catch (e) {
     console.error('Error loading categories from storage:', e);
   }
-  return INITIAL_CATEGORIES.map(normalizeCategory).filter(Boolean);
+  const defaults = INITIAL_CATEGORIES.map(normalizeCategory).filter(Boolean);
+  memoryCategoriesCache = defaults;
+  return defaults;
 }
 
-export function saveCategory(categoryData) {
+export async function saveCategory(categoryData) {
   try {
     setLocalSavingState(true);
     const list = getCategories();
@@ -565,7 +581,10 @@ export function saveCategory(categoryData) {
       return false;
     }
 
-    const existingIdx = list.findIndex(c => c.id === normalized.id || c.name.toLowerCase() === normalized.name.toLowerCase());
+    const existingIdx = list.findIndex(c => 
+      (normalized.id && c.id === normalized.id) || 
+      (c.name && normalized.name && c.name.trim().toLowerCase() === normalized.name.trim().toLowerCase())
+    );
     let updated;
     if (existingIdx >= 0) {
       updated = [...list];
@@ -574,15 +593,21 @@ export function saveCategory(categoryData) {
       updated = [...list, normalized];
     }
 
+    memoryCategoriesCache = updated;
+
     if (typeof window !== 'undefined') {
-      localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(updated));
+      safeSetLocalStorage(STORAGE_KEYS.CATEGORIES, updated);
     }
     notifyStoreUpdate();
 
     // Async push to Firebase Firestore
-    saveCategoryToCloud(normalized).finally(() => {
-      setTimeout(() => setLocalSavingState(false), 1000);
-    });
+    try {
+      await saveCategoryToCloud(normalized);
+    } catch (cloudErr) {
+      console.warn('Cloud category save notice:', cloudErr);
+    } finally {
+      setTimeout(() => setLocalSavingState(false), 500);
+    }
 
     return true;
   } catch (e) {
@@ -592,23 +617,29 @@ export function saveCategory(categoryData) {
   }
 }
 
-export function deleteCategory(categoryId) {
+export async function deleteCategory(categoryId) {
   try {
     setLocalSavingState(true);
     const list = getCategories();
     const target = list.find(c => c.id === categoryId || c.name === categoryId);
     const updated = list.filter(c => c.id !== categoryId && c.name !== categoryId);
     
+    memoryCategoriesCache = updated;
+
     if (typeof window !== 'undefined') {
-      localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(updated));
+      safeSetLocalStorage(STORAGE_KEYS.CATEGORIES, updated);
     }
     notifyStoreUpdate();
 
     // Async delete from Firestore
     const cloudId = target ? target.id : categoryId;
-    deleteCategoryFromCloud(cloudId).finally(() => {
-      setTimeout(() => setLocalSavingState(false), 1000);
-    });
+    try {
+      await deleteCategoryFromCloud(cloudId);
+    } catch (cloudErr) {
+      console.warn('Cloud category delete notice:', cloudErr);
+    } finally {
+      setTimeout(() => setLocalSavingState(false), 500);
+    }
 
     return true;
   } catch (e) {
@@ -618,30 +649,30 @@ export function deleteCategory(categoryId) {
   }
 }
 
-export function addSubcategory(categoryId, subcategoryName) {
+export async function addSubcategory(categoryId, subcategoryName) {
   if (!subcategoryName || !subcategoryName.trim()) return false;
   const list = getCategories();
   const cat = list.find(c => c.id === categoryId || c.name === categoryId);
   if (!cat) return false;
   
   const cleanSub = subcategoryName.trim();
-  if (cat.subcategories.includes(cleanSub)) return true;
+  if (cat.subcategories && cat.subcategories.includes(cleanSub)) return true;
   
-  const updatedSubcategories = [...cat.subcategories, cleanSub];
-  return saveCategory({
+  const updatedSubcategories = [...(cat.subcategories || []), cleanSub];
+  return await saveCategory({
     ...cat,
     subcategories: updatedSubcategories
   });
 }
 
-export function editSubcategory(categoryId, oldName, newName) {
+export async function editSubcategory(categoryId, oldName, newName) {
   if (!newName || !newName.trim()) return false;
   const list = getCategories();
   const cat = list.find(c => c.id === categoryId || c.name === categoryId);
   if (!cat) return false;
 
   const cleanNew = newName.trim();
-  const updatedSubcategories = cat.subcategories.map(s => s === oldName ? cleanNew : s);
+  const updatedSubcategories = (cat.subcategories || []).map(s => s === oldName ? cleanNew : s);
   
   // Also update any products currently having this old subcategory
   try {
@@ -655,41 +686,44 @@ export function editSubcategory(categoryId, oldName, newName) {
       return p;
     });
     if (prodsChanged && typeof window !== 'undefined') {
-      localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(updatedProducts));
+      safeSetLocalStorage(STORAGE_KEYS.PRODUCTS, updatedProducts);
     }
   } catch (err) {}
 
-  return saveCategory({
+  return await saveCategory({
     ...cat,
     subcategories: updatedSubcategories
   });
 }
 
-export function deleteSubcategory(categoryId, subcategoryName) {
+export async function deleteSubcategory(categoryId, subcategoryName) {
   const list = getCategories();
   const cat = list.find(c => c.id === categoryId || c.name === categoryId);
   if (!cat) return false;
 
-  const updatedSubcategories = cat.subcategories.filter(s => s !== subcategoryName);
-  return saveCategory({
+  const updatedSubcategories = (cat.subcategories || []).filter(s => s !== subcategoryName);
+  return await saveCategory({
     ...cat,
     subcategories: updatedSubcategories
   });
 }
 
-export function resetCategoriesToDefault() {
+export async function resetCategoriesToDefault() {
   try {
     setLocalSavingState(true);
     const defaults = INITIAL_CATEGORIES.map(normalizeCategory).filter(Boolean);
+    memoryCategoriesCache = defaults;
     if (typeof window !== 'undefined') {
-      localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(defaults));
+      safeSetLocalStorage(STORAGE_KEYS.CATEGORIES, defaults);
     }
     notifyStoreUpdate();
 
     // Async seed initial categories to Firestore
-    seedInitialCategoriesToFirestore().finally(() => {
-      setTimeout(() => setLocalSavingState(false), 1000);
-    });
+    try {
+      await seedInitialCategoriesToFirestore();
+    } finally {
+      setTimeout(() => setLocalSavingState(false), 500);
+    }
 
     return true;
   } catch (e) {

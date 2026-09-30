@@ -1,7 +1,8 @@
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
-import heroBgVideo from '../assets/hero-bg.mp4';
+import heroBgVideo from '../assets/IMG_5434.mp4';
+import heroBgVideoMov from '../assets/IMG_5434.MOV';
 import heroPoster from '../assets/hero-poster.jpg';
 
 export default function HeroBannerSlider({ onOpenQuote, onNavigate }) {
@@ -42,6 +43,7 @@ export default function HeroBannerSlider({ onOpenQuote, onNavigate }) {
         }}
       >
         <source src={heroBgVideo} type="video/mp4" />
+        <source src={heroBgVideoMov} type="video/quicktime" />
       </video>
 
       {/* Clean Subtle Lighter Gradient Overlay with Radiant Glow */}
@@ -80,12 +82,12 @@ export default function HeroBannerSlider({ onOpenQuote, onNavigate }) {
                 color: '#FFFFFF',
                 border: '1px solid rgba(255, 255, 255, 0.25)',
                 boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
-                letterSpacing: '0.6px',
+                letterSpacing: '0.8px',
                 textTransform: 'uppercase'
               }}
             >
               <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#FFFFFF', display: 'inline-block', boxShadow: '0 0 10px rgba(255,255,255,0.8)' }}></span>
-              <span>Precision Manufacturing & Global Merchant Exports</span>
+              <span>Welcome to Marvex International</span>
             </span>
           </motion.div>
 
@@ -96,20 +98,21 @@ export default function HeroBannerSlider({ onOpenQuote, onNavigate }) {
             transition={{ duration: 0.6, delay: 0.1 }}
             style={{ 
               fontFamily: 'var(--font-h)', 
-              fontSize: 'clamp(32px, 4.8vw, 48px)', 
+              fontSize: 'clamp(32px, 4.8vw, 50px)', 
               fontWeight: 900, 
               color: '#ffffff', 
-              lineHeight: 1.18, 
-              marginBottom: '16px', 
+              lineHeight: 1.16, 
+              marginBottom: '18px', 
               letterSpacing: '-0.5px',
               textShadow: '0 4px 24px rgba(0,0,0,0.6)' 
             }}
           >
             <span className="hero-h1-desktop">
-              Earthing Parts Exporter & Hot Line Clamps • Premier Indian Spices Exporter
+              India's Fastest Growing Exporter <br />
+              <span style={{ color: '#FFFFFF', textDecoration: 'underline', textDecorationColor: 'rgba(255,255,255,0.4)', textUnderlineOffset: '6px' }}>of Brass & Copper Parts</span>
             </span>
             <span className="hero-h1-mobile">
-              Manufacturer & Global Merchant Exporter
+              India's Fastest Growing Exporter of Brass & Copper Parts
             </span>
           </motion.h1>
 
@@ -128,10 +131,10 @@ export default function HeroBannerSlider({ onOpenQuote, onNavigate }) {
             }}
           >
             <span className="hero-desc-desktop">
-              Marvex International is India's premier earthing parts exporter, hot line clamp manufacturer, and leading Indian spices exporter delivering UL-tested grounding rods, hotline tap clamps, sanitary hardware, and 100% Sortex-cleaned whole & ground spices worldwide.
+              Premier manufacturer and exporter of precision CNC brass parts, heavy-duty brass ground clamps, UL copper earth rods (copper roads), pure copper parts & items, earthing hardware, and sortex-cleaned Indian spices worldwide.
             </span>
             <span className="hero-desc-mobile">
-              Precision Manufacturer of Earthing & Sanitary Hardware and Premier Merchant Exporter of 100% Sortex-Cleaned Indian Spices Worldwide.
+              Premier Manufacturer & Global Exporter of Brass Parts, Copper Parts, Earthing Hardware & Indian Spices Worldwide.
             </span>
           </motion.p>
 
@@ -144,7 +147,7 @@ export default function HeroBannerSlider({ onOpenQuote, onNavigate }) {
             style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}
           >
             <button 
-              onClick={() => onNavigate ? onNavigate('contact') : null}
+              onClick={() => onNavigate ? onNavigate('products') : null}
               className="hero-cta-btn"
               style={{ 
                 padding: '15px 32px', 
@@ -174,7 +177,7 @@ export default function HeroBannerSlider({ onOpenQuote, onNavigate }) {
                 e.currentTarget.style.transform = 'translateY(0)';
               }}
             >
-              <span>Request Quote / CIF Price</span>
+              <span>View Product Catalog</span>
               <ArrowRight size={18} />
             </button>
           </motion.div>

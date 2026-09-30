@@ -452,17 +452,19 @@ export default function AdminPage({ onNavigate }) {
 
   const handleSaveCategory = async (e) => {
     e.preventDefault();
-    if (!categoryForm.name.trim()) {
+    const cleanName = (categoryForm.name || '').trim();
+    if (!cleanName) {
       alert('Please enter category title/name.');
       return;
     }
 
+    const slug = cleanName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
     const catId = editingCategory 
       ? editingCategory.id 
-      : (categoryForm.id || categoryForm.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''));
+      : (slug || `cat-${Date.now()}`);
     
     // Add pending subcategory tag if user typed but didn't click add
-    let currentSubcats = [...categoryForm.subcategories];
+    let currentSubcats = [...(categoryForm.subcategories || [])];
     if (tempSubcatInput.trim() && !currentSubcats.includes(tempSubcatInput.trim())) {
       currentSubcats.push(tempSubcatInput.trim());
     }
@@ -470,13 +472,27 @@ export default function AdminPage({ onNavigate }) {
     const payload = {
       ...categoryForm,
       id: catId,
-      name: categoryForm.name.trim(),
-      title: categoryForm.name.trim(),
+      name: cleanName,
+      title: cleanName,
       subcategories: currentSubcats
     };
 
     setIsCategoryModalOpen(false);
-    showToast(editingCategory ? 'Category updated & synced live!' : 'New category created & synced live!');
+    const wasEditing = Boolean(editingCategory);
+    setEditingCategory(null);
+    setCategoryForm({
+      id: '',
+      name: '',
+      businessRole: 'Manufacturer & Exporter',
+      eyebrow: '',
+      desc: '',
+      bgImg: '',
+      icon: 'Layers',
+      subcategories: []
+    });
+    setTempSubcatInput('');
+
+    showToast(wasEditing ? 'Category updated & synced live!' : 'New category created & synced live!');
 
     try {
       await saveCategory(payload);
@@ -485,13 +501,13 @@ export default function AdminPage({ onNavigate }) {
     }
   };
 
-  const handleDeleteCategory = (cat) => {
+  const handleDeleteCategory = async (cat) => {
     const associatedProds = products.filter(p => (p.category === cat.name || p.cat === cat.name));
     const confirmMsg = associatedProds.length > 0 
       ? `Are you sure you want to delete category "${cat.name}"? It currently has ${associatedProds.length} product(s) associated.`
       : `Are you sure you want to delete category "${cat.name}"?`;
     if (window.confirm(confirmMsg)) {
-      deleteCategory(cat.id);
+      await deleteCategory(cat.id);
       showToast(`Category "${cat.name}" deleted.`);
     }
   };

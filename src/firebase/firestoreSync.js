@@ -14,6 +14,8 @@ import {
   normalizeCategory,
   notifyStoreUpdate,
   updateInMemoryProducts,
+  updateInMemoryCategories,
+  getCategories,
   safeSetLocalStorage
 } from '../utils/adminStore';
 import { compressImage } from '../utils/imageCompressor';
@@ -146,10 +148,29 @@ export function initFirestoreRealtimeSync() {
         snapshot.forEach((docSnap) => {
           remoteCategories.push({ id: docSnap.id, ...docSnap.data() });
         });
-        const normalized = remoteCategories.map(normalizeCategory).filter(Boolean);
-        safeSetLocalStorage(STORAGE_KEYS.CATEGORIES, normalized);
+        const remoteNormalized = remoteCategories.map(normalizeCategory).filter(Boolean);
+        
+        // Merge with existing local categories to never delete newly created categories
+        const currentLocal = getCategories();
+        const mergedMap = new Map();
+        
+        // Add remote categories first
+        remoteNormalized.forEach(cat => mergedMap.set(cat.id, cat));
+        
+        // Preserve any local categories that might not be in Firestore yet
+        currentLocal.forEach(localCat => {
+          if (localCat && localCat.id && !mergedMap.has(localCat.id)) {
+            mergedMap.set(localCat.id, localCat);
+            // Async push missing category to Firestore
+            saveCategoryToCloud(localCat);
+          }
+        });
+
+        const merged = Array.from(mergedMap.values());
+        updateInMemoryCategories(merged);
+        safeSetLocalStorage(STORAGE_KEYS.CATEGORIES, merged);
+        notifyStoreUpdate();
       }
-      notifyStoreUpdate();
     }, (error) => {
       console.warn('Firestore Categories sync notice:', error.message);
     });
@@ -191,6 +212,24 @@ export async function pushAllLocalProductsToCloud() {
     return true;
   } catch (e) {
     console.error('Error syncing local products to cloud:', e);
+    return false;
+  }
+}
+
+// Push all current local categories to Firestore
+export async function pushAllLocalCategoriesToCloud() {
+  if (!db || !isFirebaseConfigured()) return false;
+  try {
+    const local = getCategories();
+    if (!local || local.length === 0) return true;
+    for (const cat of local) {
+      if (cat && cat.id) {
+        await saveCategoryToCloud(cat);
+      }
+    }
+    return true;
+  } catch (e) {
+    console.error('Error syncing local categories to cloud:', e);
     return false;
   }
 }

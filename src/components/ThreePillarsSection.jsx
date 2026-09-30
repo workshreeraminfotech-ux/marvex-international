@@ -12,15 +12,15 @@ export default function ThreePillarsSection({ onNavigate, onOpenQuote }) {
       categoryKey: 'Earthing Parts',
       badge: 'Manufacturer & Exporter',
       badgeType: 'mfg',
-      title: 'Electrical Earthing & Grounding Solutions',
+      title: 'Earthing Parts, Copper Rods & Brass Clamps',
       icon: Zap,
       image: 'https://images.unsplash.com/photo-1544724569-5f546fd6f2b5?auto=format&fit=crop&w=800&q=80',
-      shortDesc: 'Custom-manufactured copper bonded earth rods, brass earthing clamps, lightning arresters & grounding accessories engineered to IEC/UL standards.',
+      shortDesc: 'Custom-manufactured copper bonded earth rods (copper roads), pure copper parts & items, precision brass earthing clamps, hot line clamps & grounding accessories engineered to UL 467 / IEC standards.',
       keyItems: [
-        'Copper Bonded & Pure Solid Earth Rods',
-        'Heavy-Duty Brass Ground Clamps & Couplers',
-        'Chemical Earth Electrodes & Earth Pits',
-        'Lightning Protection Air Terminals & Tapes'
+        'UL 467 Copper Bonded Earth Rods (Copper Roads - 254 Microns)',
+        'Pure Solid Copper Earth Rods, Busbars & Copper Parts / Items',
+        'Heavy-Duty Brass Ground Clamps & Precision Brass Components',
+        'Hot Line Clamps (Overhead Tap Clamps) & Chemical Electrodes'
       ],
       ctaText: 'Explore Earthing Range'
     },
@@ -32,32 +32,31 @@ export default function ThreePillarsSection({ onNavigate, onOpenQuote }) {
       title: 'Indian Spices & Agro Commodities',
       icon: Flame,
       image: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=800&q=80',
-      shortDesc: 'Direct procurement of 100% Sortex-cleaned whole spices, ground powders, and oil seeds from India\'s top fertile farm mandis with worldwide maritime shipping.',
+      shortDesc: 'Direct procurement of 100% Sortex-cleaned whole Indian spices, ground powders, and oil seeds from Gujarat & Rajasthan Mandis with global maritime container shipping.',
       keyItems: [
-        'Cumin, Coriander, Fennel & Mustard Seeds',
-        'Pure Turmeric, Red Chilli & Spice Powders',
-        'Whole Bold Cardamom, Cloves & Black Pepper',
-        'Natural & Hulled Sesame Seeds (Sortex 99.9%)'
+        'Sortex 99.5% Bold Cumin Seeds (Jeera) & Coriander Seeds',
+        'High Curcumin Turmeric Fingers, Bulbs & Pure Spices Powders',
+        'Whole Bold Cardamom, Whole Cloves & Black Pepper (550 GL)',
+        'Natural & Hulled Sesame Seeds with APEDA & Spices Board Certification'
       ],
-      ctaText: 'Explore Agro & Spices'
+      ctaText: 'Explore Indian Spices'
     },
     {
       id: 'hardware-sanitary',
       categoryKey: 'Hardware & Sanitary Items',
       badge: 'Manufacturer & Exporter',
       badgeType: 'mfg',
-      title: 'Hardware & Sanitary Items',
+      title: 'Brass Parts, Hardware & Sanitary Items',
       icon: Wrench,
       image: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80',
-      shortDesc: 'In-house precision manufacturing of food-grade stainless steel & quartz kitchen sinks, designer ceramic wash basins, brass mixer taps, luxury rain showers, and bath fittings.',
+      shortDesc: 'In-house precision manufacturing of precision brass parts, brass mixer taps, food-grade stainless steel & quartz kitchen sinks, designer ceramic wash basins, and sanitary fittings.',
       keyItems: [
-        'Stainless Steel (SS 304) & Quartz Kitchen Sinks',
-        'Designer Ceramic Countertop & Wall Wash Basins',
-        'Kitchen Sink Mixers, Basin Taps & Pillar Cocks',
-        'Overhead Ultra-Slim Rain Showers & Hand Showers',
-        'Sanitary Brass Angle Valves, Drains & Bath Accessories'
+        'Precision CNC Turned Brass Parts, Components & Inserts',
+        'Solid Brass Kitchen Sink Mixers, Basin Taps & Pillar Cocks',
+        'Stainless Steel (SS 304) & Quartz Composite Kitchen Sinks',
+        'Designer Ceramic Countertop Basins & Sanitary Brass Fittings'
       ],
-      ctaText: 'Explore Sanitary & Hardware'
+      ctaText: 'Explore Hardware & Brass'
     }
   ];
 

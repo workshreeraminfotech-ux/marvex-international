@@ -1,4 +1,4 @@
-import React, { useState, Suspense, lazy } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 
 import HeaderTop from './components/HeaderTop';
 import Navbar from './components/Navbar';
@@ -24,6 +24,40 @@ export default function App() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [quoteProduct, setQuoteProduct] = useState('');
   const [isQuoteOpen, setIsQuoteOpen] = useState(false);
+
+  // Dynamic SEO Title & Meta Tag Management
+  useEffect(() => {
+    let title = 'Marvex International — Earthing Parts, Copper Parts & Rods, Brass Parts, Indian Spices Exporter';
+    let desc = 'Leading manufacturer & exporter of Earthing Parts, UL copper earth rods, pure copper parts & items, precision brass parts, and Indian spices.';
+
+    if (activePage === 'about') {
+      title = 'About Us | Marvex International — Earthing Parts & Spices Manufacturer Gujarat';
+      desc = 'Learn about Marvex International: precision manufacturing of Earthing Parts, Copper Rods, Brass Components, and Sortex-Cleaned Indian Spices exporter from Gujarat.';
+    } else if (activePage === 'products') {
+      if (selectedCategory === 'Earthing Parts') {
+        title = 'Earthing Parts, Copper Rods & Brass Clamps Manufacturer — Marvex International';
+        desc = 'Explore UL listed copper bonded earth rods (copper roads), pure copper grounding parts, precision brass clamps, and hot line clamps with worldwide shipping.';
+      } else if (selectedCategory === 'Spices & Agro Commodities') {
+        title = 'Indian Spices Exporter | Cumin, Coriander & Turmeric — Marvex International';
+        desc = 'Premier merchant exporter of 100% Sortex-cleaned whole Indian spices and fine spice powders with APEDA, FSSAI, and Spices Board certifications.';
+      } else if (selectedCategory === 'Hardware & Sanitary Items') {
+        title = 'Precision Brass Parts, Hardware & Sanitary Items — Marvex International';
+        desc = 'Export-grade stainless steel kitchen sinks, precision brass mixer taps, ceramic basins, and bathroom fittings.';
+      } else {
+        title = 'Product Export Catalog — Marvex International';
+      }
+    } else if (activePage === 'blog') {
+      title = 'Export Insights & Technical Guides — Marvex International';
+      desc = 'Read our technical articles and industry guides on earthing standards, copper rod specifications, and spice export trends.';
+    } else if (activePage === 'contact') {
+      title = 'Contact Export Desk & Request Quote — Marvex International';
+      desc = 'Get in touch with Marvex International for bulk CIF/FOB pricing on Earthing Parts, Copper Rods, Brass Parts, and Indian Spices.';
+    }
+
+    document.title = title;
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) metaDesc.setAttribute('content', desc);
+  }, [activePage, selectedCategory]);
 
   const handleNavigate = (pageId, category = null) => {
     if (category) {

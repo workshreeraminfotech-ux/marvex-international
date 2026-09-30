@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowRight, CheckCircle2, Globe2 } from 'lucide-react';
-import heroBgVideo from '../assets/hero-bg.mp4';
+import heroBgVideo from '../assets/IMG_5434.mp4';
+import heroBgVideoMov from '../assets/IMG_5434.MOV';
 
 export default function HeroSection() {
   return (
@@ -14,6 +15,7 @@ export default function HeroSection() {
         playsInline 
       >
         <source src={heroBgVideo} type="video/mp4" />
+        <source src={heroBgVideoMov} type="video/quicktime" />
       </video>
 
       {/* Overlay */}

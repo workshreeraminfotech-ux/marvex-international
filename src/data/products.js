@@ -55,50 +55,82 @@ export const PRODUCTS = [
   // ==========================================
   {
     id: 'copper-bonded-earth-rods',
-    title: 'Copper Bonded Earth Rods (UL Listed)',
+    title: 'Copper Bonded Earth Rods (Copper Roads) — UL Listed 254 Microns',
     category: 'Earthing Parts',
     cat: 'Earthing Parts',
     businessType: 'Manufacturer & Exporter',
-    subcategory: 'Earth Rods & Conductors',
+    subcategory: 'Copper Earth Rods & Conductors',
     hsCode: 'HS 85389000',
     image: 'https://images.unsplash.com/photo-1544724569-5f546fd6f2b5?auto=format&fit=crop&w=800&q=80',
     origin: 'Gujarat, India (In-House Manufactured)',
     packaging: 'Bundles of 5/10 pcs in Protective Heavy Plastic Sleeves',
-    specs: 'Copper Coating: 254 Microns (UL 467) | Core: Low Carbon Steel Tensile > 600 N/mm²',
-    description: 'High-conductivity molecularly bonded copper earth rods engineered for high fault current dissipation, low electrical resistance, and 30+ years soil corrosion lifespan.',
-    desc: 'Molecularly bonded 254-micron copper coated earth rods with high tensile steel core for industrial electrical grounding.',
+    specs: 'Copper Coating: 254 Microns (UL 467) | Core: Low Carbon Steel Tensile > 600 N/mm² | Keywords: Copper Roads, Copper Rods, Grounding Rods',
+    description: 'High-conductivity molecularly bonded copper earth rods (copper roads / copper rods) engineered for high fault current dissipation, low electrical resistance, and 30+ years soil corrosion lifespan.',
+    desc: 'Molecularly bonded 254-micron copper coated earth rods (copper roads) with high tensile steel core for industrial electrical grounding.',
     isFeatured: true
   },
   {
     id: 'solid-pure-copper-earth-rods',
-    title: 'Solid Pure Copper Earth Rods & Couplers',
+    title: 'Solid Pure Copper Earth Rods (Copper Roads) & Couplers',
     category: 'Earthing Parts',
     cat: 'Earthing Parts',
     businessType: 'Manufacturer & Exporter',
-    subcategory: 'Earth Rods & Conductors',
+    subcategory: 'Copper Earth Rods & Conductors',
     hsCode: 'HS 74071010',
     image: 'https://images.unsplash.com/photo-1587293852726-70cdb56c2866?auto=format&fit=crop&w=800&q=80',
     origin: 'Gujarat, India (In-House Manufactured)',
     packaging: 'Wooden Crates / Seaworthy Bundles',
-    specs: 'Purity: 99.9% Electrolytic Tough Pitch (ETP) Copper | Diameters: 14mm to 25mm',
-    description: '100% solid ETP electrolytic copper grounding rods designed for corrosive coastal, petrochemical, and high-salinity substation installations.',
-    desc: 'Solid pure copper grounding rods for extreme corrosive environments and critical power substations.',
+    specs: 'Purity: 99.9% Electrolytic Tough Pitch (ETP) Copper | Diameters: 14mm to 25mm | Keywords: Pure Copper Rods, Copper Roads',
+    description: '100% solid ETP electrolytic copper grounding rods (copper roads) designed for corrosive coastal, petrochemical, and high-salinity substation installations.',
+    desc: 'Solid pure copper grounding rods and copper items for extreme corrosive environments and critical power substations.',
+    isFeatured: true
+  },
+  {
+    id: 'pure-copper-busbars-parts',
+    title: 'Pure Copper Busbars, Grounding Tapes & Copper Parts / Items',
+    category: 'Earthing Parts',
+    cat: 'Earthing Parts',
+    businessType: 'Manufacturer & Exporter',
+    subcategory: 'Copper Parts & Grounding Items',
+    hsCode: 'HS 74071020',
+    image: 'https://images.unsplash.com/photo-1504917599217-d4dc5ebe6122?auto=format&fit=crop&w=800&q=80',
+    origin: 'Gujarat, India (In-House Manufactured)',
+    packaging: 'Export Wooden Pallets & Shrink Wrap Coils',
+    specs: 'Purity: 99.9% ETP Copper | Finish: Bare Bright / Tinned | Keywords: Copper Parts, Copper Items, Copper Busbars, Copper Tapes',
+    description: 'Precision manufactured pure copper parts, copper busbars, copper earthing tapes, and electrical copper items for switchboards, transformers, and lightning protection systems.',
+    desc: 'High-conductivity pure copper busbars, copper grounding tapes, and custom electrical copper parts and items.',
+    isFeatured: true
+  },
+  {
+    id: 'precision-brass-cnc-parts',
+    title: 'Precision CNC Brass Parts, Brass Components & Turned Items',
+    category: 'Earthing Parts',
+    cat: 'Earthing Parts',
+    businessType: 'Manufacturer & Exporter',
+    subcategory: 'Precision Brass Parts & Clamps',
+    hsCode: 'HS 74199930',
+    image: 'https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=800&q=80',
+    origin: 'Jamnagar & Rajkot, Gujarat, India (In-House Manufactured)',
+    packaging: 'Moisture-Proof Poly Bags in Sturdy Export Cartons',
+    specs: 'Grade: Free Cutting Brass IS 319 / CW614N | Tolerance: Up to ±0.01mm | Keywords: Brass Parts, Brass Components, Brass Turned Parts',
+    description: 'Custom manufactured precision brass parts, CNC turned brass components, brass inserts, brass cable glands, and brass neutral links built to customer technical drawings.',
+    desc: 'High-precision CNC machined brass parts, brass electrical components, and custom turned brass items.',
     isFeatured: true
   },
   {
     id: 'heavy-duty-brass-earth-clamps',
-    title: 'Heavy-Duty Brass Ground Clamps & Rod-to-Tape Clamps',
+    title: 'Heavy-Duty Brass Ground Clamps & Brass Earthing Parts',
     category: 'Earthing Parts',
     cat: 'Earthing Parts',
     businessType: 'Manufacturer & Exporter',
-    subcategory: 'Earth Clamps & Couplers',
+    subcategory: 'Precision Brass Parts & Clamps',
     hsCode: 'HS 85389000',
     image: 'https://images.unsplash.com/photo-1504917599217-d4dc5ebe6122?auto=format&fit=crop&w=800&q=80',
     origin: 'Gujarat, India (In-House Manufactured)',
     packaging: 'Corrugated Export Boxes in Pallets',
-    specs: 'Material: Naval Brass / Gunmetal / Phosphor Bronze | Corrosion Resistant Stainless Hardware',
-    description: 'Precision forged brass clamps for secure mechanical and electrical bonding between earth rods, grounding cables, and copper flat tapes.',
-    desc: 'Heavy-duty forged brass rod-to-cable and rod-to-tape clamps for reliable grounding connections.',
+    specs: 'Material: Naval Brass / Gunmetal / Phosphor Bronze | Corrosion Resistant Stainless Hardware | Keywords: Brass Parts, Brass Clamps',
+    description: 'Precision forged brass clamps and brass earthing parts for secure mechanical and electrical bonding between earth rods, grounding cables, and copper flat tapes.',
+    desc: 'Heavy-duty forged brass ground clamps, rod-to-cable and rod-to-tape clamps for reliable grounding connections.',
     isFeatured: true
   },
   {
@@ -549,6 +581,8 @@ export function searchProducts(query = '', category = 'All') {
   return list.filter(p => 
     (p.title && p.title.toLowerCase().includes(q)) ||
     (p.description && p.description.toLowerCase().includes(q)) ||
+    (p.desc && p.desc.toLowerCase().includes(q)) ||
+    (p.specs && p.specs.toLowerCase().includes(q)) ||
     (p.origin && p.origin.toLowerCase().includes(q)) ||
     (p.hsCode && p.hsCode.toLowerCase().includes(q)) ||
     (p.category && p.category.toLowerCase().includes(q)) ||

@@ -100,6 +100,25 @@ export default function FooterSection({ onNavigate }) {
           </div>
         </div>
 
+        {/* Global SEO Target Keywords Directory Bar */}
+        <div style={{ marginTop: '36px', paddingTop: '24px', borderTop: '1px solid rgba(255, 255, 255, 0.1)', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div style={{ fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', color: '#94A3B8' }}>
+            Popular Export Searches & Product Catalog:
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 14px', fontSize: '13px', color: '#CBD5E1', lineHeight: 1.6 }}>
+            <a href="#earthing-parts" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('products', 'Earthing Parts'); }} style={{ color: '#E2E8F0', textDecoration: 'none' }}>Earthing Parts Manufacturer</a> •
+            <a href="#copper-roads" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('products', 'Earthing Parts'); }} style={{ color: '#E2E8F0', textDecoration: 'none' }}>Copper Earth Rods (Copper Roads)</a> •
+            <a href="#copper-parts" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('products', 'Earthing Parts'); }} style={{ color: '#E2E8F0', textDecoration: 'none' }}>Pure Copper Parts & Items</a> •
+            <a href="#brass-parts" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('products', 'Earthing Parts'); }} style={{ color: '#E2E8F0', textDecoration: 'none' }}>Precision Brass Parts & Turned Items</a> •
+            <a href="#brass-clamps" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('products', 'Earthing Parts'); }} style={{ color: '#E2E8F0', textDecoration: 'none' }}>Heavy Duty Brass Ground Clamps</a> •
+            <a href="#hot-line-clamps" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('products', 'Earthing Parts'); }} style={{ color: '#E2E8F0', textDecoration: 'none' }}>Hot Line Clamps Exporter</a> •
+            <a href="#indian-spices" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('products', 'Spices & Agro Commodities'); }} style={{ color: '#E2E8F0', textDecoration: 'none' }}>Indian Spices Exporter</a> •
+            <a href="#cumin-seeds" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('products', 'Spices & Agro Commodities'); }} style={{ color: '#E2E8F0', textDecoration: 'none' }}>Sortex Cumin & Coriander Seeds</a> •
+            <a href="#turmeric-fingers" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('products', 'Spices & Agro Commodities'); }} style={{ color: '#E2E8F0', textDecoration: 'none' }}>Pure Turmeric & Whole Spices</a> •
+            <a href="#hardware-sanitary" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('products', 'Hardware & Sanitary Items'); }} style={{ color: '#E2E8F0', textDecoration: 'none' }}>Sanitary Brass Fittings & Kitchen Sinks</a>
+          </div>
+        </div>
+
         {/* Footer Bottom copyright bar */}
         <div className="footer-bottom-bar">
           <p>
