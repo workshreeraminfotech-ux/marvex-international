@@ -1,5 +1,6 @@
 import React from 'react';
 import HeroBannerSlider from '../components/HeroBannerSlider';
+import WhyMarvex from '../components/WhyMarvex';
 import ThreePillarsSection from '../components/ThreePillarsSection';
 import AboutUs from '../components/AboutUs';
 import CounterSection from '../components/CounterSection';
@@ -14,6 +15,7 @@ export default function Home({ onSelectProduct, onNavigate, onOpenQuote }) {
   return (
     <div className="home-page">
       <HeroBannerSlider onOpenQuote={() => onOpenQuote()} onNavigate={onNavigate} />
+      <WhyMarvex onNavigate={onNavigate} />
       <ThreePillarsSection onNavigate={onNavigate} onOpenQuote={onOpenQuote} />
       <AboutUs onNavigate={onNavigate} />
       <CounterSection />
