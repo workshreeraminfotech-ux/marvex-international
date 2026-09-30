@@ -39,16 +39,45 @@ export default function Navbar({ activePage, onNavigate }) {
   const categoriesMenu = useMemo(() => {
     if (!categories || categories.length === 0) {
       return [
-        { id: 'category-earthing-parts', categoryKey: 'Earthing Parts', title: 'Earthing Parts', icon: Zap, color: '#011B47' },
-        { id: 'category-spices-agro', categoryKey: 'Spices & Agro Commodities', title: 'Spices & Agro Commodities', icon: Flame, color: '#011B47' },
-        { id: 'category-hardware-items', categoryKey: 'Hardware & Sanitary Items', title: 'Hardware & Sanitary Items', icon: Wrench, color: '#011B47' }
+        { 
+          id: 'category-earthing-parts', 
+          categoryKey: 'Earthing Parts', 
+          title: 'Earthing Parts', 
+          badge: 'Manufacturer & Exporter',
+          desc: 'UL 467 standard copper earth rods, brass ground clamps & earthing hardware',
+          subcategories: ['Copper Earth Rods', 'Brass Clamps', 'Lightning Protection'],
+          icon: Zap, 
+          color: '#011B47' 
+        },
+        { 
+          id: 'category-spices-agro', 
+          categoryKey: 'Spices & Agro Commodities', 
+          title: 'Spices & Agro Commodities', 
+          badge: 'Merchant Exporter',
+          desc: '100% Sortex cleaned Indian whole spices, ground powders & oilseeds',
+          subcategories: ['Whole Spices', 'Ground Powders', 'Oilseeds & Grains'],
+          icon: Flame, 
+          color: '#011B47' 
+        },
+        { 
+          id: 'category-hardware-items', 
+          categoryKey: 'Hardware & Sanitary Items', 
+          title: 'Hardware & Sanitary Items', 
+          badge: 'Manufacturer & Exporter',
+          desc: 'SS kitchen sinks, designer wash basins, mixer taps & sanitary fittings',
+          subcategories: ['Kitchen Sinks', 'Wash Basins', 'Taps & Faucets'],
+          icon: Wrench, 
+          color: '#011B47' 
+        }
       ];
     }
     return categories.map(cat => ({
       id: `category-${cat.id}`,
       categoryKey: cat.name,
       title: cat.name,
-      badge: cat.businessRole || 'Manufacturer',
+      badge: cat.businessRole || 'Manufacturer & Exporter',
+      desc: cat.eyebrow || cat.desc || '',
+      subcategories: Array.isArray(cat.subcategories) ? cat.subcategories.slice(0, 3) : [],
       icon: getCategoryIcon(cat.icon),
       color: '#011B47'
     }));
@@ -152,7 +181,7 @@ export default function Navbar({ activePage, onNavigate }) {
                 About Us
               </a>
 
-              {/* Product Categories Clean Dropdown */}
+              {/* Product Categories Modern Mega-Grid Dropdown */}
               <div 
                 style={{ position: 'relative' }}
                 onMouseEnter={handleMouseEnter}
@@ -189,7 +218,7 @@ export default function Navbar({ activePage, onNavigate }) {
                   />
                 </button>
 
-                {/* Simple, Clean & Minimal Dropdown Menu */}
+                {/* Rich Multi-Column Mega Grid Dropdown Menu */}
                 {dropdownOpen && (
                   <div 
                     style={{
@@ -197,57 +226,171 @@ export default function Navbar({ activePage, onNavigate }) {
                       top: '100%',
                       left: '50%',
                       transform: 'translateX(-50%)',
-                      width: '230px',
+                      width: categoriesMenu.length >= 5 ? '860px' : (categoriesMenu.length >= 2 ? '680px' : '360px'),
+                      maxWidth: 'calc(100vw - 32px)',
                       backgroundColor: '#FFFFFF',
-                      borderRadius: '14px',
+                      borderRadius: '20px',
                       border: '1.5px solid #E2E8F0',
-                      boxShadow: '0 14px 34px rgba(0, 33, 71, 0.12)',
-                      padding: '6px',
+                      boxShadow: '0 25px 60px rgba(1, 27, 71, 0.16), 0 4px 16px rgba(0,0,0,0.04)',
+                      padding: '18px',
                       boxSizing: 'border-box',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '3px',
                       zIndex: 10000
                     }}
                   >
-                    {categoriesMenu.map((item) => {
-                      const Icon = item.icon;
-                      const isCurrentActive = activePage === item.id;
-                      return (
-                        <a
-                          key={item.id}
-                          href={`#${item.id}`}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handleNav(item.id, item.categoryKey);
-                          }}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '10px',
-                            padding: '10px 14px',
-                            borderRadius: '10px',
-                            textDecoration: 'none',
-                            color: isCurrentActive ? '#002147' : '#334155',
-                            backgroundColor: isCurrentActive ? '#F1F5F9' : 'transparent',
-                            fontWeight: isCurrentActive ? 800 : 600,
-                            fontSize: '14.5px',
-                            transition: 'all 0.15s ease'
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = '#F8FAFC';
-                            e.currentTarget.style.color = item.color;
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = isCurrentActive ? '#F1F5F9' : 'transparent';
-                            e.currentTarget.style.color = isCurrentActive ? '#002147' : '#334155';
-                          }}
-                        >
-                          <Icon size={17} style={{ color: item.color, flexShrink: 0 }} />
-                          <span style={{ flex: 1 }}>{item.title}</span>
-                        </a>
-                      );
-                    })}
+                    {/* Header Header Info */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '12px', marginBottom: '12px', borderBottom: '1px solid #F1F5F9' }}>
+                      <span style={{ fontSize: '12px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.6px' }}>
+                        Product Verticals ({categoriesMenu.length})
+                      </span>
+                      <span style={{ fontSize: '11.5px', color: '#059669', fontWeight: 700, background: '#ECFDF5', padding: '2px 8px', borderRadius: '4px' }}>
+                        Export Standard Compliant
+                      </span>
+                    </div>
+
+                    {/* Responsive Multi-Column Grid */}
+                    <div style={{
+                      display: 'grid',
+                      gridTemplateColumns: categoriesMenu.length >= 5 ? 'repeat(3, 1fr)' : (categoriesMenu.length >= 2 ? 'repeat(2, 1fr)' : '1fr'),
+                      gap: '10px'
+                    }}>
+                      {categoriesMenu.map((item) => {
+                        const Icon = item.icon;
+                        const isCurrentActive = activePage === item.id;
+                        return (
+                          <a
+                            key={item.id}
+                            href={`#${item.id}`}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleNav(item.id, item.categoryKey);
+                            }}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'flex-start',
+                              gap: '12px',
+                              padding: '12px 14px',
+                              borderRadius: '12px',
+                              textDecoration: 'none',
+                              color: isCurrentActive ? '#011B47' : '#334155',
+                              backgroundColor: isCurrentActive ? '#F1F5F9' : '#FFFFFF',
+                              border: isCurrentActive ? '1.5px solid #011B47' : '1px solid #E2E8F0',
+                              transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                              cursor: 'pointer'
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.backgroundColor = '#F8FAFC';
+                              e.currentTarget.style.borderColor = '#011B47';
+                              e.currentTarget.style.transform = 'translateY(-2px)';
+                              e.currentTarget.style.boxShadow = '0 6px 16px rgba(1, 27, 71, 0.08)';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.backgroundColor = isCurrentActive ? '#F1F5F9' : '#FFFFFF';
+                              e.currentTarget.style.borderColor = isCurrentActive ? '#011B47' : '#E2E8F0';
+                              e.currentTarget.style.transform = 'translateY(0)';
+                              e.currentTarget.style.boxShadow = 'none';
+                            }}
+                          >
+                            <div style={{
+                              width: '36px',
+                              height: '36px',
+                              borderRadius: '9px',
+                              background: '#011B47',
+                              color: '#FACC15',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              flexShrink: 0,
+                              marginTop: '2px'
+                            }}>
+                              <Icon size={18} />
+                            </div>
+
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px' }}>
+                                <span style={{
+                                  fontWeight: 800,
+                                  fontSize: '14.5px',
+                                  color: '#011B47',
+                                  lineHeight: 1.3,
+                                  whiteSpace: 'nowrap',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis'
+                                }}>
+                                  {item.title}
+                                </span>
+                                <ChevronRight size={14} style={{ color: '#94A3B8', flexShrink: 0 }} />
+                              </div>
+
+                              {item.badge && (
+                                <span style={{
+                                  display: 'inline-block',
+                                  fontSize: '10.5px',
+                                  fontWeight: 700,
+                                  color: item.badge.includes('Merchant') ? '#B45309' : '#047857',
+                                  background: item.badge.includes('Merchant') ? '#FEF3C7' : '#ECFDF5',
+                                  padding: '1px 6px',
+                                  borderRadius: '4px',
+                                  marginTop: '2px',
+                                  marginBottom: '3px'
+                                }}>
+                                  {item.badge}
+                                </span>
+                              )}
+
+                              {item.subcategories && item.subcategories.length > 0 && (
+                                <div style={{
+                                  fontSize: '11.5px',
+                                  color: '#64748B',
+                                  lineHeight: 1.3,
+                                  overflow: 'hidden',
+                                  display: '-webkit-box',
+                                  WebkitLineClamp: 1,
+                                  WebkitBoxOrient: 'vertical'
+                                }}>
+                                  {item.subcategories.join(' • ')}
+                                </div>
+                              )}
+                            </div>
+                          </a>
+                        );
+                      })}
+                    </div>
+
+                    {/* Bottom Action Footer Bar */}
+                    <div style={{
+                      marginTop: '12px',
+                      padding: '10px 14px',
+                      background: '#F8FAFC',
+                      borderRadius: '10px',
+                      border: '1px solid #E2E8F0',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between'
+                    }}>
+                      <span style={{ fontSize: '12.5px', color: '#64748B', fontWeight: 600 }}>
+                        ISO 9001, UL 467 & APEDA Certified Export Supply
+                      </span>
+                      <a
+                        href="#products"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleNav('products');
+                        }}
+                        style={{
+                          fontSize: '13px',
+                          fontWeight: 800,
+                          color: '#011B47',
+                          textDecoration: 'none',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px'
+                        }}
+                      >
+                        <span>View All Products</span>
+                        <ArrowRight size={13} style={{ color: 'var(--gold)' }} />
+                      </a>
+                    </div>
+
                   </div>
                 )}
               </div>
