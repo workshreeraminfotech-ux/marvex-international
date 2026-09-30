@@ -143,8 +143,8 @@ export default function Navbar({ activePage, onNavigate }) {
   return (
     <>
       <header className="jrp-header" style={{ position: 'sticky', top: 0, zIndex: 9999, background: '#FFFFFF', boxShadow: '0 4px 20px rgba(0,0,0,0.06)' }}>
-        <div className="container">
-          <div className="jrp-header-inner" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '88px' }}>
+        <div className="container" style={{ position: 'relative' }}>
+          <div className="jrp-header-inner" style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '88px' }}>
             
             {/* Logo */}
             <a href="#" onClick={handleLogoClick} style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', cursor: 'pointer' }} title="Marvex International — Go to Home">
@@ -183,7 +183,7 @@ export default function Navbar({ activePage, onNavigate }) {
 
               {/* Product Categories Modern Mega-Grid Dropdown */}
               <div 
-                style={{ position: 'relative' }}
+                style={{ position: 'static' }}
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
               >
@@ -218,31 +218,33 @@ export default function Navbar({ activePage, onNavigate }) {
                   />
                 </button>
 
-                {/* Rich Multi-Column Mega Grid Dropdown Menu */}
+                {/* Rich Multi-Column Mega Grid Dropdown Menu - Perfectly Centered in Header */}
                 {dropdownOpen && (
                   <div 
                     style={{
                       position: 'absolute',
-                      top: '100%',
+                      top: '84px',
                       left: '50%',
                       transform: 'translateX(-50%)',
-                      width: categoriesMenu.length >= 5 ? '860px' : (categoriesMenu.length >= 2 ? '680px' : '360px'),
-                      maxWidth: 'calc(100vw - 32px)',
+                      width: categoriesMenu.length >= 6 ? '920px' : (categoriesMenu.length >= 2 ? '680px' : '360px'),
+                      maxWidth: 'calc(100% - 16px)',
+                      maxHeight: 'calc(85vh - 90px)',
+                      overflowY: 'auto',
                       backgroundColor: '#FFFFFF',
                       borderRadius: '20px',
                       border: '1.5px solid #E2E8F0',
-                      boxShadow: '0 25px 60px rgba(1, 27, 71, 0.16), 0 4px 16px rgba(0,0,0,0.04)',
-                      padding: '18px',
+                      boxShadow: '0 25px 60px rgba(1, 27, 71, 0.18), 0 4px 16px rgba(0,0,0,0.06)',
+                      padding: '16px',
                       boxSizing: 'border-box',
                       zIndex: 10000
                     }}
                   >
                     {/* Header Header Info */}
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '12px', marginBottom: '12px', borderBottom: '1px solid #F1F5F9' }}>
-                      <span style={{ fontSize: '12px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.6px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '10px', marginBottom: '10px', borderBottom: '1px solid #F1F5F9' }}>
+                      <span style={{ fontSize: '11.5px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.6px' }}>
                         Product Verticals ({categoriesMenu.length})
                       </span>
-                      <span style={{ fontSize: '11.5px', color: '#059669', fontWeight: 700, background: '#ECFDF5', padding: '2px 8px', borderRadius: '4px' }}>
+                      <span style={{ fontSize: '11px', color: '#059669', fontWeight: 700, background: '#ECFDF5', padding: '2px 8px', borderRadius: '4px' }}>
                         Export Standard Compliant
                       </span>
                     </div>
@@ -250,8 +252,8 @@ export default function Navbar({ activePage, onNavigate }) {
                     {/* Responsive Multi-Column Grid */}
                     <div style={{
                       display: 'grid',
-                      gridTemplateColumns: categoriesMenu.length >= 5 ? 'repeat(3, 1fr)' : (categoriesMenu.length >= 2 ? 'repeat(2, 1fr)' : '1fr'),
-                      gap: '10px'
+                      gridTemplateColumns: categoriesMenu.length >= 6 ? 'repeat(3, 1fr)' : (categoriesMenu.length >= 2 ? 'repeat(2, 1fr)' : '1fr'),
+                      gap: '8px'
                     }}>
                       {categoriesMenu.map((item) => {
                         const Icon = item.icon;
@@ -266,9 +268,9 @@ export default function Navbar({ activePage, onNavigate }) {
                             }}
                             style={{
                               display: 'flex',
-                              alignItems: 'flex-start',
-                              gap: '12px',
-                              padding: '12px 14px',
+                              alignItems: 'center',
+                              gap: '10px',
+                              padding: '10px 12px',
                               borderRadius: '12px',
                               textDecoration: 'none',
                               color: isCurrentActive ? '#011B47' : '#334155',
@@ -281,7 +283,7 @@ export default function Navbar({ activePage, onNavigate }) {
                               e.currentTarget.style.backgroundColor = '#F8FAFC';
                               e.currentTarget.style.borderColor = '#011B47';
                               e.currentTarget.style.transform = 'translateY(-2px)';
-                              e.currentTarget.style.boxShadow = '0 6px 16px rgba(1, 27, 71, 0.08)';
+                              e.currentTarget.style.boxShadow = '0 6px 14px rgba(1, 27, 71, 0.08)';
                             }}
                             onMouseLeave={(e) => {
                               e.currentTarget.style.backgroundColor = isCurrentActive ? '#F1F5F9' : '#FFFFFF';
@@ -291,64 +293,48 @@ export default function Navbar({ activePage, onNavigate }) {
                             }}
                           >
                             <div style={{
-                              width: '36px',
-                              height: '36px',
-                              borderRadius: '9px',
+                              width: '34px',
+                              height: '34px',
+                              borderRadius: '8px',
                               background: '#011B47',
                               color: '#FACC15',
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
-                              flexShrink: 0,
-                              marginTop: '2px'
+                              flexShrink: 0
                             }}>
-                              <Icon size={18} />
+                              <Icon size={17} />
                             </div>
 
                             <div style={{ flex: 1, minWidth: 0 }}>
-                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '4px' }}>
                                 <span style={{
                                   fontWeight: 800,
-                                  fontSize: '14.5px',
+                                  fontSize: '13.5px',
                                   color: '#011B47',
-                                  lineHeight: 1.3,
+                                  lineHeight: 1.25,
                                   whiteSpace: 'nowrap',
                                   overflow: 'hidden',
                                   textOverflow: 'ellipsis'
                                 }}>
                                   {item.title}
                                 </span>
-                                <ChevronRight size={14} style={{ color: '#94A3B8', flexShrink: 0 }} />
+                                <ChevronRight size={13} style={{ color: '#94A3B8', flexShrink: 0 }} />
                               </div>
 
                               {item.badge && (
                                 <span style={{
                                   display: 'inline-block',
-                                  fontSize: '10.5px',
+                                  fontSize: '10px',
                                   fontWeight: 700,
                                   color: item.badge.includes('Merchant') ? '#B45309' : '#047857',
                                   background: item.badge.includes('Merchant') ? '#FEF3C7' : '#ECFDF5',
-                                  padding: '1px 6px',
-                                  borderRadius: '4px',
-                                  marginTop: '2px',
-                                  marginBottom: '3px'
+                                  padding: '1px 5px',
+                                  borderRadius: '3px',
+                                  marginTop: '2px'
                                 }}>
                                   {item.badge}
                                 </span>
-                              )}
-
-                              {item.subcategories && item.subcategories.length > 0 && (
-                                <div style={{
-                                  fontSize: '11.5px',
-                                  color: '#64748B',
-                                  lineHeight: 1.3,
-                                  overflow: 'hidden',
-                                  display: '-webkit-box',
-                                  WebkitLineClamp: 1,
-                                  WebkitBoxOrient: 'vertical'
-                                }}>
-                                  {item.subcategories.join(' • ')}
-                                </div>
                               )}
                             </div>
                           </a>
