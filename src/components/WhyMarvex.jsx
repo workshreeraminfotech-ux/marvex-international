@@ -7,26 +7,22 @@ export default function WhyMarvex({ onNavigate }) {
     {
       id: 'quality',
       title: 'Commitment to Quality & Excellence',
-      icon: ShieldCheck,
-      desc: 'UL 467, ISO 9001 & APEDA certified export quality with strict multi-stage lab testing.'
+      icon: ShieldCheck
     },
     {
       id: 'mfg',
       title: 'Leading Manufacturer & Exporter of Brass Products & Accessories',
-      icon: Factory,
-      desc: 'Precision CNC brass components, earthing solutions, and premier export merchandise.'
+      icon: Factory
     },
     {
       id: 'expertise',
       title: 'Unmatched Expertise',
-      icon: Award,
-      desc: 'Decades of manufacturing mastery and seamless global freight logistics.'
+      icon: Award
     },
     {
       id: 'customer',
       title: 'Customer Centric Approach',
-      icon: Users,
-      desc: 'Dedicated FOB/CIF support, custom drawing adherence, and punctual worldwide dispatch.'
+      icon: Users
     }
   ];
 
@@ -35,7 +31,7 @@ export default function WhyMarvex({ onNavigate }) {
       className="why-marvex-section"
       style={{
         background: '#F8FAFC',
-        padding: '65px 0 72px',
+        padding: '56px 0 62px',
         borderTop: '1px solid #E2E8F0',
         borderBottom: '1px solid #E2E8F0',
         position: 'relative'
@@ -44,7 +40,7 @@ export default function WhyMarvex({ onNavigate }) {
       <div className="container" style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 20px' }}>
         
         {/* Main Section Heading */}
-        <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '44px' }}>
           <motion.h2 
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -52,7 +48,7 @@ export default function WhyMarvex({ onNavigate }) {
             transition={{ duration: 0.5 }}
             style={{
               fontFamily: 'var(--font-h)',
-              fontSize: 'clamp(32px, 4.5vw, 48px)',
+              fontSize: 'clamp(32px, 4.5vw, 46px)',
               fontWeight: 900,
               color: '#011B47',
               letterSpacing: '-0.5px',
@@ -71,7 +67,7 @@ export default function WhyMarvex({ onNavigate }) {
               width: '56px',
               height: '3.5px',
               background: 'linear-gradient(90deg, #011B47, #FACC15)',
-              margin: '14px auto 0',
+              margin: '12px auto 0',
               borderRadius: '2px'
             }}
           />
@@ -81,8 +77,8 @@ export default function WhyMarvex({ onNavigate }) {
         <div 
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))',
-            gap: '32px 24px',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap: '28px 20px',
             alignItems: 'start',
             justifyContent: 'center'
           }}
@@ -92,7 +88,7 @@ export default function WhyMarvex({ onNavigate }) {
             return (
               <motion.div
                 key={item.id}
-                initial={{ opacity: 0, y: 22 }}
+                initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.45, delay: idx * 0.1 }}
@@ -101,7 +97,7 @@ export default function WhyMarvex({ onNavigate }) {
                   flexDirection: 'column',
                   alignItems: 'center',
                   textAlign: 'center',
-                  padding: '12px 8px',
+                  padding: '8px 12px',
                   borderRadius: '16px',
                   transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
                   cursor: 'default'
@@ -126,7 +122,7 @@ export default function WhyMarvex({ onNavigate }) {
                     alignItems: 'center',
                     justifyContent: 'center',
                     color: '#F8FAFC',
-                    marginBottom: '20px',
+                    marginBottom: '18px',
                     transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
                     position: 'relative'
                   }}
@@ -151,30 +147,17 @@ export default function WhyMarvex({ onNavigate }) {
                 {/* Feature Title */}
                 <h3
                   style={{
-                    fontSize: '17px',
+                    fontSize: '16.5px',
                     fontWeight: 800,
                     color: '#011B47',
                     lineHeight: 1.35,
-                    margin: '0 0 8px',
-                    maxWidth: '225px',
+                    margin: 0,
+                    maxWidth: '220px',
                     fontFamily: 'var(--font-h)'
                   }}
                 >
                   {item.title}
                 </h3>
-
-                {/* Short Subtitle / Description */}
-                <p
-                  style={{
-                    fontSize: '13px',
-                    color: '#64748B',
-                    lineHeight: 1.55,
-                    margin: 0,
-                    maxWidth: '240px'
-                  }}
-                >
-                  {item.desc}
-                </p>
               </motion.div>
             );
           })}
