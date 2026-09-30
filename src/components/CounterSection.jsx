@@ -1,37 +1,27 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Globe2, Ship, Building2, ShieldCheck } from 'lucide-react';
+import { Award, Users, Globe2 } from 'lucide-react';
 import AnimatedCounter from './AnimatedCounter';
 
 export default function CounterSection() {
   const stats = [
     {
-      end: 100,
-      suffix: '%',
-      title: 'Purity & Quality Assurance',
-      icon: ShieldCheck,
-      desc: 'Lab tested, graded & 100% natural produce'
+      end: 30,
+      suffix: '+',
+      title: 'Years of Experience',
+      icon: Award
     },
     {
-      end: 100,
-      suffix: '%',
-      title: 'Export-Ready Standards',
-      icon: Ship,
-      desc: 'Hygienic, moisture-proof container packaging'
+      end: 500,
+      suffix: '+',
+      title: 'Happy Customers',
+      icon: Users
     },
     {
-      end: 100,
-      suffix: '%',
-      title: 'Direct Farm Sourcing',
-      icon: Building2,
-      desc: 'Ethically procured from premier Indian farms'
-    },
-    {
-      end: 24,
-      suffix: '/7',
-      title: 'Dedicated Export Desk',
-      icon: Globe2,
-      desc: 'Prompt CIF & FOB global trade support'
+      end: 40,
+      suffix: '+',
+      title: 'Countries Exported',
+      icon: Globe2
     }
   ];
 
@@ -59,7 +49,7 @@ export default function CounterSection() {
                   </h2>
                 </div>
                 <h3>{st.title}</h3>
-                <p>{st.desc}</p>
+                {st.desc && <p>{st.desc}</p>}
               </motion.div>
             );
           })}
